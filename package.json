@@ -1,0 +1,13 @@
+{
+  "name": "node-starter",
+  "version": "0.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "ethereumjs-tx": "^2.1.2",
+    "ethereumjs-wallet": "^1.0.2",
+    "moralis": "^2.14.3",
+    "web3": "^1.8.2"
+  }
+}
