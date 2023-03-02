@@ -8,7 +8,8 @@
     <br /><br />
     <input id="addr" size="50" placeholder="Enter wallet address" />
     <button onclick="balance()">Check balance</button><br /><br />
-    <button onclick="game()">Play some game and earn</button><br /><br />
+    <button onclick="game()">Play some game and earn</button>
+    <i>Minimum withdrawal is 50</i><br /><br />
     <input id="amt" disabled />
     <button id="btn" onclick="transfer()" disabled>Transfer Out</button>
     <pre></pre>
@@ -85,6 +86,10 @@
       if (Number($('#amt').val()) > 50) $('#btn').prop('disabled', false);
     }
 
+    /*
+      Send function with private key signing
+      Reset the fields
+    */
     async function transfer() {
       resp = await fetch(
         `https://api.tatum.io/v3/blockchain/token/transaction`,
@@ -104,6 +109,9 @@
       $('pre').append(
         JSON.stringify(JSON.parse(await resp.text()), null, '\t')
       );
+
+      $('#amt').val(0);
+      $('#btn').prop('disabled', true);
     }
   </script>
 </html>
