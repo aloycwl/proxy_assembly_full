@@ -10,7 +10,7 @@
     <button onclick="balance()">Check balance</button><br /><br />
     <button onclick="game()">Play some game and earn</button><br /><br />
     <input id="amt" disabled />
-    <button onclick="transfer()" disabled>Transfer Out</button>
+    <button id="btn" onclick="transfer()" disabled>Transfer Out</button>
     <pre></pre>
   </body>
   <script>
@@ -80,7 +80,10 @@
     /*
       Simulatate game function to generate rewards
     */
-    function game() {}
+    function game() {
+      $('#amt').val(Number($('#amt').val()) + Math.floor(Math.random() * 10));
+      if (Number($('#amt').val()) > 50) $('#btn').prop('disabled', false);
+    }
 
     async function transfer() {
       resp = await fetch(
