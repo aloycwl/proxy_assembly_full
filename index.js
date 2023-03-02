@@ -55,7 +55,7 @@ async function balance() {
     }
   );
   $('#bal').html(
-    `Check balance 查余额${JSON.stringify(
+    `Check balance 查余额 ${JSON.stringify(
       JSON.parse(await resp.text()),
       null,
       '\t'
