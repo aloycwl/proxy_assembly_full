@@ -25,7 +25,7 @@
       });
       data = JSON.parse(await resp.text());
       $('pre').append(JSON.stringify(data, null, '\t'));
-      const resp = await fetch(`https://api.tatum.io/v3/${CHAIN}/wallet/priv`, {
+      resp = await fetch(`https://api.tatum.io/v3/${CHAIN}/wallet/priv`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
