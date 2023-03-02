@@ -9,7 +9,7 @@
   <script defer>
     api = 'f1384f0e-abd1-4d69-bb64-4682beb7fde4';
     async function a() {
-      const resp = await fetch(
+      resp = await fetch(
         `https://api.tatum.io/v3/blockchain/token/transaction`,
         {
           method: 'POST',
@@ -29,8 +29,8 @@
         }
       );
 
-      const data = await resp.json();
-      $('pre').append(data);
+      data = JSON.parse(await resp.text());
+      $('pre').append(JSON.stringify(data, null, '\t'));
     }
 
     a();

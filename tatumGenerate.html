@@ -16,7 +16,7 @@
         },
       });
       data = JSON.parse(await resp.text());
-      $('pre').append(JSON.stringify(data, null, '\t') + '<br><br>');
+      $('pre').append(JSON.stringify(data, null, '\t'));
 
       resp = await fetch(
         `https://api.tatum.io/v3/bsc/address/${data.xpub}/${1}`,
@@ -29,7 +29,7 @@
       );
 
       data = JSON.parse(await resp.text());
-      $('pre').append(JSON.stringify(data, null, '\t') + '<br><br>');
+      $('pre').append(JSON.stringify(data, null, '\t'));
     }
     a();
   </script>

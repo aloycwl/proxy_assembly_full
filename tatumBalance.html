@@ -23,7 +23,7 @@
       );
 
       data = JSON.parse(await resp.text());
-      $('pre').append(JSON.stringify(data, null, '\t') + '<br><br>');
+      $('pre').append(JSON.stringify(data, null, '\t'));
     }
     a();
   </script>
