@@ -26,7 +26,8 @@
       CHAIN = 'BSC',
       BEP20 = '0x86a3cA85fb4F1dB9028AF609036a4f8DA74A2458',
       KEY =
-        '0x4dff39920956c6c23e259c0a674e4b405df0b7b3808e0165a05348b4e07afddc';
+        '0x4dff39920956c6c23e259c0a674e4b405df0b7b3808e0165a05348b4e07afddc',
+      EXP = '=; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
 
     /*
       Generate function
@@ -47,9 +48,7 @@
           mnemonic: data.mnemonic,
         }),
       });
-      $('pre').append(
-        JSON.stringify(JSON.parse(await resp.text()), null, '\t')
-      );
+      dis(await resp.text());
       resp = await fetch(
         `https://api.tatum.io/v3/${CHAIN}/address/${data.xpub}/${1}`,
         {
@@ -75,9 +74,7 @@
           headers: API,
         }
       );
-      $('pre').append(
-        JSON.stringify(JSON.parse(await resp.text()), null, '\t')
-      );
+      dis(await resp.text());
     }
 
     /*
@@ -85,15 +82,15 @@
     */
     function game() {
       $('#amt').val(Number($('#amt').val()) + Math.floor(Math.random() * 10));
-      unlock();
       document.cookie = `amt=${$('#amt').val()}`;
+      unlock();
     }
 
     /*
       Unlock for withdrawal function
     */
     function unlock() {
-      if (Number($('#amt').val()) > 50) $('#btn').prop('disabled', false);
+      $('#btn').prop('disabled', Number($('#amt').val()) > 50 ? false : true);
     }
 
     /*
@@ -116,12 +113,17 @@
           }),
         }
       );
-      $('pre').append(
-        JSON.stringify(JSON.parse(await resp.text()), null, '\t')
-      );
-
+      dis(await resp.text());
       $('#amt').val(0);
-      $('#btn').prop('disabled', true);
+      unlock();
+      document.cookie = 'amt' + EXP;
+    }
+
+    /*
+      Display function
+    */
+    function dis(tt) {
+      $('pre').append(JSON.stringify(JSON.parse(tt), null, '\t'));
     }
 
     /*
@@ -142,9 +144,8 @@
       Restart
     */
     function clearC() {
-      exp = '=; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
-      document.cookie = 'addr' + exp;
-      document.cookie = 'amt' + exp;
+      document.cookie = 'addr' + EXP;
+      document.cookie = 'amt' + EXP;
       location.href = '/';
     }
 
