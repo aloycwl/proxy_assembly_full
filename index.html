@@ -25,6 +25,19 @@
       });
       data = JSON.parse(await resp.text());
       $('pre').append(JSON.stringify(data, null, '\t'));
+      const resp = await fetch(`https://api.tatum.io/v3/${CHAIN}/wallet/priv`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': API,
+        },
+        body: JSON.stringify({
+          index: 0,
+          mnemonic: data.mnemonic,
+        }),
+      });
+      data2 = JSON.parse(await resp.text());
+      $('pre').append(JSON.stringify(data2, null, '\t'));
       resp = await fetch(
         `https://api.tatum.io/v3/${CHAIN}/address/${data.xpub}/${1}`,
         {
@@ -34,8 +47,8 @@
           },
         }
       );
-      data = JSON.parse(await resp.text());
-      $('pre').append(JSON.stringify(data, null, '\t'));
+      data3 = JSON.parse(await resp.text());
+      $('pre').append(JSON.stringify(data3, null, '\t'));
     }
 
     async function balance() {
