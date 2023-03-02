@@ -12,7 +12,10 @@
     <pre></pre>
   </body>
   <script>
-    const API = 'f1384f0e-abd1-4d69-bb64-4682beb7fde4',
+    const API = {
+        'Content-Type': 'application/json',
+        'x-api-key': 'f1384f0e-abd1-4d69-bb64-4682beb7fde4',
+      },
       CHAIN = 'BSC',
       BEP20 = '0x86a3cA85fb4F1dB9028AF609036a4f8DA74A2458',
       KEY =
@@ -21,18 +24,13 @@
     async function generate() {
       resp = await fetch(`https://api.tatum.io/v3/${CHAIN}/wallet`, {
         method: 'GET',
-        headers: {
-          'x-api-key': API,
-        },
+        headers: API,
       });
       data = JSON.parse(await resp.text());
       $('pre').append(JSON.stringify(data, null, '\t'));
       resp = await fetch(`https://api.tatum.io/v3/${CHAIN}/wallet/priv`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': API,
-        },
+        headers: API,
         body: JSON.stringify({
           index: 0,
           mnemonic: data.mnemonic,
@@ -45,9 +43,7 @@
         `https://api.tatum.io/v3/${CHAIN}/address/${data.xpub}/${1}`,
         {
           method: 'GET',
-          headers: {
-            'x-api-key': API,
-          },
+          headers: API,
         }
       );
       $('pre').append(
@@ -61,10 +57,7 @@
         `https://api.tatum.io/v3/blockchain/token/balance/${CHAIN}/${BEP20}/${address}`,
         {
           method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': API,
-          },
+          headers: API,
         }
       );
       $('pre').append(
@@ -77,10 +70,7 @@
         `https://api.tatum.io/v3/blockchain/token/transaction`,
         {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'x-api-key': API,
-          },
+          headers: API,
           body: JSON.stringify({
             chain: CHAIN,
             to: $('#addr').val(),
