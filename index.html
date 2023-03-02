@@ -4,8 +4,6 @@
     <script src="https://code.jquery.com/jquery-3.6.3.slim.min.js"></script>
   </head>
   <body>
-    <button onclick="generate()">Generate wallet address</button>
-    <br /><br />
     <input id="addr" size="50" placeholder="Enter wallet address" />
     <button onclick="balance()">Check balance</button><br /><br />
     <button onclick="game()">Play some game and earn</button>
@@ -14,7 +12,7 @@
     <button id="btn" onclick="transfer()" disabled>Transfer Out</button>
     <pre></pre>
   </body>
-  <script>
+  <script defer>
     /*
       Standard variable
     */
@@ -113,5 +111,7 @@
       $('#amt').val(0);
       $('#btn').prop('disabled', true);
     }
+
+    generate();
   </script>
 </html>
