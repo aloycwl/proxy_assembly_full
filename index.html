@@ -11,10 +11,12 @@
     <button onclick="transfer()">Transfer</button>
     <pre></pre>
   </body>
-  <script defer>
+  <script>
     const API = 'f1384f0e-abd1-4d69-bb64-4682beb7fde4',
       CHAIN = 'BSC',
-      BEP20 = '0x86a3cA85fb4F1dB9028AF609036a4f8DA74A2458';
+      BEP20 = '0x86a3cA85fb4F1dB9028AF609036a4f8DA74A2458',
+      KEY =
+        '0x4dff39920956c6c23e259c0a674e4b405df0b7b3808e0165a05348b4e07afddc';
 
     async function generate() {
       resp = await fetch(`https://api.tatum.io/v3/${CHAIN}/wallet`, {
@@ -36,8 +38,9 @@
           mnemonic: data.mnemonic,
         }),
       });
-      data2 = JSON.parse(await resp.text());
-      $('pre').append(JSON.stringify(data2, null, '\t'));
+      $('pre').append(
+        JSON.stringify(JSON.parse(await resp.text()), null, '\t')
+      );
       resp = await fetch(
         `https://api.tatum.io/v3/${CHAIN}/address/${data.xpub}/${1}`,
         {
@@ -47,8 +50,9 @@
           },
         }
       );
-      data3 = JSON.parse(await resp.text());
-      $('pre').append(JSON.stringify(data3, null, '\t'));
+      $('pre').append(
+        JSON.stringify(JSON.parse(await resp.text()), null, '\t')
+      );
     }
 
     async function balance() {
@@ -81,8 +85,7 @@
             contractAddress: BEP20,
             amount: '300',
             digits: 18,
-            fromPrivateKey:
-              '0x4dff39920956c6c23e259c0a674e4b405df0b7b3808e0165a05348b4e07afddc',
+            fromPrivateKey: KEY,
           }),
         }
       );
