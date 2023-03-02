@@ -76,7 +76,6 @@ function game(x) {
   Unlock for withdrawal function
 */
 function unlock() {
-  $('#ttf').val('Transfer 转出');
   $('#ttf').prop('disabled', Number($('#amt').val()) > 50 ? false : true);
 }
 
@@ -97,7 +96,7 @@ async function transfer() {
       fromPrivateKey: KEY,
     }),
   });
-  $('#ttf').val('Transferred 已转出');
+  $('#ttf').html('Transferred 已转出');
   $('#amt').val(0);
   game(0);
 }
