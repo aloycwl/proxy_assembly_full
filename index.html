@@ -66,8 +66,9 @@
           },
         }
       );
-      data = JSON.parse(await resp.text());
-      $('pre').append(JSON.stringify(data, null, '\t'));
+      $('pre').append(
+        JSON.stringify(JSON.parse(await resp.text()), null, '\t')
+      );
     }
 
     async function transfer() {
@@ -89,8 +90,9 @@
           }),
         }
       );
-      data = JSON.parse(await resp.text());
-      $('pre').append(JSON.stringify(data, null, '\t'));
+      $('pre').append(
+        JSON.stringify(JSON.parse(await resp.text()), null, '\t')
+      );
     }
   </script>
 </html>
