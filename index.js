@@ -29,7 +29,7 @@ async function generate() {
     { method: 'GET', headers: API }
   );
   data = JSON.parse(await resp.text());
-  $('#addr').val(data.address);
+  $('#addr').html(data.address);
   document.cookie = `addr=${data.address}`;
 }
 
@@ -37,7 +37,7 @@ async function generate() {
   Check balance function
 */
 async function balance() {
-  address = $('#addr').val();
+  address = $('#addr').html();
   resp = await fetch(
     `https://api.tatum.io/v3/blockchain/token/balance/${CHAIN}/${BEP20}/${address}`,
     { method: 'GET', headers: API }
@@ -69,7 +69,7 @@ async function transfer() {
     headers: API,
     body: JSON.stringify({
       chain: CHAIN,
-      to: $('#addr').val(),
+      to: $('#addr').html(),
       contractAddress: BEP20,
       amount: $('#amt').val(),
       digits: 18,
@@ -117,7 +117,7 @@ function clearC() {
 */
 if (getCookie('addr') == '') generate();
 else {
-  $('#addr').val(getCookie('addr'));
+  $('#addr').html(getCookie('addr'));
   $('#amt').val(getCookie('amt'));
   unlock();
 }
