@@ -12,7 +12,7 @@
     <input id="amt" disabled />
     <button id="btn" onclick="transfer()" disabled>Transfer Out 转出</button
     ><br /><br />
-    <button onclick="clear()">Clear cache</button>
+    <button onclick="clearC()">Clear cache 清除缓存 (Restart 重启)</button>
     <pre></pre>
   </body>
   <script defer>
@@ -143,7 +143,10 @@
       return '';
     }
 
-    function clear() {
+    /*
+      Restart
+    */
+    function clearC() {
       document.cookie = 'addr=; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
       document.cookie = 'amt=; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
       location.href = '/';
