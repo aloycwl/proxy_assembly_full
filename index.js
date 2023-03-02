@@ -93,7 +93,6 @@ async function transfer() {
   $('pre').append(JSON.stringify(JSON.parse(await resp.text()), null, '\t'));
   $('#amt').val(0);
   game(0);
-  unlock();
 }
 
 /*
