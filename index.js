@@ -116,8 +116,13 @@ function getCookie(cname) {
 */
 function clearC() {
   exp = '=; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
-  document.cookie = 'addr' + exp;
-  document.cookie = 'amt' + exp;
+  //document.cookie = 'addr' + exp;
+  //document.cookie = 'amt' + exp;
+  var Cookies = document.cookie.split(';');
+
+  for (var i = 0; i < Cookies.length; i++)
+    document.cookie = Cookies[i] + '=;expires=' + exp;
+
   location.href = '/';
 }
 
