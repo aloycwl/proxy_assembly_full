@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <title>Home</title>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width" />
     <script src="https://code.jquery.com/jquery-3.6.3.slim.min.js"></script>
   </head>
-  <body></body>
+  <body>
+    <pre></pre>
+  </body>
   <script defer>
     api = {
       'x-api-key': 'f1384f0e-abd1-4d69-bb64-4682beb7fde4',
@@ -17,7 +16,7 @@
         headers: api,
       });
       data = JSON.parse(await resp.text());
-      $('body').append(JSON.stringify(data) + '<br><br>');
+      $('pre').append(JSON.stringify(data, null, '\t') + '<br><br>');
 
       resp = await fetch(
         `https://api.tatum.io/v3/bsc/address/${data.xpub}/${1}`,
@@ -28,7 +27,7 @@
       );
 
       data = JSON.parse(await resp.text());
-      $('body').append(JSON.stringify(data) + '<br><br>');
+      $('pre').append(JSON.stringify(data, null, '\t') + '<br><br>');
     }
     a();
   </script>
