@@ -9,7 +9,6 @@
   <script defer>
     api = 'f1384f0e-abd1-4d69-bb64-4682beb7fde4';
     async function a() {
-
       const resp = await fetch(
         `https://api.tatum.io/v3/blockchain/token/transaction`,
         {
@@ -21,17 +20,17 @@
           body: JSON.stringify({
             chain: 'BSC',
             to: '0x687422eEA2cB73B5d3e242bA5456b782919AFc85',
-            contractAddress: '0x687422eEA2cB73B5d3e242bA5456b782919AFc85',
+            contractAddress: '0xaa25aa7a19f9c426e07dee59b12f944f4d9f1dd3',
             amount: '100000',
             digits: 18,
             fromPrivateKey:
-              '0x05e150c73f1920ec14caa1e0b6aa09940899678051a78542840c2668ce5080c2',
+              '0x4dff39920956c6c23e259c0a674e4b405df0b7b3808e0165a05348b4e07afddc',
           }),
         }
       );
 
       const data = await resp.json();
-      console.log(data);
+      $('pre').append(data);
     }
 
     a();
