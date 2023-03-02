@@ -91,15 +91,9 @@ function unlock() {
 /*
   Getting the cookie value
 */
-function getCookie(cname) {
-  name = cname + '=';
-  ca = decodeURIComponent(document.cookie).split(';');
-  for (i = 0; i < ca.length; i++) {
-    c = ca[i];
-    while (c.charAt(0) == ' ') c = c.substring(1);
-    if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
-  }
-  return '';
+function getC(name) {
+  match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+  return match ? match[2] : '';
 }
 
 /*
@@ -115,9 +109,9 @@ function clearC() {
 /*
   Initialise, if existing player will not create new wallet
 */
-if (getCookie('addr') == '') generate();
+if (getC('addr') == '') generate();
 else {
-  $('#addr').html(getCookie('addr'));
-  $('#amt').html(getCookie('amt'));
+  $('#addr').html(getC('addr'));
+  $('#amt').html(getC('amt'));
   unlock();
 }
