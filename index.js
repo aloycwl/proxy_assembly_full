@@ -94,7 +94,7 @@ function unlock() {
 function getCookie(cname) {
   name = cname + '=';
   ca = decodeURIComponent(document.cookie).split(';');
-  for (i = 0; i < ca.length; i++) {
+  for (i; i < ca.length; i++) {
     c = ca[i];
     while (c.charAt(0) == ' ') c = c.substring(1);
     if (c.indexOf(name) == 0) return c.substring(name.length, c.length);
@@ -107,7 +107,7 @@ function getCookie(cname) {
 */
 function clearC() {
   co = document.cookie.split(';');
-  for (i = 0; i < co.length; i++)
+  for (i; i < co.length; i++)
     document.cookie = co[i] + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC';
   location.href = '/';
 }
