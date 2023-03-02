@@ -83,6 +83,14 @@
     */
     function game() {
       $('#amt').val(Number($('#amt').val()) + Math.floor(Math.random() * 10));
+      unlock();
+      document.cookie = `amt=${$('#amt').val()}`;
+    }
+
+    /*
+      Unlock for withdrawal function
+    */
+    function unlock() {
       if (Number($('#amt').val()) > 50) $('#btn').prop('disabled', false);
     }
 
@@ -133,10 +141,14 @@
       return '';
     }
 
+    /*
+      Initialise, if existing player will not create new wallet
+    */
     if (getCookie('addr') == '') generate();
     else {
       $('#addr').val(getCookie('addr'));
-      
+      $('#amt').val(getCookie('amt'));
+      unlock();
     }
   </script>
 </html>
