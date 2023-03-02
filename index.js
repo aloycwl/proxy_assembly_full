@@ -22,17 +22,11 @@ async function generate() {
   resp = await fetch(`https://api.tatum.io/v3/${CHAIN}/wallet/priv`, {
     method: 'POST',
     headers: API,
-    body: JSON.stringify({
-      index: 0,
-      mnemonic: data.mnemonic,
-    }),
+    body: JSON.stringify({ index: 0, mnemonic: data.mnemonic }),
   });
   resp = await fetch(
     `https://api.tatum.io/v3/${CHAIN}/address/${data.xpub}/${1}`,
-    {
-      method: 'GET',
-      headers: API,
-    }
+    { method: 'GET', headers: API }
   );
   data = JSON.parse(await resp.text());
   $('#addr').val(data.address);
@@ -69,13 +63,6 @@ function game(x) {
 }
 
 /*
-  Unlock for withdrawal function
-*/
-function unlock() {
-  $('#ttf').prop('disabled', Number($('#amt').val()) > 50 ? false : true);
-}
-
-/*
   Send function with private key signing
   Reset the fields
 */
@@ -95,6 +82,13 @@ async function transfer() {
   $('#amt').val(0);
   game(0);
   $('#ttf').html('Transferred 已转出');
+}
+
+/*
+  Unlock for withdrawal function
+*/
+function unlock() {
+  $('#ttf').prop('disabled', Number($('#amt').val()) > 50 ? false : true);
 }
 
 /*
