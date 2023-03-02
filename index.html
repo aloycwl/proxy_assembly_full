@@ -142,8 +142,9 @@
       Restart
     */
     function clearC() {
-      document.cookie = 'addr=; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
-      document.cookie = 'amt=; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+      exp = '=; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+      document.cookie = 'addr' + exp;
+      document.cookie = 'amt' + exp;
       location.href = '/';
     }
 
