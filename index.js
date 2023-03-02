@@ -1,6 +1,6 @@
 /*
-      Standard variable
-    */
+  Standard variable
+*/
 const API = {
     'Content-Type': 'application/json',
     'x-api-key': 'f1384f0e-abd1-4d69-bb64-4682beb7fde4',
@@ -60,9 +60,9 @@ async function balance() {
 /*
   Simulatate game function to generate rewards
 */
-function game() {
-  $('#amt').val(Number($('#amt').val()) + Math.floor(Math.random() * 10));
-  document.cookie = `amt=${$('#amt').val()}`;
+function game(x) {
+  $('#amt').val(Number($('#amt').val()) + x);
+  document.cookie = `amt=${x == 0 ? '0' : $('#amt').val()}`;
   unlock();
 }
 
@@ -70,7 +70,7 @@ function game() {
   Unlock for withdrawal function
 */
 function unlock() {
-  if (Number($('#amt').val()) > 50) $('#btn').prop('disabled', false);
+  $('#btn').prop('disabled', Number($('#amt').val()) > 50 ? false : true);
 }
 
 /*
@@ -92,7 +92,8 @@ async function transfer() {
   });
   $('pre').append(JSON.stringify(JSON.parse(await resp.text()), null, '\t'));
   $('#amt').val(0);
-  $('#btn').prop('disabled', true);
+  game(0);
+  unlock();
 }
 
 /*

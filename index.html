@@ -8,7 +8,9 @@
   <body>
     <input id="addr" size="50" disabled />
     <button onclick="balance()">Check balance 查余额</button><br /><br />
-    <button onclick="game()">Click to earn 点击赚分</button>
+    <button onclick="game(Math.floor(Math.random()*10))">
+      Click to earn 点击赚分
+    </button>
     <i>Minimum withdrawal is 50 最低提现为50</i><br /><br />
     <input id="amt" disabled />
     <button id="btn" onclick="transfer()" disabled>Transfer Out 转出</button
