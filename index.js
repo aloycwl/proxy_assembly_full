@@ -55,11 +55,9 @@ async function balance() {
     }
   );
   $('#bal').html(
-    `Check balance 查余额 ${JSON.stringify(
-      JSON.parse(await resp.text()),
-      null,
-      '\t'
-    )}`
+    `Check balance 查余额 ${
+      Number(JSON.parse(await resp.text()).balance) / 1e18
+    }`
   );
 }
 
