@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
     <script src="https://code.jquery.com/jquery-3.6.3.slim.min.js"></script>
   </head>
@@ -8,7 +8,7 @@
   </body>
   <script defer>
     api = 'f1384f0e-abd1-4d69-bb64-4682beb7fde4';
-    async function a() {
+    async function load() {
       address = '0x473431Ac2DF142edd3E94cB85673e451A154bce5';
       contractAddress = '0x86a3cA85fb4F1dB9028AF609036a4f8DA74A2458';
       resp = await fetch(
@@ -20,10 +20,9 @@
           },
         }
       );
-
       data = JSON.parse(await resp.text());
       $('pre').append(JSON.stringify(data, null, '\t'));
     }
-    a();
+    load();
   </script>
 </html>

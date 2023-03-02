@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
   <head>
     <script src="https://code.jquery.com/jquery-3.6.3.slim.min.js"></script>
   </head>
@@ -8,7 +8,7 @@
   </body>
   <script defer>
     api = 'f1384f0e-abd1-4d69-bb64-4682beb7fde4';
-    async function a() {
+    async function load() {
       resp = await fetch(`https://api.tatum.io/v3/bsc/wallet`, {
         method: 'GET',
         headers: {
@@ -27,10 +27,9 @@
           },
         }
       );
-
       data = JSON.parse(await resp.text());
       $('pre').append(JSON.stringify(data, null, '\t'));
     }
-    a();
+    load();
   </script>
 </html>
