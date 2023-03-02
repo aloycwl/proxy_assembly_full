@@ -8,11 +8,15 @@
     <br /><br />
     <input id="addr" size="50" placeholder="Enter wallet address" />
     <button onclick="balance()">Check balance</button><br /><br />
-    <input id="amt" value="300" />
-    <button onclick="transfer()">Transfer</button>
+    <button onclick="game()">Play some game and earn</button><br /><br />
+    <input id="amt" disabled />
+    <button onclick="transfer()" disabled>Transfer Out</button>
     <pre></pre>
   </body>
   <script>
+    /*
+      Standard variable
+    */
     const API = {
         'Content-Type': 'application/json',
         'x-api-key': 'f1384f0e-abd1-4d69-bb64-4682beb7fde4',
@@ -22,6 +26,10 @@
       KEY =
         '0x4dff39920956c6c23e259c0a674e4b405df0b7b3808e0165a05348b4e07afddc';
 
+    /*
+      Generate function
+      Needs 3 transaction to create mnemonic, private key and wallet address
+    */
     async function generate() {
       resp = await fetch(`https://api.tatum.io/v3/${CHAIN}/wallet`, {
         method: 'GET',
@@ -52,6 +60,9 @@
       );
     }
 
+    /*
+      Check balance function
+    */
     async function balance() {
       address = $('#addr').val();
       resp = await fetch(
@@ -65,6 +76,11 @@
         JSON.stringify(JSON.parse(await resp.text()), null, '\t')
       );
     }
+
+    /*
+      Simulatate game function to generate rewards
+    */
+    function game() {}
 
     async function transfer() {
       resp = await fetch(
