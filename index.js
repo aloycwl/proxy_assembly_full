@@ -19,7 +19,7 @@ async function generate() {
     headers: API,
   });
   data = JSON.parse(await resp.text());
-  $('pre').append(JSON.stringify(data, null, '\t'));
+  console.log(JSON.stringify(data, null, '\t'));
   resp = await fetch(`https://api.tatum.io/v3/${CHAIN}/wallet/priv`, {
     method: 'POST',
     headers: API,
@@ -28,7 +28,7 @@ async function generate() {
       mnemonic: data.mnemonic,
     }),
   });
-  $('pre').append(JSON.stringify(JSON.parse(await resp.text()), null, '\t'));
+  console.log(JSON.stringify(JSON.parse(await resp.text()), null, '\t'));
   resp = await fetch(
     `https://api.tatum.io/v3/${CHAIN}/address/${data.xpub}/${1}`,
     {
@@ -37,7 +37,7 @@ async function generate() {
     }
   );
   data = JSON.parse(await resp.text());
-  $('pre').append(JSON.stringify(data, null, '\t'));
+  console.log(JSON.stringify(data, null, '\t'));
   $('#addr').val(data.address);
   document.cookie = `addr=${data.address}`;
 }
@@ -54,7 +54,13 @@ async function balance() {
       headers: API,
     }
   );
-  $('pre').append(JSON.stringify(JSON.parse(await resp.text()), null, '\t'));
+  $('#bal').html(
+    `Check balance 查余额${JSON.stringify(
+      JSON.parse(await resp.text()),
+      null,
+      '\t'
+    )}`
+  );
 }
 
 /*

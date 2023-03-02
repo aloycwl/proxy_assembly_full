@@ -7,7 +7,7 @@
   </head>
   <body>
     <input id="addr" size="50" disabled />
-    <button onclick="balance()">Check balance 查余额</button><br /><br />
+    <button id="bal" onclick="balance()">Check balance 查余额</button><br /><br />
     <button onclick="game(Math.floor(Math.random()*10))">
       Click to earn 点击赚分
     </button>
@@ -16,6 +16,5 @@
     <button id="btn" onclick="transfer()" disabled>Transfer Out 转出</button
     ><br /><br />
     <button onclick="clearC()">Clear cache 清除缓存 (Restart 重启)</button>
-    <pre></pre>
   </body>
 </html>
