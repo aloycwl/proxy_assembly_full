@@ -7,17 +7,17 @@
     <pre></pre>
   </body>
   <script defer>
-    api = {
-      'x-api-key': 'f1384f0e-abd1-4d69-bb64-4682beb7fde4',
-    };
+    api = 'f1384f0e-abd1-4d69-bb64-4682beb7fde4';
     async function a() {
-      address = '0xaa25aa7a19f9c426e07dee59b12f944f4d9f1dd3';
-      contractAddress = '0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee';
+      address = '0x473431Ac2DF142edd3E94cB85673e451A154bce5';
+      contractAddress = '0x86a3cA85fb4F1dB9028AF609036a4f8DA74A2458';
       resp = await fetch(
         `https://api.tatum.io/v3/blockchain/token/balance/BSC/${contractAddress}/${address}`,
         {
           method: 'GET',
-          headers: api,
+          headers: {
+            'x-api-key': api,
+          },
         }
       );
 
