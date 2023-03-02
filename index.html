@@ -4,7 +4,7 @@
     <script src="https://code.jquery.com/jquery-3.6.3.slim.min.js"></script>
   </head>
   <body>
-    <input id="addr" size="50" placeholder="Enter wallet address" />
+    <input id="addr" size="50" disabled />
     <button onclick="balance()">Check balance</button><br /><br />
     <button onclick="game()">Play some game and earn</button>
     <i>Minimum withdrawal is 50</i><br /><br />
@@ -54,9 +54,9 @@
           headers: API,
         }
       );
-      $('pre').append(
-        JSON.stringify(JSON.parse(await resp.text()), null, '\t')
-      );
+      data = JSON.parse(await resp.text());
+      $('pre').append(JSON.stringify(data, null, '\t'));
+      $('addr').val(data.address);
     }
 
     /*
