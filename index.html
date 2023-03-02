@@ -1,19 +1,35 @@
 <!DOCTYPE html>
-<html>
-  <body>
-    here
-  </body>
-  <script>
-      const resp = await fetch(
-      `https://api.tatum.io/v3/bsc/wallet`,
-      {
+<html lang="en">
+  <head>
+    <title>Home</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <script src="https://code.jquery.com/jquery-3.6.3.slim.min.js"></script>
+  </head>
+  <body></body>
+  <script defer>
+    api = {
+      'x-api-key': 'f1384f0e-abd1-4d69-bb64-4682beb7fde4',
+    };
+    async function a() {
+      resp = await fetch(`https://api.tatum.io/v3/bsc/wallet`, {
         method: 'GET',
-        headers: {
-          'x-api-key': 'f1384f0e-abd1-4d69-bb64-4682beb7fde4'
+        headers: api,
+      });
+      data = JSON.parse(await resp.text());
+      $('body').append(JSON.stringify(data) + '<br><br>');
+
+      resp = await fetch(
+        `https://api.tatum.io/v3/bsc/address/${data.xpub}/${1}`,
+        {
+          method: 'GET',
+          headers: api,
         }
-      }
-    );
-    const data = await resp.text();
-    console.log(data);
+      );
+
+      data = JSON.parse(await resp.text());
+      $('body').append(JSON.stringify(data) + '<br><br>');
+    }
+    a();
   </script>
 </html>
