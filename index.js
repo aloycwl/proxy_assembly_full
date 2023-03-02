@@ -40,10 +40,7 @@ async function balance() {
   address = $('#addr').val();
   resp = await fetch(
     `https://api.tatum.io/v3/blockchain/token/balance/${CHAIN}/${BEP20}/${address}`,
-    {
-      method: 'GET',
-      headers: API,
-    }
+    { method: 'GET', headers: API }
   );
   $('#bal').html(
     `Check balance 查余额 (${
