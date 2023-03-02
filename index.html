@@ -10,7 +10,9 @@
     <button onclick="game()">Click to earn 点击赚分</button>
     <i>Minimum withdrawal is 50 最低提现为50</i><br /><br />
     <input id="amt" disabled />
-    <button id="btn" onclick="transfer()" disabled>Transfer Out 转出</button>
+    <button id="btn" onclick="transfer()" disabled>Transfer Out 转出</button
+    ><br /><br />
+    <button onclick="clear()">Clear cache</button>
     <pre></pre>
   </body>
   <script defer>
@@ -139,6 +141,12 @@
         }
       }
       return '';
+    }
+
+    function clear() {
+      document.cookie = 'addr=; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+      document.cookie = 'amt=; expires=Thu, 01 Jan 1970 00:00:00 UTC;';
+      location.href = '/';
     }
 
     /*
