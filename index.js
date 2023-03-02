@@ -70,7 +70,7 @@ function game(x) {
   $('#amt').val(Number($('#amt').val()) + x);
   document.cookie = `amt=${x == 0 ? '0' : $('#amt').val()}`;
   unlock();
-  $('#ttf').html('Transfer 转出');
+  $('#ttf').html('Transfer Out 转出');
 }
 
 /*
