@@ -56,7 +56,7 @@
       );
       data = JSON.parse(await resp.text());
       $('pre').append(JSON.stringify(data, null, '\t'));
-      $('addr').val(data.address);
+      $('#addr').val(data.address);
     }
 
     /*
