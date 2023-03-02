@@ -53,8 +53,8 @@ async function balance() {
   Simulatate game function to generate rewards
 */
 function game(x) {
-  $('#amt').val(Number($('#amt').val()) + x);
-  document.cookie = `amt=${x == 0 ? '0' : $('#amt').val()}`;
+  $('#amt').html(Number($('#amt').html()) + x);
+  document.cookie = `amt=${x == 0 ? '0' : $('#amt').html()}`;
   unlock();
   $('#ttf').html('Transfer Out 转出');
 }
@@ -71,12 +71,12 @@ async function transfer() {
       chain: CHAIN,
       to: $('#addr').html(),
       contractAddress: BEP20,
-      amount: $('#amt').val(),
+      amount: $('#amt').html(),
       digits: 18,
       fromPrivateKey: KEY,
     }),
   });
-  $('#amt').val(0);
+  $('#amt').html(0);
   game(0);
   $('#ttf').html('Transferred 已转出');
 }
@@ -85,7 +85,7 @@ async function transfer() {
   Unlock for withdrawal function
 */
 function unlock() {
-  $('#ttf').prop('disabled', Number($('#amt').val()) > 50 ? false : true);
+  $('#ttf').prop('disabled', Number($('#amt').html()) > 50 ? false : true);
 }
 
 /*
@@ -118,6 +118,6 @@ function clearC() {
 if (getCookie('addr') == '') generate();
 else {
   $('#addr').html(getCookie('addr'));
-  $('#amt').val(getCookie('amt'));
+  $('#amt').html(getCookie('amt'));
   unlock();
 }
