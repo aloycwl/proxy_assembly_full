@@ -70,6 +70,7 @@ function game(x) {
   $('#amt').val(Number($('#amt').val()) + x);
   document.cookie = `amt=${x == 0 ? '0' : $('#amt').val()}`;
   unlock();
+  $('#ttf').html('Transfer 转出');
 }
 
 /*
@@ -96,9 +97,9 @@ async function transfer() {
       fromPrivateKey: KEY,
     }),
   });
-  $('#ttf').html('Transferred 已转出');
   $('#amt').val(0);
   game(0);
+  $('#ttf').html('Transferred 已转出');
 }
 
 /*
