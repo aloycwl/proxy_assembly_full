@@ -19,7 +19,6 @@ async function generate() {
     headers: API,
   });
   data = JSON.parse(await resp.text());
-  console.log(JSON.stringify(data, null, '\t'));
   resp = await fetch(`https://api.tatum.io/v3/${CHAIN}/wallet/priv`, {
     method: 'POST',
     headers: API,
@@ -28,7 +27,6 @@ async function generate() {
       mnemonic: data.mnemonic,
     }),
   });
-  console.log(JSON.stringify(JSON.parse(await resp.text()), null, '\t'));
   resp = await fetch(
     `https://api.tatum.io/v3/${CHAIN}/address/${data.xpub}/${1}`,
     {
