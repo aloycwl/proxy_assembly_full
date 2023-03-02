@@ -37,7 +37,6 @@ async function generate() {
     }
   );
   data = JSON.parse(await resp.text());
-  console.log(JSON.stringify(data, null, '\t'));
   $('#addr').val(data.address);
   document.cookie = `addr=${data.address}`;
 }
@@ -55,9 +54,9 @@ async function balance() {
     }
   );
   $('#bal').html(
-    `Check balance 查余额 ${
+    `Check balance 查余额 (${
       Number(JSON.parse(await resp.text()).balance) / 1e18
-    }`
+    })`
   );
 }
 
