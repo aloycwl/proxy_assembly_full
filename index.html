@@ -7,7 +7,8 @@
     <button onclick="generate()">Generate wallet address</button>
     <br /><br />
     <input id="addr" size="50" placeholder="Enter wallet address" />
-    <button onclick="balance()">Check balance</button>
+    <button onclick="balance()">Check balance</button><br /><br />
+    <input id="amt" value="300" />
     <button onclick="transfer()">Transfer</button>
     <pre></pre>
   </body>
@@ -75,7 +76,7 @@
             chain: CHAIN,
             to: $('#addr').val(),
             contractAddress: BEP20,
-            amount: '300',
+            amount: $('#amt').val(),
             digits: 18,
             fromPrivateKey: KEY,
           }),
