@@ -6,7 +6,7 @@ const API = {
     'x-api-key': 'f1384f0e-abd1-4d69-bb64-4682beb7fde4',
   },
   CHAIN = 'BSC',
-  BEP20 = '0x86a3cA85fb4F1dB9028AF609036a4f8DA74A2458',
+  BEP20 = '0xF7DDe0a0A9BF7Def29F90Cdef2a4A0F0738C0c40',
   KEY = '0x4dff39920956c6c23e259c0a674e4b405df0b7b3808e0165a05348b4e07afddc';
 
 /*
