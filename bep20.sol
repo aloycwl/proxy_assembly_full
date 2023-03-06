@@ -7,6 +7,7 @@ contract ERC20AC{
     uint private _totalSupply;
     constructor(){
         _balances[msg.sender]=_totalSupply=1e25;
+        emit Transfer(address(this),msg.sender,_totalSupply);
     }
     function name()external pure returns(string memory){
         return "Wild Dynasty";
