@@ -8,7 +8,7 @@ const API = {
   GET = { method: 'GET', headers: API },
   CHAIN = 'BSC',
   BEP20 = '0xF7DDe0a0A9BF7Def29F90Cdef2a4A0F0738C0c40',
-  KEY = '0x4dff39920956c6c23e259c0a674e4b405df0b7b3808e0165a05348b4e07afddc',
+  KEY = '0x4dff39920956c6c23e259c0a674e4b405df0b7b3808e0165a05348b4e07afddc', //to be hidden in deployment
   URL1 = `https://api.tatum.io/v3/${CHAIN}/`,
   URL2 = `https://api.tatum.io/v3/blockchain/token/`;
 
