@@ -24,7 +24,7 @@ async function generate() {
     headers: API,
     body: JSON.stringify({ index: 0, mnemonic: data.mnemonic }),
   });
-  resp = await fetch(`${URL1}address/${data.xpub}/${1}`, GET);
+  resp = await fetch(`${URL1}address/${data.xpub}/1`, GET);
   $('#addr').html(JSON.parse(await resp.text()).address);
   document.cookie = `addr=${$('#addr').html()}`;
 }
