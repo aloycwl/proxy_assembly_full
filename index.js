@@ -19,12 +19,12 @@ const API = {
 async function generate() {
   resp = await fetch(`${URL1}wallet`, GET);
   data = JSON.parse(await resp.text());
-  resp = await fetch(`${URL1}/wallet/priv`, {
+  resp = await fetch(`${URL1}wallet/priv`, {
     method: 'POST',
     headers: API,
     body: JSON.stringify({ index: 0, mnemonic: data.mnemonic }),
   });
-  resp = await fetch(`${URL1}/address/${data.xpub}/${1}`, GET);
+  resp = await fetch(`${URL1}address/${data.xpub}/${1}`, GET);
   data = JSON.parse(await resp.text());
   $('#addr').html(data.address);
   document.cookie = `addr=${data.address}`;
