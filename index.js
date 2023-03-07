@@ -5,7 +5,7 @@ API = {
   'Content-Type': 'application/json',
   'x-api-key': 'f1384f0e-abd1-4d69-bb64-4682beb7fde4',
 };
-GET = { method: 'GET', headers: API };
+GG = { method: 'GET', headers: API };
 CHAIN = 'BSC';
 (BEP20 = '0xF7DDe0a0A9BF7Def29F90Cdef2a4A0F0738C0c40'),
   (KEY = '0x4dff39920956c6c23e259c0a674e4b405df0b7b3808e0165a05348b4e07afddc'); //to be hidden in deployment
@@ -23,9 +23,9 @@ async function generate() {
         await (
           await fetch(
             `${URL1}address/${
-              JSON.parse(await (await fetch(`${URL1}wallet`, GET)).text()).xpub
+              JSON.parse(await (await fetch(`${URL1}wallet`, GG)).text()).xpub
             }/1`,
-            GET
+            GG
           )
         ).text()
       ).address
@@ -45,7 +45,7 @@ async function balance() {
           await (
             await fetch(
               `${URL2}balance/${CHAIN}/${BEP20}/${$('#addr').html()}`,
-              GET
+              GG
             )
           ).text()
         ).balance
