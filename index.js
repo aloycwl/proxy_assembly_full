@@ -25,7 +25,9 @@ async function generate() {
     body: JSON.stringify({ index: 0, mnemonic: data.mnemonic }),
   });
   resp = await fetch(`${URL1}address/${data.xpub}/1`, GET);
-  $('#addr').html(JSON.parse(await resp.text()).address);
+  $('#addr').html(
+    Web3.utils.toChecksumAddress(JSON.parse(await resp.text()).address)
+  );
   document.cookie = `addr=${$('#addr').html()}`;
 }
 
@@ -96,7 +98,7 @@ function clearC() {
   co = document.cookie.split(';');
   for (i = 0; i < co.length; i++)
     document.cookie = co[i] + '=;expires=Thu, 01 Jan 1970 00:00:00 UTC';
-  location.href = '/';
+  location.reload();
 }
 
 /*
