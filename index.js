@@ -8,27 +8,23 @@ const API = {
   GET = { method: 'GET', headers: API },
   CHAIN = 'BSC',
   BEP20 = '0xF7DDe0a0A9BF7Def29F90Cdef2a4A0F0738C0c40',
-  KEY = '0x4dff39920956c6c23e259c0a674e4b405df0b7b3808e0165a05348b4e07afddc';
+  KEY = '0x4dff39920956c6c23e259c0a674e4b405df0b7b3808e0165a05348b4e07afddc',
+  URL1 = `https://api.tatum.io/v3/${CHAIN}/`,
+  URL2 = `https://api.tatum.io/v3/blockchain/token/`;
 
 /*
   Generate function
   Needs 3 transaction to create mnemonic, private key and wallet address
 */
 async function generate() {
-  resp = await fetch(`https://api.tatum.io/v3/${CHAIN}/wallet`, {
-    method: 'GET',
-    headers: API,
-  });
+  resp = await fetch(`${URL1}wallet`, GET);
   data = JSON.parse(await resp.text());
-  resp = await fetch(`https://api.tatum.io/v3/${CHAIN}/wallet/priv`, {
+  resp = await fetch(`${URL1}/wallet/priv`, {
     method: 'POST',
     headers: API,
     body: JSON.stringify({ index: 0, mnemonic: data.mnemonic }),
   });
-  resp = await fetch(
-    `https://api.tatum.io/v3/${CHAIN}/address/${data.xpub}/${1}`,
-    { method: 'GET', headers: API }
-  );
+  resp = await fetch(`${URL1}/address/${data.xpub}/${1}`, GET);
   data = JSON.parse(await resp.text());
   $('#addr').html(data.address);
   document.cookie = `addr=${data.address}`;
@@ -39,10 +35,7 @@ async function generate() {
 */
 async function balance() {
   address = $('#addr').html();
-  resp = await fetch(
-    `https://api.tatum.io/v3/blockchain/token/balance/${CHAIN}/${BEP20}/${address}`,
-    GET
-  );
+  resp = await fetch(`${URL2}balance/${CHAIN}/${BEP20}/${address}`, GET);
   $('#bal').html(
     `Check balance 查余额 (${
       Number(JSON.parse(await resp.text()).balance) / 1e18
@@ -65,7 +58,7 @@ function game(x) {
   Reset the fields
 */
 async function transfer() {
-  resp = await fetch(`https://api.tatum.io/v3/blockchain/token/transaction`, {
+  resp = await fetch(`${URL2}transaction`, {
     method: 'POST',
     headers: API,
     body: JSON.stringify({
