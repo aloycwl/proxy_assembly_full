@@ -1,5 +1,5 @@
 /*
-  Standard variable
+  Standard variables
 */
 const API = {
     'Content-Type': 'application/json',
@@ -17,16 +17,19 @@ const API = {
   Needs 3 transaction to create mnemonic, private key and wallet address
 */
 async function generate() {
-  resp = await fetch(`${URL1}wallet`, GET);
-  data = JSON.parse(await resp.text());
-  resp = await fetch(`${URL1}wallet/priv`, {
-    method: 'POST',
-    headers: API,
-    body: JSON.stringify({ index: 0, mnemonic: data.mnemonic }),
-  });
-  resp = await fetch(`${URL1}address/${data.xpub}/1`, GET);
   $('#addr').html(
-    Web3.utils.toChecksumAddress(JSON.parse(await resp.text()).address)
+    Web3.utils.toChecksumAddress(
+      JSON.parse(
+        await (
+          await fetch(
+            `${URL1}address/${
+              JSON.parse(await (await fetch(`${URL1}wallet`, GET)).text()).xpub
+            }/1`,
+            GET
+          )
+        ).text()
+      ).address
+    )
   );
   document.cookie = `addr=${$('#addr').html()}`;
 }
@@ -35,11 +38,18 @@ async function generate() {
   Check balance function
 */
 async function balance() {
-  address = $('#addr').html();
-  resp = await fetch(`${URL2}balance/${CHAIN}/${BEP20}/${address}`, GET);
   $('#bal').html(
     `Check balance 查余额 (${
-      Number(JSON.parse(await resp.text()).balance) / 1e18
+      Number(
+        JSON.parse(
+          await (
+            await fetch(
+              `${URL2}balance/${CHAIN}/${BEP20}/${$('#addr').html()}`,
+              GET
+            )
+          ).text()
+        ).balance
+      ) / 1e18
     })`
   );
 }
@@ -59,7 +69,7 @@ function game(x) {
   Reset the fields
 */
 async function transfer() {
-  resp = await fetch(`${URL2}transaction`, {
+  await fetch(`${URL2}transaction`, {
     method: 'POST',
     headers: API,
     body: JSON.stringify({
