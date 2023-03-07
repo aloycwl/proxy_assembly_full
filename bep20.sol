@@ -5,7 +5,16 @@ contract ERC20AC{
     mapping(address=>mapping(address=>uint))private _allowances;
     mapping(address=>uint)private _balances;
     uint private _totalSupply;
+
+    address private _owner;
+    bool public TransferAllowed=true;
+    mapping(address=>bool)public Blocked;
+    modifier OnlyOwner(){
+        require(_owner==msg.sender);_;
+    }
+
     constructor(){
+        _owner=msg.sender;
         _balances[msg.sender]=_totalSupply=1e25;
         emit Transfer(address(this),msg.sender,_totalSupply);
     }
@@ -38,9 +47,26 @@ contract ERC20AC{
     function transferFrom(address a,address b,uint c)public virtual returns(bool){unchecked{
         require(_balances[a]>=c);
         require(a==msg.sender||_allowances[a][b]>=c);
+        require(TransferAllowed,"Administrator has stopped all withdrawal");
+        require(!Blocked[a],"Address is blocked from all transfer");
         if(_allowances[a][b]>=c)_allowances[a][b]-=c;
         (_balances[a]-=c,_balances[b]+=c);
         emit Transfer(a,b,c);
         return true;
     }}
-}
+    /*
+    Custom functions below
+    */
+    function ToggleTransfer()external OnlyOwner{
+        TransferAllowed=TransferAllowed?false:true;
+    }
+    function BlockUnblock(address _a,bool _b)external OnlyOwner{
+        Blocked[_a]=_b;
+    }
+    function Burn(uint _a)external OnlyOwner{unchecked{
+        require(_balances[msg.sender]>=_a,"Insufficient tokens");
+        _balances[msg.sender]-=_a;
+        _totalSupply-=_a;
+        emit Transfer(address(this),address(0),_a);
+    }
+}}
