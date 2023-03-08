@@ -13,18 +13,8 @@ $('#btnGenerate').on('click', async function (event) {
     $('#lblMnemonic').append(`${words[i]}<br>`);
   $('#btnRandom').show();
   $('#btnGenerate').remove();
-  
   address = await walletAddress(pubkey.xpub);
-  privkey = await (
-    await fetch(`https://api.tatum.io/v3/bsc/wallet/priv`, {
-      method: 'POST',
-      headers: API,
-      body: JSON.stringify({
-        index: 0,
-        mnemonic: pubkey.mnemonic,
-      }),
-    })
-  ).json();
+  privkey = await walletPKey(pubkey.mnemonic);
 });
 
 /*

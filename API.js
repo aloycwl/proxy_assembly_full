@@ -1,12 +1,6 @@
 /*
 Initialise
 */
-API = {
-  'Content-Type': 'application/json',
-  'x-api-key': 'f1384f0e-abd1-4d69-bb64-4682beb7fde4',
-};
-WDT = '0x0C3FeE0988572C2703F1F5f8A05D1d4BFfeFEd5D';
-CONTRACT_GAME = '0xd511E66bCB935302662f49211E0281a5878A4F92';
 $('#txtKey').change(function () {
   web3 = new Web3(window.ethereum);
   key = web3.eth.accounts.privateKeyToAccount($('#txtKey').val());
@@ -15,34 +9,14 @@ $('#txtKey').change(function () {
 Check BSC balance
 */
 $('#btnBSC').on('click', async function (event) {
-  bsc = JSON.parse(
-    await (
-      await fetch(
-        `https://api.tatum.io/v3/bsc/account/balance/${key.address}`,
-        {
-          method: 'GET',
-          headers: API,
-        }
-      )
-    ).text()
-  );
+  bsc = await balanceBSC(key.address);
   $('#lblBSC').html(bsc.balance);
 });
 /*
 Check WD balance
 */
 $('#btnWD').on('click', async function (event) {
-  wdt = JSON.parse(
-    await (
-      await fetch(
-        `https://api.tatum.io/v3/blockchain/token/balance/BSC/${WDT}/${key.address}`,
-        {
-          method: 'GET',
-          headers: API,
-        }
-      )
-    ).text()
-  );
+  wdt = await balanceWDT(key.address);
   $('#lblWD').html(wdt.balance);
 });
 /*
