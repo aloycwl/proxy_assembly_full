@@ -7,8 +7,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.8.2/web3.min.js"></script>
   </head>
   <body>
-    <button id="btnGenerate">Create new wallet</button><br />
+    <button id="btnGenerate">Create new wallet 造钱包</button>
     <a id="lblMnemonic"></a>
+    <button id="btnRandom">I have noted down 记下了</button><br />
+    <div id="lblRandom"></div>
+    <div id="lblCorrect"></div>
   </body>
   <script defer>
     API = {
@@ -16,6 +19,7 @@
       'x-api-key': 'f1384f0e-abd1-4d69-bb64-4682beb7fde4',
     };
 
+    $('#btnRandom').hide();
 
     $('#btnGenerate').on('click', async function (event) {
       data = JSON.parse(
@@ -31,6 +35,8 @@
         $('#lblMnemonic').append(`${words[i]}<br>`);
       }
       console.log(data.mnemonic);
+      $('#btnRandom').show();
+      $('#btnGenerate').remove();
     });
   </script>
 </html>
