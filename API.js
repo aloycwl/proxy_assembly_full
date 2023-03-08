@@ -5,8 +5,8 @@ API = {
   'Content-Type': 'application/json',
   'x-api-key': 'f1384f0e-abd1-4d69-bb64-4682beb7fde4',
 };
-WDT = '0x1798f8B138B1eBFfc46467bd82eD1435923C7b63';
-CONTRACT_GAME = '0xD4Bcde8373440E62193dce510cc84E74a3547Da0';
+WDT = '0x0C3FeE0988572C2703F1F5f8A05D1d4BFfeFEd5D';
+CONTRACT_GAME = '0xd511E66bCB935302662f49211E0281a5878A4F92';
 $('#txtKey').change(function () {
   web3 = new Web3(window.ethereum);
   key = web3.eth.accounts.privateKeyToAccount($('#txtKey').val());
@@ -49,7 +49,7 @@ $('#btnWD').on('click', async function (event) {
 Write to score
 */
 $('#btnScore').on('click', async function (event) {
-  await fetch(`https://api.tatum.io/v3/bsc/smartcontract`, {
+  const resp = await fetch(`https://api.tatum.io/v3/bsc/smartcontract`, {
     method: 'POST',
     headers: API,
     body: JSON.stringify({
@@ -72,6 +72,8 @@ $('#btnScore').on('click', async function (event) {
       fromPrivateKey: $('#txtKey').val(),
     }),
   });
+  const data = await resp.json();
+  //console.log(data);
 });
 /*
 Fetch the updated score
@@ -113,7 +115,7 @@ $('#btnCheckScore').on('click', async function (event) {
 Withdrawal
 */
 $('#btnWithdraw').on('click', async function (event) {
-  await fetch(`https://api.tatum.io/v3/bsc/smartcontract`, {
+  const resp = await fetch(`https://api.tatum.io/v3/bsc/smartcontract`, {
     method: 'POST',
     headers: API,
     body: JSON.stringify({
@@ -130,4 +132,6 @@ $('#btnWithdraw').on('click', async function (event) {
       fromPrivateKey: $('#txtKey').val(),
     }),
   });
+  const data = await resp.json();
+  //console.log(data);
 });
