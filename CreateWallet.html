@@ -54,7 +54,7 @@
     Generate Random
     */
     $('#btnRandom').on('click', async function (event) {
-      var arr = words;
+      arr = words.slice();
       ci = arr.length;
       while (ci != 0) {
         ri = Math.floor(Math.random() * ci);
@@ -84,9 +84,11 @@
         for (i = 0; i < arr.length; i++)
           if ($($('#lblCorrect').children()[i]).html() != words[i])
             passed = false;
-        $('#lblSequence').html(
-          passed ? 'Correct 正确' : 'Wrong Sequence 顺序错'
-        );
+        if (passed) {
+          $('#lblRandom').remove();
+          $('#lblCorrect').remove();
+          $('#lblSequence').html('Correct 正确');
+        } else $('#lblSequence').html('Wrong Sequence 顺序错');
       }
     }
   </script>
