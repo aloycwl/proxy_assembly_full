@@ -14,27 +14,33 @@ $('#txtKey').change(function () {
 Check BSC balance
 */
 $('#btnBSC').on('click', async function (event) {
-  resp = await fetch(
-    `https://api.tatum.io/v3/bsc/account/balance/${key.address}`,
-    {
-      method: 'GET',
-      headers: API,
-    }
+  bsc = JSON.parse(
+    await (
+      await fetch(
+        `https://api.tatum.io/v3/bsc/account/balance/${key.address}`,
+        {
+          method: 'GET',
+          headers: API,
+        }
+      )
+    ).text()
   );
-  data = await resp.text();
-  $('#lblBSC').html(data);
+  $('#lblBSC').html(bsc.balance);
 });
 /*
 Check WD balance
 */
 $('#btnWD').on('click', async function (event) {
-  const resp = await fetch(
-    `https://api.tatum.io/v3/blockchain/token/balance/BSC/${WDT}/${key.address}`,
-    {
-      method: 'GET',
-      headers: API,
-    }
+  wdt = JSON.parse(
+    await (
+      await fetch(
+        `https://api.tatum.io/v3/blockchain/token/balance/BSC/${WDT}/${key.address}`,
+        {
+          method: 'GET',
+          headers: API,
+        }
+      )
+    ).text()
   );
-  data = await resp.text();
-  $('#lblWD').html(data);
+  $('#lblWD').html(wdt.balance);
 });
