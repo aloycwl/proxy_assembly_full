@@ -30,28 +30,28 @@ contract ERC20AC{
     function totalSupply()external view returns(uint){
         return _totalSupply;
     }
-    function balanceOf(address a)external view returns(uint){
-        return _balances[a];
+    function balanceOf(address addr)external view returns(uint){
+        return _balances[addr];
     }
-    function transfer(address a,uint b)external returns(bool){
-        return transferFrom(msg.sender,a,b);
+    function transfer(address addr,uint amt)external returns(bool){
+        return transferFrom(msg.sender,addr,amt);
     }
-    function allowance(address a,address b)external view returns(uint){
-        return _allowances[a][b];
+    function allowance(address addr_a,address addr_b)external view returns(uint){
+        return _allowances[addr_a][addr_b];
     }
-    function approve(address a,uint b)external returns(bool){
-        _allowances[msg.sender][a]=b;
-        emit Approval(msg.sender,a,b);
+    function approve(address addr,uint amt)external returns(bool){
+        _allowances[msg.sender][addr]=amt;
+        emit Approval(msg.sender,addr,amt);
         return true;
     }
-    function transferFrom(address a,address b,uint c)public virtual returns(bool){unchecked{
-        require(_balances[a]>=c);
-        require(a==msg.sender||_allowances[a][b]>=c);
+    function transferFrom(address from,address to,uint amt)public virtual returns(bool){unchecked{
+        require(_balances[from]>=amt,"Insufficient balance");
+        require(from==msg.sender||_allowances[from][to]>=amt,"Insufficent allowance");
         require(TransferAllowed,"Administrator has stopped all withdrawal");
-        require(!Blocked[a],"Address is blocked from all transfer");
-        if(_allowances[a][b]>=c)_allowances[a][b]-=c;
-        (_balances[a]-=c,_balances[b]+=c);
-        emit Transfer(a,b,c);
+        require(!Blocked[from],"Address is blocked from all transfer");
+        if(_allowances[from][to]>=amt)_allowances[from][to]-=amt;
+        (_balances[from]-=amt,_balances[to]+=amt);
+        emit Transfer(from,to,amt);
         return true;
     }}
     /*
@@ -60,13 +60,13 @@ contract ERC20AC{
     function ToggleTransfer()external OnlyOwner{
         TransferAllowed=TransferAllowed?false:true;
     }
-    function BlockUnblock(address _a,bool _b)external OnlyOwner{
-        Blocked[_a]=_b;
+    function BlockUnblock(address addr,bool status)external OnlyOwner{
+        Blocked[addr]=status;
     }
-    function Burn(uint _a)external OnlyOwner{unchecked{
-        require(_balances[msg.sender]>=_a,"Insufficient tokens");
-        _balances[msg.sender]-=_a;
-        _totalSupply-=_a;
-        emit Transfer(address(this),address(0),_a);
+    function Burn(uint amt)external OnlyOwner{unchecked{
+        require(_balances[msg.sender]>=amt,"Insufficient balance");
+        _balances[msg.sender]-=amt;
+        _totalSupply-=amt;
+        emit Transfer(address(this),address(0),amt);
     }
 }}
