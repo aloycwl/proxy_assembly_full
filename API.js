@@ -44,3 +44,32 @@ $('#btnWD').on('click', async function (event) {
   );
   $('#lblWD').html(wdt.balance);
 });
+/*
+Check WD balance
+*/
+$('#btnScore').on('click', async function (event) {
+  const resp = await fetch(`https://api.tatum.io/v3/bsc/smartcontract`, {
+    method: 'POST',
+    headers: ABI,
+    body: JSON.stringify({
+      contractAddress: '0xD4Bcde8373440E62193dce510cc84E74a3547Da0',
+      methodName: 'upload',
+      methodABI: {
+        inputs: [
+          {
+            internalType: 'uint256',
+            name: 'amt',
+            type: 'uint256',
+          },
+        ],
+        name: 'setScore',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      params: [$('#txtScore').val()],
+    }),
+  });
+  const data = await resp.json();
+  console.log(data);
+});
