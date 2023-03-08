@@ -17,7 +17,7 @@
     <button id="btnRandom">I have noted down 记下了</button><br />
     <div id="lblRandom"></div>
     <div id="lblCorrect"></div>
-    <a id="lblSequence"></a>
+    <h1 id="lblSequence"></h1>
   </body>
   <script defer>
     /*
@@ -54,7 +54,7 @@
     Generate Random
     */
     $('#btnRandom').on('click', async function (event) {
-      arr = words;
+      var arr = words;
       ci = arr.length;
       while (ci != 0) {
         ri = Math.floor(Math.random() * ci);
@@ -79,8 +79,15 @@
         $(n).detach().appendTo('#lblCorrect');
       else $(n).detach().appendTo('#lblRandom');
 
-      
-      $('#lblSequence').html('Wrong Sequence 顺序错');
+      if ($('#lblCorrect').children().length == words.length) {
+        passed = true;
+        for (i = 0; i < arr.length; i++)
+          if ($($('#lblCorrect').children()[i]).html() != words[i])
+            passed = false;
+        $('#lblSequence').html(
+          passed ? 'Correct 正确' : 'Wrong Sequence 顺序错'
+        );
+      }
     }
   </script>
 </html>
