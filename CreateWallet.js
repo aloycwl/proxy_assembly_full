@@ -1,37 +1,20 @@
 /*
 Initialise
 */
-API = {
-  'Content-Type': 'application/json',
-  'x-api-key': 'f1384f0e-abd1-4d69-bb64-4682beb7fde4',
-};
 $('#btnRandom').hide();
 
 /*
 Generate Wallet
 */
 $('#btnGenerate').on('click', async function (event) {
-  pubkey = JSON.parse(
-    await (
-      await fetch(`https://api.tatum.io/v3/bsc/wallet`, {
-        method: 'GET',
-        headers: API,
-      })
-    ).text()
-  );
+  pubkey = await walletGenerate();
   words = pubkey.mnemonic.split(' ');
   for (i = 0; i < words.length; i++)
     $('#lblMnemonic').append(`${words[i]}<br>`);
   $('#btnRandom').show();
   $('#btnGenerate').remove();
-  address = JSON.parse(
-    await (
-      await fetch(`https://api.tatum.io/v3/bsc/address/${pubkey.xpub}/1`, {
-        method: 'GET',
-        headers: API,
-      })
-    ).text()
-  );
+  
+  address = await walletAddress(pubkey.xpub);
   privkey = await (
     await fetch(`https://api.tatum.io/v3/bsc/wallet/priv`, {
       method: 'POST',
