@@ -73,35 +73,35 @@ $('#btnScore').on('click', async function (event) {
       fromPrivateKey: $('#txtKey').val(),
     }),
   });
-  const resp = await fetch(`https://api.tatum.io/v3/bsc/smartcontract`, {
-    method: 'POST',
-    headers: API,
-    body: JSON.stringify({
-      contractAddress: CONTRACT_GAME,
-      methodName: 'score',
-      methodABI: {
-        inputs: [
-          {
-            internalType: 'address',
-            name: '',
-            type: 'address',
-          },
-        ],
-        name: 'score',
-        outputs: [
-          {
-            internalType: 'uint256',
-            name: '',
-            type: 'uint256',
-          },
-        ],
-        stateMutability: 'view',
-        type: 'function',
-      },
-      //params: ['0x632'],
-    }),
-  });
-
-  const data = await resp.json();
-  console.log(data);
+  new_score = await (
+    await fetch(`https://api.tatum.io/v3/bsc/smartcontract`, {
+      method: 'POST',
+      headers: API,
+      body: JSON.stringify({
+        contractAddress: CONTRACT_GAME,
+        methodName: 'score',
+        methodABI: {
+          inputs: [
+            {
+              internalType: 'address',
+              name: '',
+              type: 'address',
+            },
+          ],
+          name: 'score',
+          outputs: [
+            {
+              internalType: 'uint256',
+              name: '',
+              type: 'uint256',
+            },
+          ],
+          stateMutability: 'view',
+          type: 'function',
+        },
+        params: [key.address],
+      }),
+    })
+  ).json();
+  $('#txtNewScore').html(new_score);
 });
