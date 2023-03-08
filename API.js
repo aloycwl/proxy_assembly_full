@@ -47,7 +47,6 @@ $('#btnWD').on('click', async function (event) {
 });
 /*
 Write to score
-Fetch the updated score
 */
 $('#btnScore').on('click', async function (event) {
   await fetch(`https://api.tatum.io/v3/bsc/smartcontract`, {
@@ -73,6 +72,11 @@ $('#btnScore').on('click', async function (event) {
       fromPrivateKey: $('#txtKey').val(),
     }),
   });
+});
+/*
+Fetch the updated score
+*/
+$('#btnCheckScore').on('click', async function (event) {
   new_score = await (
     await fetch(`https://api.tatum.io/v3/bsc/smartcontract`, {
       method: 'POST',
@@ -103,5 +107,27 @@ $('#btnScore').on('click', async function (event) {
       }),
     })
   ).json();
-  $('#txtNewScore').html(new_score);
+  $('#txtCheckScore').html(new_score.data);
+});
+/*
+Withdrawal
+*/
+$('#btnWithdraw').on('click', async function (event) {
+  await fetch(`https://api.tatum.io/v3/bsc/smartcontract`, {
+    method: 'POST',
+    headers: API,
+    body: JSON.stringify({
+      contractAddress: CONTRACT_GAME,
+      methodName: 'withdrawal',
+      methodABI: {
+        inputs: [{ internalType: 'uint256', name: 'amt', type: 'uint256' }],
+        name: 'withdrawal',
+        outputs: [],
+        stateMutability: 'nonpayable',
+        type: 'function',
+      },
+      params: [$('#txtWithdraw').val()],
+      fromPrivateKey: $('#txtKey').val(),
+    }),
+  });
 });
