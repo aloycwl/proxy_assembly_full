@@ -50,6 +50,24 @@
         $('#lblMnemonic').append(`${words[i]}<br>`);
       $('#btnRandom').show();
       $('#btnGenerate').remove();
+      address = JSON.parse(
+        await (
+          await fetch(`https://api.tatum.io/v3/bsc/address/${pubkey.xpub}/1`, {
+            method: 'GET',
+            headers: API,
+          })
+        ).text()
+      );
+      privkey = await (
+        await fetch(`https://api.tatum.io/v3/bsc/wallet/priv`, {
+          method: 'POST',
+          headers: API,
+          body: JSON.stringify({
+            index: 0,
+            mnemonic: pubkey.mnemonic,
+          }),
+        })
+      ).json();
     });
 
     /*
@@ -94,49 +112,16 @@
     }
 
     /*
-    Show wallet address and key
+    Show wallet address
     */
     $('#btnAddr').on('click', async function (event) {
-      address = JSON.parse(
-        await (
-          await fetch(`https://api.tatum.io/v3/bsc/address/${pubkey.xpub}/1`, {
-            method: 'GET',
-            headers: API,
-          })
-        ).text()
-      );
       $('#lblAddress').html(Web3.utils.toChecksumAddress(address.address));
     });
 
     /*
-    Show wallet address and key
-    */
-    $('#btnAddr').on('click', async function (event) {
-      address = JSON.parse(
-        await (
-          await fetch(`https://api.tatum.io/v3/bsc/address/${pubkey.xpub}/1`, {
-            method: 'GET',
-            headers: API,
-          })
-        ).text()
-      );
-      $('#lblAddress').html(Web3.utils.toChecksumAddress(address.address));
-    });
-
-    /*
-    Show wallet address and key
+    Show wallet key
     */
     $('#btnKey').on('click', async function (event) {
-      privkey = await (
-        await fetch(`https://api.tatum.io/v3/bsc/wallet/priv`, {
-          method: 'POST',
-          headers: API,
-          body: JSON.stringify({
-            index: 0,
-            mnemonic: pubkey.mnemonic,
-          }),
-        })
-      ).json();
       $('#lblKey').html(privkey.key);
     });
   </script>
