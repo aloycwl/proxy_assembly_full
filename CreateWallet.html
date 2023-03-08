@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.8.2/web3.min.js"></script>
+    <style>
+      button {
+        margin-right: 5px;
+      }
+    </style>
   </head>
   <body>
     <button id="btnGenerate">Create new wallet 造钱包</button>
@@ -12,15 +17,21 @@
     <button id="btnRandom">I have noted down 记下了</button><br />
     <div id="lblRandom"></div>
     <div id="lblCorrect"></div>
+    <a id="lblSequence"></a>
   </body>
   <script defer>
+    /*
+    Initialise
+    */
     API = {
       'Content-Type': 'application/json',
       'x-api-key': 'f1384f0e-abd1-4d69-bb64-4682beb7fde4',
     };
-
     $('#btnRandom').hide();
 
+    /*
+    Generate Wallet
+    */
     $('#btnGenerate').on('click', async function (event) {
       data = JSON.parse(
         await (
@@ -38,5 +49,38 @@
       $('#btnRandom').show();
       $('#btnGenerate').remove();
     });
+
+    /*
+    Generate Random
+    */
+    $('#btnRandom').on('click', async function (event) {
+      arr = words;
+      ci = arr.length;
+      while (ci != 0) {
+        ri = Math.floor(Math.random() * ci);
+        ci--;
+        [arr[ci], arr[ri]] = [arr[ri], arr[ci]];
+      }
+      for (i = 0; i < arr.length; i++) {
+        $('#lblRandom').append(
+          `<button id=btn${i} onclick=move(${i})>${arr[i]}</button>`
+        );
+      }
+      $('#lblMnemonic').remove();
+      $('#btnRandom').remove();
+    });
+
+    /*
+    Check the mnemonic sequence
+    */
+    function move(n) {
+      n = '#btn' + n;
+      if ($(n).parent().attr('id') == 'lblRandom')
+        $(n).detach().appendTo('#lblCorrect');
+      else $(n).detach().appendTo('#lblRandom');
+
+      
+      $('#lblSequence').html('Wrong Sequence 顺序错');
+    }
   </script>
 </html>
