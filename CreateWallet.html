@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.8.2/web3.min.js"></script>
+  </head>
+  <body>
+    <a id="lblMnemonic"></a>
+  </body>
+  <script defer>
+    API = {
+      'Content-Type': 'application/json',
+      'x-api-key': 'f1384f0e-abd1-4d69-bb64-4682beb7fde4',
+    };
+
+    async function CreateWallet() {
+      data = JSON.parse(
+        await (
+          await fetch(`https://api.tatum.io/v3/bsc/wallet`, {
+            method: 'GET',
+            headers: API,
+          })
+        ).text()
+      );
+      words = data.mnemonic.split(' ');
+      for (i = 0; i < words.length; i++) {
+        $('#lblMnemonic').append(`${words[i]}<br>`);
+      }
+      console.log(data.mnemonic);
+    }
+
+    CreateWallet();
+  </script>
+</html>
