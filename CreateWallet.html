@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.8.2/web3.min.js"></script>
+    <script src="CreateWallet.js" defer></script>
     <style>
       button {
         margin-right: 5px;
@@ -23,106 +24,4 @@
     <button id="btnKey">Show Private Key</button> <a id="lblKey"></a
     ><br /><br />
   </body>
-  <script defer>
-    /*
-    Initialise
-    */
-    API = {
-      'Content-Type': 'application/json',
-      'x-api-key': 'f1384f0e-abd1-4d69-bb64-4682beb7fde4',
-    };
-    $('#btnRandom').hide();
-
-    /*
-    Generate Wallet
-    */
-    $('#btnGenerate').on('click', async function (event) {
-      pubkey = JSON.parse(
-        await (
-          await fetch(`https://api.tatum.io/v3/bsc/wallet`, {
-            method: 'GET',
-            headers: API,
-          })
-        ).text()
-      );
-      words = pubkey.mnemonic.split(' ');
-      for (i = 0; i < words.length; i++)
-        $('#lblMnemonic').append(`${words[i]}<br>`);
-      $('#btnRandom').show();
-      $('#btnGenerate').remove();
-      address = JSON.parse(
-        await (
-          await fetch(`https://api.tatum.io/v3/bsc/address/${pubkey.xpub}/1`, {
-            method: 'GET',
-            headers: API,
-          })
-        ).text()
-      );
-      privkey = await (
-        await fetch(`https://api.tatum.io/v3/bsc/wallet/priv`, {
-          method: 'POST',
-          headers: API,
-          body: JSON.stringify({
-            index: 0,
-            mnemonic: pubkey.mnemonic,
-          }),
-        })
-      ).json();
-    });
-
-    /*
-    Generate Random
-    */
-    $('#btnRandom').on('click', async function (event) {
-      arr = words.slice();
-      ci = arr.length;
-      while (ci != 0) {
-        ri = Math.floor(Math.random() * ci);
-        ci--;
-        [arr[ci], arr[ri]] = [arr[ri], arr[ci]];
-      }
-      for (i = 0; i < arr.length; i++) {
-        $('#lblRandom').append(
-          `<button id=btn${i} onclick=move(${i})>${arr[i]}</button>`
-        );
-      }
-      $('#lblMnemonic').remove();
-      $('#btnRandom').remove();
-    });
-
-    /*
-    Check the mnemonic sequence
-    */
-    function move(n) {
-      n = '#btn' + n;
-      if ($(n).parent().attr('id') == 'lblRandom')
-        $(n).detach().appendTo('#lblCorrect');
-      else $(n).detach().appendTo('#lblRandom');
-      if ($('#lblCorrect').children().length == words.length) {
-        passed = true;
-        for (i = 0; i < arr.length; i++)
-          if ($($('#lblCorrect').children()[i]).html() != words[i])
-            passed = false;
-        if (passed) {
-          $('#lblRandom').remove();
-          $('#lblCorrect').remove();
-          $('#lblSequence').html('Correct 正确');
-        } else $('#lblSequence').html('Wrong Sequence 顺序错');
-      }
-    }
-
-    /*
-    Show wallet address
-    */
-    $('#btnAddr').on('click', async function (event) {
-      $('#lblAddress').html(Web3.utils.toChecksumAddress(address.address));
-    });
-
-    /*
-    Show wallet key
-    */
-    $('#btnKey').on('click', async function (event) {
-      $('#lblKey').html(privkey.key);
-    });
-  </script>
 </html>
