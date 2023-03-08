@@ -18,7 +18,10 @@
     <div id="lblRandom"></div>
     <div id="lblCorrect"></div>
     <h1 id="lblSequence"></h1>
-    <button id="btnShow">Show Address</button> <a id="lblAddress"></a>
+    <button id="btnAddr">Show Address</button> <a id="lblAddress"></a
+    ><br /><br />
+    <button id="btnKey">Show Private Key</button> <a id="lblKey"></a
+    ><br /><br />
   </body>
   <script defer>
     /*
@@ -34,7 +37,7 @@
     Generate Wallet
     */
     $('#btnGenerate').on('click', async function (event) {
-      data = JSON.parse(
+      pubkey = JSON.parse(
         await (
           await fetch(`https://api.tatum.io/v3/bsc/wallet`, {
             method: 'GET',
@@ -42,7 +45,7 @@
           })
         ).text()
       );
-      words = data.mnemonic.split(' ');
+      words = pubkey.mnemonic.split(' ');
       for (i = 0; i < words.length; i++)
         $('#lblMnemonic').append(`${words[i]}<br>`);
       $('#btnRandom').show();
@@ -93,8 +96,48 @@
     /*
     Show wallet address and key
     */
-    $('#btnRandom').on('click', async function (event) {
+    $('#btnAddr').on('click', async function (event) {
+      address = JSON.parse(
+        await (
+          await fetch(`https://api.tatum.io/v3/bsc/address/${pubkey.xpub}/1`, {
+            method: 'GET',
+            headers: API,
+          })
+        ).text()
+      );
+      $('#lblAddress').html(Web3.utils.toChecksumAddress(address.address));
+    });
 
-    }
+    /*
+    Show wallet address and key
+    */
+    $('#btnAddr').on('click', async function (event) {
+      address = JSON.parse(
+        await (
+          await fetch(`https://api.tatum.io/v3/bsc/address/${pubkey.xpub}/1`, {
+            method: 'GET',
+            headers: API,
+          })
+        ).text()
+      );
+      $('#lblAddress').html(Web3.utils.toChecksumAddress(address.address));
+    });
+
+    /*
+    Show wallet address and key
+    */
+    $('#btnKey').on('click', async function (event) {
+      privkey = await (
+        await fetch(`https://api.tatum.io/v3/bsc/wallet/priv`, {
+          method: 'POST',
+          headers: API,
+          body: JSON.stringify({
+            index: 0,
+            mnemonic: pubkey.mnemonic,
+          }),
+        })
+      ).json();
+      $('#lblKey').html(privkey.key);
+    });
   </script>
 </html>
