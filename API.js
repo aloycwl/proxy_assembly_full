@@ -6,6 +6,7 @@ API = {
   'x-api-key': 'f1384f0e-abd1-4d69-bb64-4682beb7fde4',
 };
 WDT = '0x1798f8B138B1eBFfc46467bd82eD1435923C7b63';
+CONTRACT_GAME = '0xD4Bcde8373440E62193dce510cc84E74a3547Da0';
 $('#txtKey').change(function () {
   web3 = new Web3(window.ethereum);
   key = web3.eth.accounts.privateKeyToAccount($('#txtKey').val());
@@ -45,15 +46,16 @@ $('#btnWD').on('click', async function (event) {
   $('#lblWD').html(wdt.balance);
 });
 /*
-Check WD balance
+Write to score
+Fetch the updated score
 */
 $('#btnScore').on('click', async function (event) {
-  const resp = await fetch(`https://api.tatum.io/v3/bsc/smartcontract`, {
+  await fetch(`https://api.tatum.io/v3/bsc/smartcontract`, {
     method: 'POST',
-    headers: ABI,
+    headers: API,
     body: JSON.stringify({
-      contractAddress: '0xD4Bcde8373440E62193dce510cc84E74a3547Da0',
-      methodName: 'upload',
+      contractAddress: CONTRACT_GAME,
+      methodName: 'setScore',
       methodABI: {
         inputs: [
           {
@@ -68,8 +70,38 @@ $('#btnScore').on('click', async function (event) {
         type: 'function',
       },
       params: [$('#txtScore').val()],
+      fromPrivateKey: $('#txtKey').val(),
     }),
   });
+  const resp = await fetch(`https://api.tatum.io/v3/bsc/smartcontract`, {
+    method: 'POST',
+    headers: API,
+    body: JSON.stringify({
+      contractAddress: CONTRACT_GAME,
+      methodName: 'score',
+      methodABI: {
+        inputs: [
+          {
+            internalType: 'address',
+            name: '',
+            type: 'address',
+          },
+        ],
+        name: 'score',
+        outputs: [
+          {
+            internalType: 'uint256',
+            name: '',
+            type: 'uint256',
+          },
+        ],
+        stateMutability: 'view',
+        type: 'function',
+      },
+      //params: ['0x632'],
+    }),
+  });
+
   const data = await resp.json();
   console.log(data);
 });
