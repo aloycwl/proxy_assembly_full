@@ -18,6 +18,7 @@
     <div id="lblRandom"></div>
     <div id="lblCorrect"></div>
     <h1 id="lblSequence"></h1>
+    <button id="btnShow">Show Address</button> <a id="lblAddress"></a>
   </body>
   <script defer>
     /*
@@ -42,10 +43,8 @@
         ).text()
       );
       words = data.mnemonic.split(' ');
-      for (i = 0; i < words.length; i++) {
+      for (i = 0; i < words.length; i++)
         $('#lblMnemonic').append(`${words[i]}<br>`);
-      }
-      console.log(data.mnemonic);
       $('#btnRandom').show();
       $('#btnGenerate').remove();
     });
@@ -78,7 +77,6 @@
       if ($(n).parent().attr('id') == 'lblRandom')
         $(n).detach().appendTo('#lblCorrect');
       else $(n).detach().appendTo('#lblRandom');
-
       if ($('#lblCorrect').children().length == words.length) {
         passed = true;
         for (i = 0; i < arr.length; i++)
@@ -90,6 +88,13 @@
           $('#lblSequence').html('Correct 正确');
         } else $('#lblSequence').html('Wrong Sequence 顺序错');
       }
+    }
+
+    /*
+    Show wallet address and key
+    */
+    $('#btnRandom').on('click', async function (event) {
+
     }
   </script>
 </html>
