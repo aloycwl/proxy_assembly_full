@@ -7,16 +7,15 @@ API = {
 };
 
 $('#btnBSC').on('click', async function (event) {
-  const web3 = new Web3(window.ethereum);
+  web3 = new Web3(window.ethereum);
   key = web3.eth.accounts.privateKeyToAccount($('#txtKey').val());
-  const resp = await fetch(
+  resp = await fetch(
     `https://api.tatum.io/v3/bsc/account/balance/${key.address}`,
     {
       method: 'GET',
       headers: API,
     }
   );
-
-  const data = await resp.text();
+  data = await resp.text();
   $('#lblBSC').html(data);
 });
