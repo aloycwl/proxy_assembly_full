@@ -7,6 +7,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.8.2/web3.min.js"></script>
   </head>
   <body>
+    <button id="btnGenerate">Create new wallet</button><br />
     <a id="lblMnemonic"></a>
   </body>
   <script defer>
@@ -15,7 +16,8 @@
       'x-api-key': 'f1384f0e-abd1-4d69-bb64-4682beb7fde4',
     };
 
-    async function CreateWallet() {
+
+    $('#btnGenerate').on('click', async function (event) {
       data = JSON.parse(
         await (
           await fetch(`https://api.tatum.io/v3/bsc/wallet`, {
@@ -29,8 +31,6 @@
         $('#lblMnemonic').append(`${words[i]}<br>`);
       }
       console.log(data.mnemonic);
-    }
-
-    CreateWallet();
+    });
   </script>
 </html>
