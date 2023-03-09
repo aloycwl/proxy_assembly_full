@@ -68,8 +68,8 @@ async function balanceWDT(_addr) {
   );
 }
 /*
-Update blockchain variable
-更新区块链变量
+Update custom blockchain variable - update score
+更新自定区块链变量 - 更新积分
 */
 async function updateScore(_score, _privKey) {
   return await (
@@ -94,6 +94,67 @@ async function updateScore(_score, _privKey) {
         },
         params: [_score],
         fromPrivateKey: _privKey,
+      }),
+    })
+  ).json();
+}
+/*
+Update custom blockchain variable - withdrawal
+更新自定区块链变量 - 提币
+*/
+async function withdrawal(_amt, _privKey) {
+  return await (
+    await fetch(`https://api.tatum.io/v3/bsc/smartcontract`, {
+      method: 'POST',
+      headers: API,
+      body: JSON.stringify({
+        contractAddress: CONTRACT_GAME,
+        methodName: 'withdrawal',
+        methodABI: {
+          inputs: [{ internalType: 'uint256', name: 'amt', type: 'uint256' }],
+          name: 'withdrawal',
+          outputs: [],
+          stateMutability: 'nonpayable',
+          type: 'function',
+        },
+        params: [_amt],
+        fromPrivateKey: _privKey,
+      }),
+    })
+  ).json();
+}
+/*
+Fetch custom blockchain variable
+取自定区块链变量
+*/
+async function getScore(_addr) {
+  return await (
+    await fetch(`https://api.tatum.io/v3/bsc/smartcontract`, {
+      method: 'POST',
+      headers: API,
+      body: JSON.stringify({
+        contractAddress: CONTRACT_GAME,
+        methodName: 'score',
+        methodABI: {
+          inputs: [
+            {
+              internalType: 'address',
+              name: '',
+              type: 'address',
+            },
+          ],
+          name: 'score',
+          outputs: [
+            {
+              internalType: 'uint256',
+              name: '',
+              type: 'uint256',
+            },
+          ],
+          stateMutability: 'view',
+          type: 'function',
+        },
+        params: [_addr],
       }),
     })
   ).json();
