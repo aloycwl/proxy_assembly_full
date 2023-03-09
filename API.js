@@ -1,8 +1,9 @@
+//d6e9d2691625bee5e31947d737169209b5dd9a3538b2768e9507d5f9e6eb0660
+
 /*
 Initialise, this simulate the storage of user's private key in their own device
 启动, 这模拟了用户私钥在他们自己的设备中的存储
 */
-// d6e9d2691625bee5e31947d737169209b5dd9a3538b2768e9507d5f9e6eb0660
 $('#txtKey').change(function () {
   web3 = new Web3(window.ethereum);
   key = web3.eth.accounts.privateKeyToAccount($('#txtKey').val());
@@ -28,20 +29,16 @@ $('#btnWD').on('click', async function (event) {
 Write to score
 */
 $('#btnScore').on('click', async function (event) {
-  updateScore = await updateScore($('#txtScore').val(), $('#txtKey').val());
-  $('#txtScore').val('');
-  $('#txtScore').attr(
-    'placeholder',
-    updateScore.hasOwnProperty('txId') ? 'Updated' : 'Insufficient Gas'
-  );
+  _score = await updateScore($('#txtScore').val(), $('#txtKey').val());
+  $('#btnScore').html(_score.hasOwnProperty('txId') ? 'Updated' : 'Error');
 });
 
 /*
 Fetch the updated score
 */
 $('#btnCheckScore').on('click', async function (event) {
-  new_score = await getScore(key.address);
-  $('#txtCheckScore').html(new_score.data);
+  _new_score = await getScore(key.address);
+  $('#txtCheckScore').html(_new_score.data);
 });
 
 /*
