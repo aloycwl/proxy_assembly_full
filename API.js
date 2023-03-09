@@ -1,5 +1,6 @@
 /*
-Initialise
+Initialise, this simulate the 
+启动
 */
 web3 = new Web3(window.ethereum); //TEMPTEMPTEMPTEMPTEMPTEMPTEMPTEMPTEMPTEMPTEMP
 key = web3.eth.accounts.privateKeyToAccount(
