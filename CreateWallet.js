@@ -11,8 +11,6 @@ $('#btnGenerate').on('click', async function (event) {
   words = pubkey.mnemonic.split(' ');
   for (i = 0; i < words.length; i++)
     $('#lblMnemonic').append(`${words[i]}<br>`);
-  $('#btnRandom').show();
-  $('#btnGenerate').remove();
   address = await walletAddress(pubkey.xpub);
   privkey = await walletPKey(pubkey.mnemonic);
 });
@@ -33,8 +31,6 @@ $('#btnRandom').on('click', async function (event) {
       `<button id=btn${i} onclick=move(${i})>${arr[i]}</button>`
     );
   }
-  $('#lblMnemonic').remove();
-  $('#btnRandom').remove();
 });
 
 /*
@@ -49,11 +45,7 @@ function move(n) {
     passed = true;
     for (i = 0; i < arr.length; i++)
       if ($($('#lblCorrect').children()[i]).html() != words[i]) passed = false;
-    if (passed) {
-      $('#lblRandom').remove();
-      $('#lblCorrect').remove();
-      $('#lblSequence').html('Correct 正确');
-    } else $('#lblSequence').html('Wrong Sequence 顺序错');
+    $('#lblSequence').html(passed ? 'Correct 正确' : 'Wrong Sequence 顺序错');
   }
 }
 
