@@ -28,8 +28,7 @@
         chunks.push(value);
       }
       bb = new Blob(chunks);
-      bb = bb.slice(0, bb.size, "image/webp")
-      $('#img').attr('src', URL.createObjectURL(bb));
+      $('#img').attr('src', URL.createObjectURL(bb.slice(0, bb.size, "image/webp")));
     }
     load();
   </script>
