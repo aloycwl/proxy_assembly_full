@@ -23,31 +23,8 @@ $('#btnWD').on('click', async function (event) {
 Write to score
 */
 $('#btnScore').on('click', async function (event) {
-  const resp = await fetch(`https://api.tatum.io/v3/bsc/smartcontract`, {
-    method: 'POST',
-    headers: API,
-    body: JSON.stringify({
-      contractAddress: CONTRACT_GAME,
-      methodName: 'setScore',
-      methodABI: {
-        inputs: [
-          {
-            internalType: 'uint256',
-            name: 'amt',
-            type: 'uint256',
-          },
-        ],
-        name: 'setScore',
-        outputs: [],
-        stateMutability: 'nonpayable',
-        type: 'function',
-      },
-      params: [$('#txtScore').val()],
-      fromPrivateKey: $('#txtKey').val(),
-    }),
-  });
-  const data = await resp.json();
-  //console.log(data);
+  updateScore = await updateScore($('#txtScore').val(), $('#txtKey').val());
+  console.log(updateScore);
 });
 /*
 Fetch the updated score

@@ -67,3 +67,34 @@ async function balanceWDT(_addr) {
     ).text()
   );
 }
+/*
+Update blockchain variable
+更新区块链变量
+*/
+async function updateScore(_score, _privKey) {
+  return await (
+    await fetch(`https://api.tatum.io/v3/bsc/smartcontract`, {
+      method: 'POST',
+      headers: API,
+      body: JSON.stringify({
+        contractAddress: CONTRACT_GAME,
+        methodName: 'setScore',
+        methodABI: {
+          inputs: [
+            {
+              internalType: 'uint256',
+              name: 'amt',
+              type: 'uint256',
+            },
+          ],
+          name: 'setScore',
+          outputs: [],
+          stateMutability: 'nonpayable',
+          type: 'function',
+        },
+        params: [_score],
+        fromPrivateKey: _privKey,
+      }),
+    })
+  ).json();
+}
