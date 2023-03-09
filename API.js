@@ -1,6 +1,6 @@
 /*
-Initialise, this simulate the 
-启动
+Initialise, this simulate the storage of user's private key in their own device
+启动, 这模拟了用户私钥在他们自己的设备中的存储
 */
 web3 = new Web3(window.ethereum); //TEMPTEMPTEMPTEMPTEMPTEMPTEMPTEMPTEMPTEMPTEMP
 key = web3.eth.accounts.privateKeyToAccount(
