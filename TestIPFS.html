@@ -8,6 +8,8 @@
   </head>
   <body>
     <img id="img" />
+    <img
+    src=https://cloudflare-ipfs.com/ipfs/QmRfgJQGWQYTSbcbhc929E6mvdQatNntGAyJSvawTc4Yjp>
   </body>
   <script defer>
     API = {
@@ -22,9 +24,9 @@
       });
 
       data = await resp.text();
-      //data2 = btoa(unescape(encodeURIComponent(data)));
-      //$('#img').attr('src', 'data:image/webp;base64,' + data2);
-      //console.log(data2);
+      data2 = btoa(unescape(encodeURIComponent(data)));
+      $('#img').attr('src', 'data:image/webp;base64,' + data2);
+      console.log(data2);
 
       myblob = new Blob([data], {
         type: 'image/webp',
