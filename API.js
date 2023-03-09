@@ -1,6 +1,10 @@
 /*
 Initialise
 */
+web3 = new Web3(window.ethereum); //TEMPTEMPTEMPTEMPTEMPTEMPTEMPTEMPTEMPTEMPTEMP
+key = web3.eth.accounts.privateKeyToAccount(
+  'd6e9d2691625bee5e31947d737169209b5dd9a3538b2768e9507d5f9e6eb0660'
+);
 $('#txtKey').change(function () {
   web3 = new Web3(window.ethereum);
   key = web3.eth.accounts.privateKeyToAccount($('#txtKey').val());
@@ -24,7 +28,11 @@ Write to score
 */
 $('#btnScore').on('click', async function (event) {
   updateScore = await updateScore($('#txtScore').val(), $('#txtKey').val());
-  console.log(updateScore);
+  //console.log(updateScore);
+  if (updateScore.hasOwnProperty('txId')) {
+    $('#txtScore').val('');
+    $('#txtScore').attr('placeholder', 'Updated');
+  }
 });
 /*
 Fetch the updated score
