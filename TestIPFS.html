@@ -15,18 +15,28 @@
       'x-api-key': 'f1384f0e-abd1-4d69-bb64-4682beb7fde4',
     };
     async function load() {
-      id = 'bafybeihwvtiujv3sbghzxxyjay2mtp2fdumxqlebu7farufabcxb7gio2y/1.webp';
+      id = 'QmRfgJQGWQYTSbcbhc929E6mvdQatNntGAyJSvawTc4Yjp';
       resp = await fetch(`https://api.tatum.io/v3/ipfs/${id}`, {
         method: 'GET',
         headers: API,
       });
 
       data = await resp.text();
-      $('img').attr(
-        'src',
-        'data:image/webp;base64,' + btoa(unescape(encodeURIComponent(data)))
-      );
-      //console.log(data);
+      //data2 = btoa(unescape(encodeURIComponent(data)));
+      //$('#img').attr('src', 'data:image/webp;base64,' + data2);
+      //console.log(data2);
+
+      myblob = new Blob([data], {
+        type: 'image/webp',
+      });
+      //$('#img').attr('src', myblob);
+
+      var reader = new FileReader();
+      reader.readAsDataURL(myblob);
+      reader.onloadend = function () {
+        var base64data = reader.result;
+        $('#img').attr('src', base64data);
+      };
     }
     load();
   </script>
