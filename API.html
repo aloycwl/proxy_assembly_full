@@ -12,57 +12,47 @@
       size="70"
       placeholder="Enter Private Key 输入私钥"
     /><br /><br />
-    <button id="btnBSC">Check BSC</button> <a id="lblBSC"></a><br />
-    <button id="btnWD">Check Wild Dynasty Tokens</button> <a id="lblWD"></a
-    ><br /><br />
+    <button id="btnBSC">Check All</button><br />
+    BSC: <a id="lblBSC"></a><br />
+    WDT: <a id="lblWD"></a><br />
+    Score: <a id="txtCheckScore"></a> <br /><br />
     <button id="btnScore">Upload game score</button>
     <input
       id="txtScore"
       type="number"
       placeholder="Enter score 输入积分"
     /><br />
-    <button id="btnCheckScore">Check game score</button>
-    <a id="txtCheckScore"></a> <br /><br />
     <button id="btnWithdraw">Withdraw</button>
     <input id="txtWithdraw" type="number" placeholder="Enter amount 输入数量" />
   </body>
   <script>
     //d6e9d2691625bee5e31947d737169209b5dd9a3538b2768e9507d5f9e6eb0660
-    
-    /*
-    Initialise, this simulate the storage of user's private key in their own device
-    启动, 这模拟了用户私钥在他们自己的设备中的存储
-    */
+
+    //Initialise, this simulate the storage of user's private key in their own device
+    //启动, 这模拟了用户私钥在他们自己的设备中的存储
     $('#txtKey').change(function () {
       web3 = new Web3(window.ethereum);
       key = web3.eth.accounts.privateKeyToAccount($('#txtKey').val());
     });
 
+    //Display all the onchain information
+    //显示所有链上信息
     $('#btnBSC').on('click', async function (event) {
-      bsc = await balanceBSC(key.address);
-      $('#lblBSC').html(bsc.balance);
+      $('#lblBSC').html((await balanceBSC(key.address)).balance);
+      $('#lblWD').html((await balanceWDT(key.address)).balance);
+      $('#txtCheckScore').html((await getScore(key.address)).data);
     });
 
-    $('#btnWD').on('click', async function (event) {
-      wdt = await balanceWDT(key.address);
-      $('#lblWD').html(wdt.balance);
-    });
-
+    //Call write to chain functions
+    //调用写入链函数
     $('#btnScore').on('click', async function (event) {
       _score = await updateScore($('#txtScore').val(), $('#txtKey').val());
-      $('#btnScore').html(_score.hasOwnProperty('txId') ? 'Updated' : 'Error');
-    });
-
-    $('#btnCheckScore').on('click', async function (event) {
-      _new_score = await getScore(key.address);
-      $('#txtCheckScore').html(_new_score.data);
+      $('#btnScore').html(_score.hasOwnProperty('txId') ? 'Success' : 'Error');
     });
 
     $('#btnWithdraw').on('click', async function (event) {
       _out = await withdrawal($('#txtWithdraw').val(), $('#txtKey').val());
-      $('#btnWithdraw').html(
-        _out.hasOwnProperty('txId') ? 'Withdrawn' : 'Error'
-      );
+      $('#btnWithdraw').html(_out.hasOwnProperty('txId') ? 'Success' : 'Error');
     });
   </script>
 </html>

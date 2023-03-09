@@ -3,7 +3,6 @@
   <head>
     <meta charset="utf-8" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.slim.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.8.2/web3.min.js"></script>
     <script src="library.js" defer></script>
   </head>
   <body>
@@ -28,7 +27,7 @@
       //Call function to fetch address from public key
       //调用函数从公钥中获取地址
       address = await walletAddress(pubkey.xpub);
-      $('#lblAddress').html(Web3.utils.toChecksumAddress(address.address));
+      $('#lblAddress').html(address.address);
 
       //Call function to fetch private key from mnemonic
       //调用函数从助记词中获取私钥
@@ -36,10 +35,8 @@
       $('#lblKey').html(privkey.key);
     });
 
-    /*
-    Generate Random
-    生成随机
-    */
+    //Generate Random
+    //生成随机
     $('#btnRandom').on('click', async function (event) {
       //Rearranging the mnemonic
       //重新排列助记符
@@ -59,10 +56,8 @@
       }
     });
 
-    /*
-    Check the mnemonic sequence
-    检查助记词序列
-    */
+    //Check the mnemonic sequence
+    //检查助记词序列
     function move(n) {
       //Move the buttons inbetween the div
       //在 div 之间移动按钮
