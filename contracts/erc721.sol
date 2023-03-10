@@ -28,7 +28,7 @@ contract ERC721AC is IERC721,IERC721Metadata{
     mapping(uint=>address)private _tokenApprovals;
     mapping(address=>mapping(address=>bool))private _operatorApprovals;
     uint public Count;
-    mapping(address=>mapping(uint=>uint))public _owned;
+    mapping(address=>mapping(uint=>uint))private _owned;
 
     /*
     Standard functions for ERC721
