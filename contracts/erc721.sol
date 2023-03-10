@@ -28,6 +28,7 @@ contract ERC721AC is IERC721,IERC721Metadata{
     mapping(uint=>address)private _tokenApprovals;
     mapping(address=>mapping(address=>bool))private _operatorApprovals;
     uint public Count;
+    mapping(address=>uint[])private _owned;
 
     constructor(){
         _owner=msg.sender;
@@ -82,16 +83,27 @@ contract ERC721AC is IERC721,IERC721Metadata{
         transferFrom(from,to,id);
     }
 
+    function getOwned(address from)external view returns(uint[]memory _ids){
+        _ids=new uint[](_owned[from].length);
+    }
+
     function Burn(uint id)external{unchecked{
         address addr=_owners[id];
         transferFrom(addr,address(0),id);
         _balances[_owners[id]]--;
+        uint len=_owned[msg.sender].length;
+        for(uint i=0;i<len;i++)
+            if(_owned[msg.sender][i]==id){
+                _owned[msg.sender][i]=_owned[msg.sender][len-1];
+                _owned[msg.sender].pop();
+            }
         delete _owners[id];
     }}
     function Mint()external{unchecked{
         Count++;
         _balances[msg.sender]++;
         _owners[Count]=msg.sender;
+        _owned[msg.sender].push(Count);
         emit Transfer(address(this),msg.sender,Count);
     }}
     function toString(uint _i)private pure returns(bytes memory bstr){unchecked{
