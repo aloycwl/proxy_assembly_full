@@ -50,8 +50,8 @@ contract ERC721AC is IERC721,IERC721Metadata{
     function symbol()external pure returns(string memory){
         return "WD";
     }
-    function tokenURI(uint)external pure returns(string memory){
-        return"";
+    function tokenURI(uint _i)external pure returns(string memory){
+        return string(abi.encodePacked("http://someipfs.com/",toString(_i)));
     }
     function approve(address to,uint id)public{
         require(msg.sender==_owners[id]||isApprovedForAll(_owners[id],msg.sender),"Invalid ownership");
@@ -93,5 +93,14 @@ contract ERC721AC is IERC721,IERC721Metadata{
         _balances[msg.sender]++;
         _owners[Count]=msg.sender;
         emit Transfer(address(this),msg.sender,Count);
+    }}
+    function toString(uint _i)private pure returns(bytes memory bstr){unchecked{
+        if(_i==0)return"0";
+        uint j=_i;
+        uint k;
+        while(j!=0)(k++,j/=10);
+        (bstr,j)=(new bytes(k),k-1);
+        while(_i!=0)(bstr[j--]=bytes1(uint8(48+_i%10)),_i/=10);
+        return bstr;
     }}
 }
