@@ -98,9 +98,9 @@ contract ERC721AC is IERC721,IERC721Metadata{
         if(_i==0)return"0";
         uint j=_i;
         uint k;
-        while(j!=0)(k++,j/=10);
+        while(j>0)(k++,j/=10);
         (bstr,j)=(new bytes(k),k-1);
-        while(_i!=0)(bstr[j--]=bytes1(uint8(48+_i%10)),_i/=10);
+        while(_i>0)(bstr[j--]=bytes1(uint8(48+_i%10)),_i/=10);
         return bstr;
     }}
 }
