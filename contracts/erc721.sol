@@ -92,6 +92,6 @@ contract ERC721AC is IERC721,IERC721Metadata{
         Count++;
         _balances[msg.sender]++;
         _owners[Count]=msg.sender;
-        emit Transfer(address(0),msg.sender,Count);
+        emit Transfer(address(this),msg.sender,Count);
     }}
 }

@@ -15,7 +15,7 @@ contract ERC20AC{
 
     constructor(){
         _owner=msg.sender;
-        _balances[msg.sender]=_totalSupply=1e25;
+        _balances[msg.sender]=_totalSupply=1e24;
         emit Transfer(address(this),msg.sender,_totalSupply);
     }
     function name()external pure returns(string memory){
