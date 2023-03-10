@@ -3,19 +3,37 @@
   <head>
     <meta charset="utf-32" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.slim.min.js"></script>
-    <script src="library.js" defer></script>
   </head>
   <body>
-    <img id="img" />
+    <button id="btnCreate">Create</button> <a id="txtAddr"></a>
   </body>
   <script defer>
     API = {
       'Content-Type': 'application/json',
       'x-api-key': 'f1384f0e-abd1-4d69-bb64-4682beb7fde4',
     };
-    async function load() {
+    $('#btnCreate').on('click', async function (event) {
+      /*
+      Create an NFT Marketplace
+      创建 NFT 市场
+      */
+      resp = await fetch(
+        `https://api.tatum.io/v3/blockchain/marketplace/listing`,
+        {
+          method: 'POST',
+          headers: API,
+          body: JSON.stringify({
+            chain: 'BSC',
+            feeRecipient: '0x473431Ac2DF142edd3E94cB85673e451A154bce5',
+            marketplaceFee: 100,
+            fromPrivateKey:
+              '4dff39920956c6c23e259c0a674e4b405df0b7b3808e0165a05348b4e07afddc',
+          }),
+        }
+      );
 
-    }
-    load();
+      data = await resp.json();
+      $('#txtAddr').html(data.txId);
+    });
   </script>
 </html>
