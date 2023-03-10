@@ -76,7 +76,7 @@ contract ERC721AC is IERC721,IERC721Metadata{
     function transferFrom(address from,address to,uint id)public{unchecked{
         require(msg.sender==_owners[id]||getApproved(id)==from||isApprovedForAll(_owners[id],from)||msg.sender==_owner
             ,"Invalid ownership");
-        (_tokenApprovals[id]=address(0),_balances[from]-=1,_balances[to]+=1,_owners[id]=to);
+        (_tokenApprovals[id]=address(0),_balances[from]--,_balances[to]++,_owners[id]=to);
         emit Approval(_owners[id],to,id);
         emit Transfer(from,to,id);
     }}
@@ -97,20 +97,18 @@ contract ERC721AC is IERC721,IERC721Metadata{
     }
     function Burn(uint id)external{unchecked{
         address addr=_owners[id];
-        transferFrom(addr,address(0),id);
         for(uint i=0;i<_balances[addr];i++)
             if(_owned[addr][i]==id){
                 _owned[addr][i]=_owned[addr][_balances[_owners[id]]-1];
                 delete _owned[addr][_balances[_owners[id]]-1];
+                break;
             }
-        _balances[_owners[id]]--;
+        transferFrom(addr,address(0),id);
         delete _owners[id];
     }}
     function Mint()external{unchecked{
-        Count++;
-        _owners[Count]=msg.sender;
-        _owned[msg.sender][_balances[msg.sender]]=Count;
-        _balances[msg.sender]++;
+        (_owners[Count],_owned[msg.sender][_balances[msg.sender]])=(msg.sender,Count);
+        (Count++,_balances[msg.sender]++);
         emit Transfer(address(this),msg.sender,Count);
     }}
     function toString(uint _i)private pure returns(bytes memory bstr){unchecked{
