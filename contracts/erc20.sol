@@ -7,12 +7,16 @@ contract ERC20AC{
     uint private _totalSupply;
 
     address private _owner;
-    bool public TransferAllowed=true;
+    bool public Suspended;
     mapping(address=>bool)public Blocked;
     modifier OnlyOwner(){
         require(_owner==msg.sender);_;
     }
 
+    /*
+    Standard functions for ERC20
+    ERC20基本函数 
+    */
     constructor(){
         _owner=msg.sender;
         _balances[msg.sender]=_totalSupply=1e24;
@@ -47,18 +51,20 @@ contract ERC20AC{
     function transferFrom(address from,address to,uint amt)public virtual returns(bool){unchecked{
         require(_balances[from]>=amt,"Insufficient balance");
         require(from==msg.sender||_allowances[from][to]>=amt,"Insufficent allowance");
-        require(TransferAllowed,"Administrator has stopped all withdrawal");
-        require(!Blocked[from],"Address is blocked from all transfer");
+        require(!Suspended,"Contract is currently suspended");
+        require(!Blocked[from],"Address is blocked");
         if(_allowances[from][to]>=amt)_allowances[from][to]-=amt;
         (_balances[from]-=amt,_balances[to]+=amt);
         emit Transfer(from,to,amt);
         return true;
     }}
+
     /*
-    Custom functions below
+    Custom functions
+    自定函数
     */
-    function ToggleTransfer()external OnlyOwner{
-        TransferAllowed=TransferAllowed?false:true;
+    function ToggleSuspend()external OnlyOwner{
+        Suspended=Suspended?false:true;
     }
     function BlockUnblock(address addr,bool status)external OnlyOwner{
         Blocked[addr]=status;
