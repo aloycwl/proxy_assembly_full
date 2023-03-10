@@ -28,8 +28,12 @@ contract ERC721AC is IERC721,IERC721Metadata{
     mapping(uint=>address)private _tokenApprovals;
     mapping(address=>mapping(address=>bool))private _operatorApprovals;
     uint public Count;
-    mapping(address=>uint[])private _owned;
+    mapping(address=>mapping(uint=>uint))public _owned;
 
+    /*
+    Standard functions for ERC721
+    ERC721基本函数 
+    */
     constructor(){
         _owner=msg.sender;
     }
@@ -83,27 +87,30 @@ contract ERC721AC is IERC721,IERC721Metadata{
         transferFrom(from,to,id);
     }
 
+    /*
+    Custom functions
+    自定函数
+    */
     function getOwned(address from)external view returns(uint[]memory _ids){
-        _ids=new uint[](_owned[from].length);
+        _ids=new uint[](_balances[from]);
+        for(uint i=0;i<_balances[from];i++)_ids[i]=_owned[from][i];
     }
-
     function Burn(uint id)external{unchecked{
         address addr=_owners[id];
         transferFrom(addr,address(0),id);
-        _balances[_owners[id]]--;
-        uint len=_owned[msg.sender].length;
-        for(uint i=0;i<len;i++)
-            if(_owned[msg.sender][i]==id){
-                _owned[msg.sender][i]=_owned[msg.sender][len-1];
-                _owned[msg.sender].pop();
+        for(uint i=0;i<_balances[addr];i++)
+            if(_owned[addr][i]==id){
+                _owned[addr][i]=_owned[addr][_balances[_owners[id]]-1];
+                delete _owned[addr][_balances[_owners[id]]-1];
             }
+        _balances[_owners[id]]--;
         delete _owners[id];
     }}
     function Mint()external{unchecked{
         Count++;
-        _balances[msg.sender]++;
         _owners[Count]=msg.sender;
-        _owned[msg.sender].push(Count);
+        _owned[msg.sender][_balances[msg.sender]]=Count;
+        _balances[msg.sender]++;
         emit Transfer(address(this),msg.sender,Count);
     }}
     function toString(uint _i)private pure returns(bytes memory bstr){unchecked{
