@@ -17,6 +17,7 @@
     /*
     Create an NFT Marketplace
     创建 NFT 市场
+    0x9cc7d32560eaf2ce2b1e37abed7ac4a3b2cb7a5dcb0615c1d1e6a5f977fd8640
     */
     $('#btnCreate').on('click', async function (event) {
       mkpl = await (
@@ -42,7 +43,8 @@
       addr = JSON.parse(
         await (
           await fetch(
-            `https://api.tatum.io/v3/blockchain/sc/address/BSC/${mkpl.txId}`,
+            //`https://api.tatum.io/v3/blockchain/sc/address/BSC/${mkpl.txId}`,
+            `https://api.tatum.io/v3/blockchain/sc/address/BSC/0x9cc7d32560eaf2ce2b1e37abed7ac4a3b2cb7a5dcb0615c1d1e6a5f977fd8640`,
             {
               method: 'GET',
               headers: API,
