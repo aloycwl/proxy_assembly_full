@@ -5,21 +5,22 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.slim.min.js"></script>
   </head>
   <body>
-    <button id="btnCreate">Create</button> <a id="txtAddr"></a>
+    <button id="btnCreate">Create NFT Marketplace</button> <a id="txtTxid"></a
+    ><br /><br />
+    <button id="btnFetch">Get Contract Address</button> <a id="txtAddr"></a>
   </body>
   <script defer>
     API = {
       'Content-Type': 'application/json',
       'x-api-key': 'f1384f0e-abd1-4d69-bb64-4682beb7fde4',
     };
+    /*
+    Create an NFT Marketplace
+    创建 NFT 市场
+    */
     $('#btnCreate').on('click', async function (event) {
-      /*
-      Create an NFT Marketplace
-      创建 NFT 市场
-      */
-      resp = await fetch(
-        `https://api.tatum.io/v3/blockchain/marketplace/listing`,
-        {
+      mkpl = await (
+        await fetch(`https://api.tatum.io/v3/blockchain/marketplace/listing`, {
           method: 'POST',
           headers: API,
           body: JSON.stringify({
@@ -29,11 +30,27 @@
             fromPrivateKey:
               '4dff39920956c6c23e259c0a674e4b405df0b7b3808e0165a05348b4e07afddc',
           }),
-        }
+        })
+      ).json();
+      $('#txtTxid').html(mkpl.txId);
+    });
+    /*
+    Get the contract address from txId
+    从 txId 获取合约地址
+    */
+    $('#btnFetch').on('click', async function (event) {
+      addr = JSON.parse(
+        await (
+          await fetch(
+            `https://api.tatum.io/v3/blockchain/sc/address/BSC/${mkpl.txId}`,
+            {
+              method: 'GET',
+              headers: API,
+            }
+          )
+        ).text()
       );
-
-      data = await resp.json();
-      $('#txtAddr').html(data.txId);
+      $('#txtAddr').html(${addr.contractAddress});
     });
   </script>
 </html>
