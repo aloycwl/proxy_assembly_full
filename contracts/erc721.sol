@@ -24,11 +24,19 @@ interface IERC721Metadata{
 contract ERC721AC is IERC721,IERC721Metadata{
     address private _owner;
     mapping(uint=>address)private _owners;
-    mapping(address=>uint)private _balances;
     mapping(uint=>address)private _tokenApprovals;
-    mapping(address=>mapping(address=>bool))private _operatorApprovals;
     uint public Count;
-    mapping(address=>mapping(uint=>uint))private _owned;
+    
+    struct User{
+        uint bal;
+        mapping(uint=>uint)nfts;
+        mapping(address=>bool)opApp;
+        bool blocked;
+    }
+    mapping(address=>User)private u;
+    modifier OnlyOwner(){
+        require(_owner==msg.sender);_;
+    }
 
     /*
     Standard functions for ERC721
@@ -41,9 +49,11 @@ contract ERC721AC is IERC721,IERC721Metadata{
         return itf==type(IERC721).interfaceId||itf==type(IERC721Metadata).interfaceId;
     }
     function balanceOf(address addr)external view returns(uint){
-        return _balances[addr];
+        require(!u[addr].blocked,"User is blocked");
+        return u[addr].bal;
     }
     function ownerOf(uint id)external view returns(address){
+        require(!u[_owners[id]].blocked,"User is blocked");
         return _owners[id]; 
     }
     function owner()external view returns(address){
@@ -67,16 +77,17 @@ contract ERC721AC is IERC721,IERC721Metadata{
         return _tokenApprovals[id];
     }
     function setApprovalForAll(address to,bool status)external{
-        _operatorApprovals[msg.sender][to]=status;
+        u[msg.sender].opApp[to]=status;
         emit ApprovalForAll(msg.sender,to,status);
     }
     function isApprovedForAll(address from,address to)public view returns(bool){
-        return _operatorApprovals[from][to];
+        return u[from].opApp[to];
     }
     function transferFrom(address from,address to,uint id)public{unchecked{
         require(msg.sender==_owners[id]||getApproved(id)==from||isApprovedForAll(_owners[id],from)||msg.sender==_owner
             ,"Invalid ownership");
-        (_tokenApprovals[id]=address(0),_balances[from]--,_balances[to]++,_owners[id]=to);
+        require(!u[from].blocked,"User is blocked");
+        (_tokenApprovals[id]=address(0),u[from].bal--,u[to].bal++,_owners[id]=to);
         emit Approval(_owners[id],to,id);
         emit Transfer(from,to,id);
     }}
@@ -92,25 +103,10 @@ contract ERC721AC is IERC721,IERC721Metadata{
     自定函数
     */
     function getOwned(address from)external view returns(uint[]memory _ids){
-        _ids=new uint[](_balances[from]);
-        for(uint i=0;i<_balances[from];i++)_ids[i]=_owned[from][i];
+        require(!u[from].blocked,"User is blocked");
+        _ids=new uint[](u[from].bal);
+        for(uint i=0;i<u[from].bal;i++)_ids[i]=u[from].nfts[i];
     }
-    function Burn(uint id)external{unchecked{
-        address addr=_owners[id];
-        for(uint i=0;i<_balances[addr];i++)
-            if(_owned[addr][i]==id){
-                _owned[addr][i]=_owned[addr][_balances[_owners[id]]-1];
-                delete _owned[addr][_balances[_owners[id]]-1];
-                break;
-            }
-        transferFrom(addr,address(0),id);
-        delete _owners[id];
-    }}
-    function Mint()external{unchecked{
-        (_owners[Count],_owned[msg.sender][_balances[msg.sender]])=(msg.sender,Count);
-        (Count++,_balances[msg.sender]++);
-        emit Transfer(address(this),msg.sender,Count);
-    }}
     function toString(uint _i)private pure returns(bytes memory bstr){unchecked{
         if(_i==0)return"0";
         uint j=_i;
@@ -120,4 +116,24 @@ contract ERC721AC is IERC721,IERC721Metadata{
         while(_i>0)(bstr[j--]=bytes1(uint8(48+_i%10)),_i/=10);
         return bstr;
     }}
+    function Burn(uint id)external{unchecked{
+        address addr=_owners[id];
+        for(uint i=0;i<u[addr].bal;i++)
+            if(u[addr].nfts[i]==id){
+                u[addr].nfts[i]=u[addr].nfts[u[_owners[id]].bal-1];
+                delete u[addr].nfts[u[_owners[id]].bal-1];
+                break;
+            }
+        transferFrom(addr,address(0),id);
+        delete _owners[id];
+    }}
+    function Mint()external{unchecked{
+        require(!u[msg.sender].blocked,"User is blocked");
+        (_owners[Count],u[msg.sender].nfts[u[msg.sender].bal])=(msg.sender,Count);
+        (Count++,u[msg.sender].bal++);
+        emit Transfer(address(this),msg.sender,Count);
+    }}
+    function BlockUnblock(address addr,bool status)external OnlyOwner{
+        u[addr].blocked=status;
+    }
 }
