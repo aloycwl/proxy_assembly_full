@@ -14,11 +14,16 @@ interface IERC721{
     function isApprovedForAll(address,address)external view returns(bool);
     function safeTransferFrom(address,address,uint,bytes calldata)external;
 }
-
 interface IERC721Metadata{
     function name()external view returns(string memory);
     function symbol()external view returns(string memory);
     function tokenURI(uint)external view returns(string memory);
+}
+struct User{
+    uint bal;
+    mapping(uint=>uint)nfts;
+    mapping(address=>bool)opApp;
+    bool blocked;
 }
 
 contract ERC721AC is IERC721,IERC721Metadata{
@@ -27,13 +32,6 @@ contract ERC721AC is IERC721,IERC721Metadata{
     mapping(uint=>address)private _tokenApprovals;
     uint public Count;
     bool public Suspended;
-    
-    struct User{
-        uint bal;
-        mapping(uint=>uint)nfts;
-        mapping(address=>bool)opApp;
-        bool blocked;
-    }
     mapping(address=>User)public u;
     modifier OnlyOwner(){
         require(_owner==msg.sender);_;

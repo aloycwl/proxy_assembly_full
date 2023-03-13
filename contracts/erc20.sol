@@ -1,16 +1,17 @@
 pragma solidity>0.8.0;//SPDX-License-Identifier:None
+
+struct User{
+    uint bal;
+    mapping(address=>uint)allow;
+    bool blocked;
+}
+
 contract ERC20AC{
     event Transfer(address indexed from,address indexed to,uint value);
     event Approval(address indexed owner,address indexed spender,uint value);
     uint private _totalSupply;
     address private _owner;
     bool public Suspended;
-
-    struct User{
-        uint bal;
-        mapping(address=>uint)allow;
-        bool blocked;
-    }
     mapping(address=>User)public u;
     modifier OnlyOwner(){
         require(_owner==msg.sender);_;
@@ -52,7 +53,7 @@ contract ERC20AC{
         emit Approval(msg.sender,addr,amt);
         return true;
     }
-    function transferFrom(address from,address to,uint amt)public virtual returns(bool){unchecked{
+    function transferFrom(address from,address to,uint amt)public returns(bool){unchecked{
         require(u[from].bal>=amt,"Insufficient balance");
         require(from==msg.sender||u[from].allow[to]>=amt,"Insufficent allowance");
         require(!Suspended&&!u[from].blocked,"Suspended");
@@ -74,8 +75,7 @@ contract ERC20AC{
     }
     function Burn(uint amt)external OnlyOwner{unchecked{
         require(u[_owner].bal>=amt,"Insufficient balance");
-        u[_owner].bal-=amt;
+        transferFrom(_owner,address(0),amt);
         _totalSupply-=amt;
-        emit Transfer(address(this),address(0),amt);
     }
 }}
