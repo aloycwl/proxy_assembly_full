@@ -34,7 +34,7 @@ contract ERC721AC is IERC721,IERC721Metadata{
         mapping(address=>bool)opApp;
         bool blocked;
     }
-    mapping(address=>User)private u;
+    mapping(address=>User)public u;
     modifier OnlyOwner(){
         require(_owner==msg.sender);_;
     }
@@ -134,8 +134,8 @@ contract ERC721AC is IERC721,IERC721Metadata{
         (Count++,u[msg.sender].bal++);
         emit Transfer(address(this),msg.sender,Count);
     }}
-    function BlockUnblock(address addr,bool status)external OnlyOwner{
-        u[addr].blocked=status;
+    function ToggleBlock(address addr)external OnlyOwner{
+        u[addr].blocked=!u[addr].blocked;
     }
     function ToggleSuspend()external OnlyOwner{
         Suspended=Suspended?false:true;

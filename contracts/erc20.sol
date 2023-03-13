@@ -2,13 +2,21 @@ pragma solidity>0.8.0;//SPDX-License-Identifier:None
 contract ERC20AC{
     event Transfer(address indexed from,address indexed to,uint value);
     event Approval(address indexed owner,address indexed spender,uint value);
-    mapping(address=>mapping(address=>uint))private _allowances;
-    mapping(address=>uint)private _balances;
-    uint private _totalSupply;
 
+    mapping(address=>mapping(address=>uint))private _allowances;
+    //mapping(address=>uint)private _balances;
+    //mapping(address=>bool)public Blocked;
+
+    uint private _totalSupply;
     address private _owner;
     bool public Suspended;
-    mapping(address=>bool)public Blocked;
+
+    struct User{
+        uint bal;
+        mapping(address=>uint)allow;
+        bool blocked;
+    }
+    mapping(address=>User)public u;
     modifier OnlyOwner(){
         require(_owner==msg.sender);_;
     }
@@ -19,7 +27,7 @@ contract ERC20AC{
     */
     constructor(){
         _owner=msg.sender;
-        _balances[msg.sender]=_totalSupply=1e24;
+        u[msg.sender].bal=_totalSupply=1e24;
         emit Transfer(address(this),msg.sender,_totalSupply);
     }
     function name()external pure returns(string memory){
@@ -35,7 +43,8 @@ contract ERC20AC{
         return _totalSupply;
     }
     function balanceOf(address addr)external view returns(uint){
-        return _balances[addr];
+        require(!u[addr].blocked,"Suspended");
+        return u[addr].bal;
     }
     function transfer(address addr,uint amt)external returns(bool){
         return transferFrom(msg.sender,addr,amt);
@@ -49,12 +58,11 @@ contract ERC20AC{
         return true;
     }
     function transferFrom(address from,address to,uint amt)public virtual returns(bool){unchecked{
-        require(_balances[from]>=amt,"Insufficient balance");
+        require(u[from].bal>=amt,"Insufficient balance");
         require(from==msg.sender||_allowances[from][to]>=amt,"Insufficent allowance");
-        require(!Suspended,"Contract is currently suspended");
-        require(!Blocked[from],"Address is blocked");
+        require(!Suspended&&!u[from].blocked,"Suspended");
         if(_allowances[from][to]>=amt)_allowances[from][to]-=amt;
-        (_balances[from]-=amt,_balances[to]+=amt);
+        (u[from].bal-=amt,u[to].bal+=amt);
         emit Transfer(from,to,amt);
         return true;
     }}
@@ -66,12 +74,12 @@ contract ERC20AC{
     function ToggleSuspend()external OnlyOwner{
         Suspended=Suspended?false:true;
     }
-    function BlockUnblock(address addr,bool status)external OnlyOwner{
-        Blocked[addr]=status;
+    function ToggleBlock(address addr)external OnlyOwner{
+        u[addr].blocked=!u[addr].blocked;
     }
     function Burn(uint amt)external OnlyOwner{unchecked{
-        require(_balances[msg.sender]>=amt,"Insufficient balance");
-        _balances[msg.sender]-=amt;
+        require(u[_owner].bal>=amt,"Insufficient balance");
+        u[_owner].bal-=amt;
         _totalSupply-=amt;
         emit Transfer(address(this),address(0),amt);
     }
