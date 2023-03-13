@@ -10,22 +10,24 @@
   </body>
   <script defer>
     $('#btnSign').on('click', async function (event) {
-      if (!window.ethereum) return alert('Please Install Metamask');
-      const accounts = await ethereum.request({
-        method: 'eth_requestAccounts',
-      });
-      const message = 'hello';
-      console.log({ message });
-      const hashedMessage = Web3.utils.sha3(message);
+      if (!ethereum) return alert('No Metamask');
+      hashedMessage = Web3.utils.sha3('hello');
       console.log({ hashedMessage });
-      const signature = await ethereum.request({
+      signature = await ethereum.request({
         method: 'personal_sign',
-        params: [hashedMessage, accounts[0]],
+        params: [
+          hashedMessage,
+          (
+            await ethereum.request({
+              method: 'eth_requestAccounts',
+            })
+          )[0],
+        ],
       });
       console.log({ signature });
-      const r = signature.slice(0, 66);
-      const s = '0x' + signature.slice(66, 130);
-      const v = parseInt(signature.slice(130, 132), 16);
+      r = signature.slice(0, 66);
+      s = '0x' + signature.slice(66, 130);
+      v = parseInt(signature.slice(130, 132), 16);
       console.log({ r, s, v });
     });
   </script>
