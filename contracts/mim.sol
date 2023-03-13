@@ -229,232 +229,90 @@ interface IBentoBoxV1{
     function balanceOf(IERC20,address)external view returns(uint);
     function batch(bytes[]calldata,bool)external payable returns(bool[]memory,bytes[]memory);
     function batchFlashLoan(IBatchFlashBorrower,address[]calldata,IERC20[]calldata,uint[]calldata,bytes calldata)external;
-
     function claimOwnership()external;
-
-    function deploy(
-        address masterContract,
-        bytes calldata data,
-        bool useCreate2
-    )external payable;
-
-    function deposit(
-        IERC20 token_,
-        address from,
-        address to,
-        uint amount,
-        uint share
-    )external payable returns(uint amountOut,uint shareOut);
-
-    function flashLoan(
-        IFlashBorrower borrower,
-        address receiver,
-        IERC20 token,
-        uint amount,
-        bytes calldata data
-    )external;
-
-    function harvest(
-        IERC20 token,
-        bool balance,
-        uint maxChangeAmount
-    )external;
-
+    function deploy(address,bytes calldata,bool)external payable;
+    function deposit(IERC20,address,address,uint,uint)external payable returns(uint,uint);
+    function flashLoan(IFlashBorrower,address,IERC20,uint,bytes calldata)external;
+    function harvest(IERC20,bool,uint)external;
     function masterContractApproved(address,address)external view returns(bool);
-
     function masterContractOf(address)external view returns(address);
-
     function nonces(address)external view returns(uint);
-
     function owner()external view returns(address);
-
     function pendingOwner()external view returns(address);
-
     function pendingStrategy(IERC20)external view returns(IStrategy);
-
-    function permitToken(
-        IERC20 token,
-        address from,
-        address to,
-        uint amount,
-        uint deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    )external;
-
+    function permitToken(IERC20,address,address,uint,uint,uint8,bytes32,bytes32)external;
     function registerProtocol()external;
-
-    function setMasterContractApproval(
-        address user,
-        address masterContract,
-        bool approved,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    )external;
-
-    function setStrategy(IERC20 token,IStrategy newStrategy)external;
-
-    function setStrategyTargetPercentage(IERC20 token,uint64 targetPercentage_)external;
-
+    function setMasterContractApproval(address,address,bool,uint8,bytes32,bytes32)external;
+    function setStrategy(IERC20,IStrategy)external;
+    function setStrategyTargetPercentage(IERC20,uint64)external;
     function strategy(IERC20)external view returns(IStrategy);
-
-    function strategyData(IERC20)
-        external
-        view
-        returns(
-            uint64 strategyStartDate,
-            uint64 targetPercentage,
-            uint128 balance
-        );
-
-    function toAmount(
-        IERC20 token,
-        uint share,
-        bool roundUp
-    )external view returns(uint amount);
-
-    function toShare(
-        IERC20 token,
-        uint amount,
-        bool roundUp
-    )external view returns(uint share);
-
-    function totals(IERC20)external view returns(Rebase memory totals_);
-
-    function transfer(
-        IERC20 token,
-        address from,
-        address to,
-        uint share
-    )external;
-
-    function transferMultiple(
-        IERC20 token,
-        address from,
-        address[]calldata tos,
-        uint[]calldata shares
-    )external;
-
-    function transferOwnership(
-        address newOwner,
-        bool direct,
-        bool renounce
-    )external;
-
-    function whitelistMasterContract(address masterContract,bool approved)external;
-
+    function strategyData(IERC20)external view returns(uint64,uint64,uint128);
+    function toAmount(IERC20,uint,bool)external view returns(uint);
+    function toShare(IERC20,uint,bool)external view returns(uint);
+    function totals(IERC20)external view returns(Rebase memory);
+    function transfer(IERC20,address,address,uint)external;
+    function transferMultiple(IERC20,address,address[]calldata,uint[]calldata)external;
+    function transferOwnership(address,bool,bool)external;
+    function whitelistMasterContract(address,bool)external;
     function whitelistedMasterContracts(address)external view returns(bool);
-
-    function withdraw(
-        IERC20 token_,
-        address from,
-        address to,
-        uint amount,
-        uint share
-    )external returns(uint amountOut,uint shareOut);
+    function withdraw(IERC20,address,address,uint,uint)external returns(uint,uint);
 }
 
-contract BoringOwnableData{
+contract BoringOwnable{
     address public owner;
     address public pendingOwner;
-}
-
-contract BoringOwnable is BoringOwnableData{
     event OwnershipTransferred(address indexed previousOwner,address indexed newOwner);
-
-   ///@notice `owner` defaults to msg.sender on construction.
     constructor(){
         owner=msg.sender;
         emit OwnershipTransferred(address(0),msg.sender);
     }
-    function transferOwnership(
-        address newOwner,
-        bool direct,
-        bool renounce
-    )public onlyOwner{
+    function transferOwnership(address newOwner,bool direct,bool renounce)public onlyOwner{
         if(direct){
-           //Checks
             require(newOwner!=address(0)||renounce,"Ownable: zero address");
-
-           //Effects
             emit OwnershipTransferred(owner,newOwner);
-            owner=newOwner;
-            pendingOwner=address(0);
-        }else{
-           //Effects
-            pendingOwner=newOwner;
-        }
+            (owner,pendingOwner)=(newOwner,address(0));
+        }else pendingOwner=newOwner;
     }
-
-   ///@notice Needs to be called by `pendingOwner` to claim ownership.
     function claimOwnership()public{
         address _pendingOwner=pendingOwner;
-
-       //Checks
         require(msg.sender==_pendingOwner,"Ownable: caller!=pending owner");
-
-       //Effects
         emit OwnershipTransferred(owner,_pendingOwner);
-        owner=_pendingOwner;
-        pendingOwner=address(0);
+        (owner,pendingOwner)=(_pendingOwner,address(0));
     }
-
-   ///@notice Only allows the `owner` to execute the function.
     modifier onlyOwner(){
-        require(msg.sender==owner,"Ownable: caller is not the owner");
-        _;
+        require(msg.sender==owner,"Ownable: caller is not the owner");_;
     }
 }
 
 contract MagicInternetMoneyV1 is ERC20,BoringOwnable{
     using BoringMath for uint;
-   //ERC20 'variables'
     string public constant symbol="MIM";
     string public constant name="Magic Internet Money";
     uint8 public constant decimals=18;
     uint public override totalSupply;
-
     struct Minting{
         uint128 time;
         uint128 amount;
     }
-
     Minting public lastMint;
     uint private constant MINTING_PERIOD=24 hours;
     uint private constant MINTING_INCREASE=15000;
     uint private constant MINTING_PRECISION=1e5;
-
     function mint(address to,uint amount)public onlyOwner{
         require(to!=address(0),"MIM: no mint to zero address");
-
-       //Limits the amount minted per period to a convergence function,with the period duration restarting on every mint
         uint totalMintedAmount=uint(lastMint.time<block.timestamp-MINTING_PERIOD ? 0 : lastMint.amount).add(amount);
         require(totalSupply==0||totalSupply.mul(MINTING_INCREASE)/MINTING_PRECISION>=totalMintedAmount);
-
-        lastMint.time=block.timestamp.to128();
-        lastMint.amount=totalMintedAmount.to128();
-
-        totalSupply=totalSupply+amount;
-        balanceOf[to]+=amount;
+        (lastMint.time,lastMint.amount)=(block.timestamp.to128(),totalMintedAmount.to128());
+        (totalSupply+=amount,balanceOf[to]+=amount);
         emit Transfer(address(0),to,amount);
     }
-
-    function mintToBentoBox(
-        address clone,
-        uint amount,
-        IBentoBoxV1 bentoBox
-    )public onlyOwner{
+    function mintToBentoBox(address clone,uint amount,IBentoBoxV1 bentoBox)public onlyOwner{
         mint(address(bentoBox),amount);
         bentoBox.deposit(IERC20(address(this)),address(bentoBox),clone,amount,0);
     }
-
     function burn(uint amount)public{
         require(amount<=balanceOf[msg.sender],"MIM: not enough");
-
-        balanceOf[msg.sender]-=amount;
-        totalSupply-=amount;
+        (balanceOf[msg.sender]-=amount,totalSupply-=amount);
         emit Transfer(msg.sender,address(0),amount);
     }
 }
