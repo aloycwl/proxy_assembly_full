@@ -9,9 +9,13 @@ struct User{
 contract ERC20AC{
     event Transfer(address indexed from,address indexed to,uint value);
     event Approval(address indexed owner,address indexed spender,uint value);
-    uint private _totalSupply;
     address private _owner;
     bool public Suspended;
+    uint private _totalSupply;
+    uint public constant decimals=18;
+    uint public constant totalSupply=1e24;
+    string public constant symbol="WD";
+    string public constant name="Wild Dynasty";
     mapping(address=>User)public u;
     modifier OnlyOwner(){
         require(_owner==msg.sender);_;
@@ -23,20 +27,8 @@ contract ERC20AC{
     */
     constructor(){
         _owner=msg.sender;
-        u[msg.sender].bal=_totalSupply=1e24;
+        u[msg.sender].bal=_totalSupply;
         emit Transfer(address(this),msg.sender,_totalSupply);
-    }
-    function name()external pure returns(string memory){
-        return "Wild Dynasty";
-    }
-    function symbol()external pure returns(string memory){
-        return "WD";
-    }
-    function decimals()external pure returns(uint){
-        return 18;
-    }
-    function totalSupply()external view returns(uint){
-        return _totalSupply;
     }
     function balanceOf(address addr)external view returns(uint){
         require(!u[addr].blocked,"Suspended");

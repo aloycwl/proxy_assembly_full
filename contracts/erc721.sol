@@ -32,6 +32,8 @@ contract ERC721AC is IERC721,IERC721Metadata{
     mapping(uint=>address)private _tokenApprovals;
     uint public Count;
     bool public Suspended;
+    string public constant symbol="WDNFT";
+    string public constant name="Wild Dynasty NFT";
     mapping(address=>User)public u;
     modifier OnlyOwner(){
         require(_owner==msg.sender);_;
@@ -57,12 +59,6 @@ contract ERC721AC is IERC721,IERC721Metadata{
     }
     function owner()external view returns(address){
         return _owner;
-    }
-    function name()external pure returns(string memory){
-        return "Wild Dynasty NFT";
-    }
-    function symbol()external pure returns(string memory){
-        return "WD";
     }
     function tokenURI(uint _i)external pure returns(string memory){
         return string(abi.encodePacked("http://someipfs.com/",toString(_i)));
