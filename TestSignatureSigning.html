@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-32" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.8.2/web3.min.js"></script>
+  </head>
+  <body>
+    <button id="btnSign">Test sign</button>
+  </body>
+  <script defer>
+    $('#btnSign').on('click', async function (event) {
+      if (!window.ethereum) return alert('Please Install Metamask');
+      const accounts = await ethereum.request({
+        method: 'eth_requestAccounts',
+      });
+      const message = 'hello';
+      console.log({ message });
+      const hashedMessage = Web3.utils.sha3(message);
+      console.log({ hashedMessage });
+      const signature = await ethereum.request({
+        method: 'personal_sign',
+        params: [hashedMessage, accounts[0]],
+      });
+      console.log({ signature });
+      const r = signature.slice(0, 66);
+      const s = '0x' + signature.slice(66, 130);
+      const v = parseInt(signature.slice(130, 132), 16);
+      console.log({ r, s, v });
+    });
+  </script>
+</html>
