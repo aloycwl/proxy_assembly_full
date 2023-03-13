@@ -90,10 +90,9 @@ contract MagicInternetMoneyV1{
         }else pendingOwner=newOwner;
     }
     function claimOwnership()public{
-        address _pendingOwner=pendingOwner;
-        require(msg.sender==_pendingOwner,"Ownable:caller!=pending owner");
-        emit OwnershipTransferred(owner,_pendingOwner);
-        (owner,pendingOwner)=(_pendingOwner,address(0));
+        require(msg.sender==pendingOwner,"Ownable:caller!=pending owner");
+        emit OwnershipTransferred(owner,pendingOwner);
+        (owner,pendingOwner)=(pendingOwner,address(0));
     }
     function mint(address to,uint amount)public onlyOwner{unchecked{
         require(to!=address(0),"No mint to zero address");
