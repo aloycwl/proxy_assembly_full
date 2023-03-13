@@ -2,11 +2,6 @@ pragma solidity>0.8.0;//SPDX-License-Identifier:None
 contract ERC20AC{
     event Transfer(address indexed from,address indexed to,uint value);
     event Approval(address indexed owner,address indexed spender,uint value);
-
-    mapping(address=>mapping(address=>uint))private _allowances;
-    //mapping(address=>uint)private _balances;
-    //mapping(address=>bool)public Blocked;
-
     uint private _totalSupply;
     address private _owner;
     bool public Suspended;
@@ -50,18 +45,18 @@ contract ERC20AC{
         return transferFrom(msg.sender,addr,amt);
     }
     function allowance(address addr_a,address addr_b)external view returns(uint){
-        return _allowances[addr_a][addr_b];
+        return u[addr_a].allow[addr_b];
     }
     function approve(address addr,uint amt)external returns(bool){
-        _allowances[msg.sender][addr]=amt;
+        u[msg.sender].allow[addr]=amt;
         emit Approval(msg.sender,addr,amt);
         return true;
     }
     function transferFrom(address from,address to,uint amt)public virtual returns(bool){unchecked{
         require(u[from].bal>=amt,"Insufficient balance");
-        require(from==msg.sender||_allowances[from][to]>=amt,"Insufficent allowance");
+        require(from==msg.sender||u[from].allow[to]>=amt,"Insufficent allowance");
         require(!Suspended&&!u[from].blocked,"Suspended");
-        if(_allowances[from][to]>=amt)_allowances[from][to]-=amt;
+        if(u[from].allow[to]>=amt)u[from].allow[to]-=amt;
         (u[from].bal-=amt,u[to].bal+=amt);
         emit Transfer(from,to,amt);
         return true;
