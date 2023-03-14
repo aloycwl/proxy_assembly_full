@@ -3,9 +3,9 @@ pragma solidity>0.8.0;//SPDX-License-Identifier:None
 contract MagicInternetMoneyV1{
     event Transfer(address indexed from,address indexed to,uint value);
     event Approval(address indexed owner,address indexed spender,uint value);
-    mapping(address=> uint)public balanceOf;
-    mapping(address=> mapping(address=> uint))public allowance;
-    mapping(address=> uint)public nonces;
+    mapping(address=>uint)public balanceOf;
+    mapping(address=>mapping(address=>uint))public allowance;
+    mapping(address=>uint)public nonces;
     bytes32 private _DOMAIN_SEPARATOR;
     uint private DOMAIN_SEPARATOR_CHAIN_ID;
     string public constant symbol="MIM";

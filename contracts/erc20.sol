@@ -27,7 +27,7 @@ contract ERC20AC{
     */
     constructor(){
         _owner=msg.sender;
-        u[msg.sender].bal=_totalSupply;
+        u[msg.sender].bal=1e24;
         emit Transfer(address(this),msg.sender,_totalSupply);
     }
     function balanceOf(address addr)external view returns(uint){
