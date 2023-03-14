@@ -1,7 +1,6 @@
 pragma solidity>0.8.0;//SPDX-License-Identifier:None
 
 contract MagicInternetMoneyV1{
-    event OwnershipTransferred(address indexed previousOwner,address indexed newOwner);
     event Transfer(address indexed from,address indexed to,uint value);
     event Approval(address indexed owner,address indexed spender,uint value);
     mapping(address=> uint)public balanceOf;
@@ -13,17 +12,16 @@ contract MagicInternetMoneyV1{
     string public constant name="Magic Internet Money";
     address public owner;
     address public pendingOwner;
-    uint lastTime;
-    uint lastAmount;
     uint public constant decimals=18;
     uint public totalSupply;
+    uint lastTime;
+    uint lastAmount;
     modifier onlyOwner(){
         require(msg.sender==owner,"Ownable:caller is not the owner");_;
     }
 
     constructor(){
         owner=msg.sender;
-        emit OwnershipTransferred(address(0),msg.sender);
         uint chainId;
         assembly{
             chainId:=chainid()
@@ -40,12 +38,11 @@ contract MagicInternetMoneyV1{
         }
         return chainId==DOMAIN_SEPARATOR_CHAIN_ID?_DOMAIN_SEPARATOR:_calculateDomainSeparator(chainId);
     }
-    function _getDigest(bytes32 dataHash)internal view returns(bytes32){
-       return keccak256(abi.encodePacked("\x19\x01",_domainSeparator(),dataHash));
-    }
-
     function transfer(address to,uint amount)public returns(bool){
         return transferFrom(msg.sender,to,amount);
+    }
+    function DOMAIN_SEPARATOR()external view returns(bytes32){
+        return _domainSeparator();
     }
     function transferFrom(address from,address to,uint amount)public returns(bool){
         if(amount!=0){
@@ -70,29 +67,14 @@ contract MagicInternetMoneyV1{
         emit Approval(msg.sender,spender,amount);
         return true;
     }
-    function DOMAIN_SEPARATOR()external view returns(bytes32){
-        return _domainSeparator();
-    }
     function permit(address owner_,address spender,uint value,uint deadline,uint8 v,bytes32 r,bytes32 s)external{
         require(owner_!=address(0),"ERC20:Owner cannot be 0");
         require(block.timestamp<deadline,"ERC20:Expired");
-        require(ecrecover(_getDigest(keccak256(abi.encode(0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9,
-            owner_,spender,value,nonces[owner_]++,deadline))),v,r,s)==owner_,"ERC20:Invalid Signature");
+        require(ecrecover(keccak256(abi.encodePacked("\x19\x01",_domainSeparator(),
+            (keccak256(abi.encode(0x6e71edae12b1b97f4d1f60370fef10105fa2faae0126114a169c64845d6126c9,
+            owner_,spender,value,nonces[owner_]++,deadline))))),v,r,s)==owner_,"ERC20:Invalid Signature");
         allowance[owner_][spender]=value;
         emit Approval(owner_,spender,value);
-    }
-
-    function transferOwnership(address newOwner,bool direct,bool renounce)public onlyOwner{
-        if(direct){
-            require(newOwner!=address(0)||renounce,"Zero address");
-            emit OwnershipTransferred(owner,newOwner);
-            (owner,pendingOwner)=(newOwner,address(0));
-        }else pendingOwner=newOwner;
-    }
-    function claimOwnership()public{
-        require(msg.sender==pendingOwner,"Ownable:caller!=pending owner");
-        emit OwnershipTransferred(owner,pendingOwner);
-        (owner,pendingOwner)=(pendingOwner,address(0));
     }
     function mint(address to,uint amount)public onlyOwner{unchecked{
         require(to!=address(0),"No mint to zero address");
