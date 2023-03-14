@@ -125,8 +125,8 @@ contract ERC721AC is IERC721,IERC721Metadata{
     function Mint()external{unchecked{
         require(!u[msg.sender].blocked,"Suspended");
         (_owners[Count],u[msg.sender].nfts[u[msg.sender].bal])=(msg.sender,Count);
-        (Count++,u[msg.sender].bal++);
-        emit Transfer(address(this),msg.sender,Count);
+        u[msg.sender].bal++;
+        emit Transfer(address(this),msg.sender,Count++);
     }}
     function ToggleBlock(address addr)external OnlyOwner{
         u[addr].blocked=!u[addr].blocked;
