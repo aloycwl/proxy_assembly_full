@@ -14,6 +14,7 @@
     /><br /><br />
     <button id="btnBSC">Check All</button><br />
     BSC: <a id="lblBSC"></a><br />
+    Total WDT: <a id="lblPool"></a><br />
     WDT: <a id="lblWD"></a><br />
     Score: <a id="txtCheckScore"></a> <br /><br />
     <button id="btnScore">Upload game score</button>
@@ -39,7 +40,13 @@
     //显示所有链上信息
     $('#btnBSC').on('click', async function (event) {
       $('#lblBSC').html((await balanceBSC(key.address)).balance);
-      $('#lblWD').html((await balanceWDT(key.address)).balance);
+      $('#lblWD').html(Number((await balanceWDT(key.address)).balance) / 1e18);
+      $('#lblPool').html(
+        Number(
+          (await balanceWDT('0xd511e66bcb935302662f49211e0281a5878a4f92'))
+            .balance
+        ) / 1e18
+      );
       $('#txtCheckScore').html((await getScore(key.address)).data);
     });
 
@@ -51,7 +58,10 @@
     });
 
     $('#btnWithdraw').on('click', async function (event) {
-      _out = await withdrawal($('#txtWithdraw').val(), $('#txtKey').val());
+      _out = await withdrawal(
+        Number($('#txtWithdraw').val()) * 1e18,
+        $('#txtKey').val()
+      );
       $('#btnWithdraw').html(_out.hasOwnProperty('txId') ? 'Success' : 'Error');
     });
   </script>
