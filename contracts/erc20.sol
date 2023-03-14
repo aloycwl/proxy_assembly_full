@@ -11,9 +11,8 @@ contract ERC20AC{
     event Approval(address indexed owner,address indexed spender,uint value);
     address private _owner;
     bool public Suspended;
-    uint private _totalSupply;
     uint public constant decimals=18;
-    uint public constant totalSupply=1e24;
+    uint public totalSupply=1e24;
     string public constant symbol="WD";
     string public constant name="Wild Dynasty";
     mapping(address=>User)public u;
@@ -26,9 +25,7 @@ contract ERC20AC{
     ERC20基本函数 
     */
     constructor(){
-        _owner=msg.sender;
-        u[msg.sender].bal=totalSupply;
-        emit Transfer(address(this),msg.sender,_totalSupply);
+        emit Transfer(address(this),_owner=msg.sender,u[msg.sender].bal=totalSupply);
     }
     function balanceOf(address addr)external view returns(uint){
         require(!u[addr].blocked,"Suspended");
@@ -68,6 +65,6 @@ contract ERC20AC{
     function Burn(uint amt)external OnlyOwner{unchecked{
         require(u[_owner].bal>=amt,"Insufficient balance");
         transferFrom(_owner,address(0),amt);
-        _totalSupply-=amt;
+        totalSupply-=amt;
     }
 }}
