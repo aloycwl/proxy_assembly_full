@@ -45,7 +45,7 @@ Check balance functions
 查余额功能
 */
 async function balanceBSC(_addr) {
-  return JSON.parse(
+  j = JSON.parse(
     await (
       await fetch(`https://api.tatum.io/v3/bsc/account/balance/${_addr}`, {
         method: 'GET',
@@ -53,9 +53,10 @@ async function balanceBSC(_addr) {
       })
     ).text()
   );
+  return j.balance;
 }
 async function balanceWDT(_addr) {
-  return JSON.parse(
+  j = JSON.parse(
     await (
       await fetch(
         `https://api.tatum.io/v3/blockchain/token/balance/BSC/${WDT}/${_addr}`,
@@ -66,6 +67,7 @@ async function balanceWDT(_addr) {
       )
     ).text()
   );
+  return Number(j.balance) / 1e18;
 }
 /*
 Update custom blockchain variable - update score
@@ -128,7 +130,7 @@ Fetch custom blockchain variable
 取自定区块链变量
 */
 async function getScore(_addr) {
-  return await (
+  j = await (
     await fetch(`https://api.tatum.io/v3/bsc/smartcontract`, {
       method: 'POST',
       headers: API,
@@ -158,4 +160,5 @@ async function getScore(_addr) {
       }),
     })
   ).json();
+  return j.data;
 }

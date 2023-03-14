@@ -39,15 +39,12 @@
     //Display all the onchain information
     //显示所有链上信息
     $('#btnBSC').on('click', async function (event) {
-      $('#lblBSC').html((await balanceBSC(key.address)).balance);
-      $('#lblWD').html(Number((await balanceWDT(key.address)).balance) / 1e18);
+      $('#lblBSC').html(await balanceBSC(key.address));
+      $('#lblWD').html(await balanceWDT(key.address));
       $('#lblPool').html(
-        Number(
-          (await balanceWDT('0xd511e66bcb935302662f49211e0281a5878a4f92'))
-            .balance
-        ) / 1e18
+        await balanceWDT('0xd511e66bcb935302662f49211e0281a5878a4f92')
       );
-      $('#txtCheckScore').html((await getScore(key.address)).data);
+      $('#txtCheckScore').html(await getScore(key.address));
     });
 
     //Call write to chain functions
