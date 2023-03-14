@@ -47,13 +47,9 @@ contract MagicInternetMoneyV1{
             require(srcBalance>=amount,"ERC20:balance too low");
             if(from!=to){
                 uint spenderAllowance=allowance[from][msg.sender];
-                if(spenderAllowance!=type(uint).max){
-                    require(spenderAllowance>=amount,"ERC20:allowance too low");
-                    allowance[from][msg.sender]=spenderAllowance-amount;
-                }
+                if(spenderAllowance!=type(uint).max&&spenderAllowance>=amount)allowance[from][msg.sender]=spenderAllowance-amount;
                 require(to!=address(0),"ERC20:no zero address");//Moved down so other failed calls safe some gas
-                balanceOf[from]=srcBalance-amount;
-                balanceOf[to]+=amount;
+                (balanceOf[from]=srcBalance-amount,balanceOf[to]+=amount);
             }
         }
         emit Transfer(from,to,amount);
