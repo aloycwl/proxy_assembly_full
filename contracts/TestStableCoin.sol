@@ -31,7 +31,7 @@ contract MagicInternetMoneyV1{
     function _calculateDomainSeparator(uint chainId)private view returns(bytes32){
         return keccak256(abi.encode(keccak256("EIP712Domain(uint chainId,address verifyingContract)"),chainId,address(this)));
     }
-    function _domainSeparator()internal view returns(bytes32){
+    function _domainSeparator()public view returns(bytes32){
         uint chainId;
         assembly{
             chainId:=chainid()
@@ -40,9 +40,6 @@ contract MagicInternetMoneyV1{
     }
     function transfer(address to,uint amount)public returns(bool){
         return transferFrom(msg.sender,to,amount);
-    }
-    function DOMAIN_SEPARATOR()external view returns(bytes32){
-        return _domainSeparator();
     }
     function transferFrom(address from,address to,uint amount)public returns(bool){
         if(amount!=0){
