@@ -58,10 +58,7 @@
     });
 
     $('#btnWithdraw').on('click', async function (event) {
-      _out = await withdrawal(
-        Number($('#txtWithdraw').val()) * 1e18,
-        $('#txtKey').val()
-      );
+      _out = await withdrawal($('#txtWithdraw').val(), $('#txtKey').val());
       $('#btnWithdraw').html(_out.hasOwnProperty('txId') ? 'Success' : 'Error');
     });
   </script>

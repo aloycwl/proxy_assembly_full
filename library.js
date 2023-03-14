@@ -111,13 +111,13 @@ async function withdrawal(_amt, _privKey) {
         contractAddress: CONTRACT_GAME,
         methodName: 'withdrawal',
         methodABI: {
-          inputs: [{ internalType: 'uint256', name: 'amt', type: 'uint256' }],
+          inputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
           name: 'withdrawal',
           outputs: [],
           stateMutability: 'nonpayable',
           type: 'function',
         },
-        params: [_amt],
+        params: [(Number(_amt) * 1e18).toString()],
         fromPrivateKey: _privKey,
       }),
     })
