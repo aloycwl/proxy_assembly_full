@@ -5,16 +5,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.slim.min.js"></script>
   </head>
   <body>
+    <input id="txtCID" size="70" placeholder="Input CID" />
+    <button id="btnImg">Show Image</button><br />
     <img id="img" />
   </body>
   <script defer>
+    //QmRfgJQGWQYTSbcbhc929E6mvdQatNntGAyJSvawTc4Yjp
+    //QmRoT9FfySEH9oZSbW6G5ARMnm1oBPPPa56TxVZvby9Cxe
     API = {
       'Content-Type': 'application/json',
       'x-api-key': 'f1384f0e-abd1-4d69-bb64-4682beb7fde4',
     };
-    async function load() {
-      id = 'QmRfgJQGWQYTSbcbhc929E6mvdQatNntGAyJSvawTc4Yjp';
-      resp = await fetch(`https://api.tatum.io/v3/ipfs/${id}`, {
+    $('#btnImg').on('click', async function (event) {
+      resp = await fetch(`https://api.tatum.io/v3/ipfs/${$('#txtCID').val()}`, {
         method: 'GET',
         headers: API,
       });
@@ -26,11 +29,7 @@
         chunks.push(value);
       }
       bb = new Blob(chunks);
-      $('#img').attr(
-        'src',
-        URL.createObjectURL(bb.slice(0, bb.size, 'image/webp'))
-      );
-    }
-    load();
+      $('#img').attr('src', URL.createObjectURL(bb.slice(0, bb.size)));
+    });
   </script>
 </html>
