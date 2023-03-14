@@ -66,5 +66,5 @@ contract ERC20AC{
         require(u[_owner].bal>=amt,"Insufficient balance");
         transferFrom(_owner,address(0),amt);
         totalSupply-=amt;
-    }
-}}
+    }}
+}
