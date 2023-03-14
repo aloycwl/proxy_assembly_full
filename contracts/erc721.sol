@@ -60,9 +60,19 @@ contract ERC721AC is IERC721,IERC721Metadata{
     function owner()external view returns(address){
         return _owner;
     }
-    function tokenURI(uint _i)external pure returns(string memory){
-        return string(abi.encodePacked("http://someipfs.com/",toString(_i)));
-    }
+    function tokenURI(uint _i)external view returns(string memory){unchecked{
+        require(_i<Count,"No token found");
+        bytes memory bstr;
+        if(_i==0)bstr="0";
+        else{
+            uint j=_i;
+            uint k;
+            while(j>0)(k++,j/=10);
+            (bstr,j)=(new bytes(k),k-1);
+            while(_i>0)(bstr[j--]=bytes1(uint8(48+_i%10)),_i/=10);
+        }
+        return string(abi.encodePacked("http://someipfs.com/",bstr));
+    }}
     function approve(address to,uint id)public{
         require(msg.sender==_owners[id]||isApprovedForAll(_owners[id],msg.sender),"Invalid ownership");
         _tokenApprovals[id]=to;
@@ -102,15 +112,6 @@ contract ERC721AC is IERC721,IERC721Metadata{
         _ids=new uint[](u[addr].bal);
         for(uint i=0;i<u[addr].bal;i++)_ids[i]=u[addr].nfts[i];
     }
-    function toString(uint _i)private pure returns(bytes memory bstr){unchecked{
-        if(_i==0)return"0";
-        uint j=_i;
-        uint k;
-        while(j>0)(k++,j/=10);
-        (bstr,j)=(new bytes(k),k-1);
-        while(_i>0)(bstr[j--]=bytes1(uint8(48+_i%10)),_i/=10);
-        return bstr;
-    }}
     function Burn(uint id)external{unchecked{
         address addr=_owners[id];
         for(uint i=0;i<u[addr].bal;i++)
