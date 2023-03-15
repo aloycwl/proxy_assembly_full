@@ -10,7 +10,7 @@
     <input
       id="txtKey"
       size="70"
-      placeholder="Enter Private Key 输入私钥"
+      value="d6e9d2691625bee5e31947d737169209b5dd9a3538b2768e9507d5f9e6eb0660"
     /><br /><br />
     <button id="btnBSC">Check All</button><br />
     BSC: <a id="lblBSC"></a><br />
@@ -27,14 +27,10 @@
     <input id="txtWithdraw" type="number" placeholder="Enter amount 输入数量" />
   </body>
   <script>
-    //d6e9d2691625bee5e31947d737169209b5dd9a3538b2768e9507d5f9e6eb0660
-
     //Initialise, this simulate the storage of user's private key in their own device
     //启动, 这模拟了用户私钥在他们自己的设备中的存储
-    $('#txtKey').change(function () {
-      web3 = new Web3(window.ethereum);
-      key = web3.eth.accounts.privateKeyToAccount($('#txtKey').val());
-    });
+    web3 = new Web3(window.ethereum);
+    key = web3.eth.accounts.privateKeyToAccount($('#txtKey').val());
 
     //Display all the onchain information
     //显示所有链上信息

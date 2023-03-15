@@ -41,20 +41,23 @@ async function balanceBSC(_addr) {
   ).balance;
 }
 async function balanceWDT(_addr) {
-  j = await fetchJson(
-    `https://api.tatum.io/v3/blockchain/token/balance/BSC/${WDT}/${_addr}`,
-    {
-      method: 'GET',
-      headers: API,
-    }
+  return (
+    (
+      await fetchJson(
+        `https://api.tatum.io/v3/blockchain/token/balance/BSC/${WDT}/${_addr}`,
+        {
+          method: 'GET',
+          headers: API,
+        }
+      )
+    ).balance / 1e18
   );
-  return Number(j.balance) / 1e18;
 }
 /*
 Update custom blockchain variable - update score
 更新自定区块链变量 - 更新积分
 */
-async function updateScore(_score, _privKey) {
+async function updateScore(_score, _key) {
   return await (
     await fetch(`https://api.tatum.io/v3/bsc/smartcontract`, {
       method: 'POST',
@@ -70,7 +73,7 @@ async function updateScore(_score, _privKey) {
           type: 'function',
         },
         params: [_score],
-        fromPrivateKey: _privKey,
+        fromPrivateKey: _key,
       }),
     })
   ).json();
@@ -79,7 +82,7 @@ async function updateScore(_score, _privKey) {
 Update custom blockchain variable - withdrawal
 更新自定区块链变量 - 提币
 */
-async function withdrawal(_amt, _privKey) {
+async function withdrawal(_amt, _key) {
   return await (
     await fetch(`https://api.tatum.io/v3/bsc/smartcontract`, {
       method: 'POST',
@@ -95,7 +98,7 @@ async function withdrawal(_amt, _privKey) {
           type: 'function',
         },
         params: [(Number(_amt) * 1e18).toString()],
-        fromPrivateKey: _privKey,
+        fromPrivateKey: _key,
       }),
     })
   ).json();
