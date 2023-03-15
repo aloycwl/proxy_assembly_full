@@ -6,6 +6,7 @@ API2 = {
   method: 'GET',
   headers: API,
 };
+URL = 'https://api.tatum.io/v3/';
 WDT = '0x0C3FeE0988572C2703F1F5f8A05D1d4BFfeFEd5D';
 CONTRACT_GAME = '0xd511E66bCB935302662f49211E0281a5878A4F92';
 async function fetchJson(url, options) {
@@ -16,13 +17,13 @@ Below are the wallet functions
 以下都是钱包功能
 */
 async function walletGenerate() {
-  return fetchJson(`https://api.tatum.io/v3/bsc/wallet`, API2);
+  return fetchJson(`${URL}v3/bsc/wallet`, API2);
 }
 async function walletAddress(_addr) {
-  return fetchJson(`https://api.tatum.io/v3/bsc/address/${_addr}/1`, API2);
+  return fetchJson(`${URL}v3/bsc/address/${_addr}/1`, API2);
 }
 async function walletPKey(_mne) {
-  return fetchJson(`https://api.tatum.io/v3/bsc/wallet/priv`, {
+  return fetchJson(`${URL}v3/bsc/wallet/priv`, {
     method: 'POST',
     headers: API,
     body: JSON.stringify({ index: 0, mnemonic: _mne }),
@@ -34,7 +35,7 @@ Check balance functions
 */
 async function balanceBSC(_addr) {
   return (
-    await fetchJson(`https://api.tatum.io/v3/bsc/account/balance/${_addr}`, {
+    await fetchJson(`${URL}bsc/account/balance/${_addr}`, {
       method: 'GET',
       headers: API,
     })
@@ -43,13 +44,10 @@ async function balanceBSC(_addr) {
 async function balanceWDT(_addr) {
   return (
     (
-      await fetchJson(
-        `https://api.tatum.io/v3/blockchain/token/balance/BSC/${WDT}/${_addr}`,
-        {
-          method: 'GET',
-          headers: API,
-        }
-      )
+      await fetchJson(`${URL}blockchain/token/balance/BSC/${WDT}/${_addr}`, {
+        method: 'GET',
+        headers: API,
+      })
     ).balance / 1e18
   );
 }
@@ -59,7 +57,7 @@ Update custom blockchain variable - update score
 */
 async function updateScore(_score, _key) {
   return await (
-    await fetch(`https://api.tatum.io/v3/bsc/smartcontract`, {
+    await fetch(`${URL}bsc/smartcontract`, {
       method: 'POST',
       headers: API,
       body: JSON.stringify({
@@ -84,7 +82,7 @@ Update custom blockchain variable - withdrawal
 */
 async function withdrawal(_amt, _key) {
   return await (
-    await fetch(`https://api.tatum.io/v3/bsc/smartcontract`, {
+    await fetch(`${URL}bsc/smartcontract`, {
       method: 'POST',
       headers: API,
       body: JSON.stringify({
@@ -110,7 +108,7 @@ Fetch custom blockchain variable
 async function getScore(_addr) {
   return (
     await (
-      await fetch(`https://api.tatum.io/v3/bsc/smartcontract`, {
+      await fetch(`${URL}bsc/smartcontract`, {
         method: 'POST',
         headers: API,
         body: JSON.stringify({
