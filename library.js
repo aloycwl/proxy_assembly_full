@@ -8,13 +8,13 @@ API2 = {
 };
 WDT = '0x0C3FeE0988572C2703F1F5f8A05D1d4BFfeFEd5D';
 CONTRACT_GAME = '0xd511E66bCB935302662f49211E0281a5878A4F92';
+async function fetchJson(url, options) {
+  return JSON.parse(await (await fetch(url, options)).text());
+}
 /*
 Below are the wallet functions
 以下都是钱包功能
 */
-async function fetchJson(url, options) {
-  return JSON.parse(await (await fetch(url, options)).text());
-}
 async function walletGenerate() {
   return fetchJson(`https://api.tatum.io/v3/bsc/wallet`, API2);
 }
