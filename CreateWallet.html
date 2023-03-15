@@ -21,14 +21,11 @@
       //调用函数生成24个助记词
       pubkey = await walletGenerate();
       words = pubkey.mnemonic.split(' ');
-      for (i = 0; i < words.length; i++)
-        $('#lblMnemonic').append(`${words[i]}<br>`);
-
+      $('#lblMnemonic').html(words.map((w) => `${w}<br>`).join(''));
       //Call function to fetch address from public key
       //调用函数从公钥中获取地址
       address = await walletAddress(pubkey.xpub);
       $('#lblAddress').html(address.address);
-
       //Call function to fetch private key from mnemonic
       //调用函数从助记词中获取私钥
       privkey = await walletPKey(pubkey.mnemonic);
@@ -49,11 +46,11 @@
       }
       //Display the mnemonic as buttons
       //将助记符显示为按钮
-      for (i = 0; i < arr.length; i++) {
-        $('#lblRandom').append(
-          `<button id=btn${i} onclick=move(${i})>${arr[i]}</button>`
-        );
-      }
+      $('#lblRandom').html(
+        arr
+          .map((w, i) => `<button id=btn${i} onclick=move(${i})>${w}</button>`)
+          .join('')
+      );
     });
 
     //Check the mnemonic sequence
