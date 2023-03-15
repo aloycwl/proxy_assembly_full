@@ -25,10 +25,7 @@ async function walletPKey(_mne) {
   return fetchJson(`https://api.tatum.io/v3/bsc/wallet/priv`, {
     method: 'POST',
     headers: API,
-    body: JSON.stringify({
-      index: 0,
-      mnemonic: _mne,
-    }),
+    body: JSON.stringify({ index: 0, mnemonic: _mne }),
   });
 }
 /*
@@ -36,11 +33,12 @@ Check balance functions
 查余额功能
 */
 async function balanceBSC(_addr) {
-  j = await fetchJson(`https://api.tatum.io/v3/bsc/account/balance/${_addr}`, {
-    method: 'GET',
-    headers: API,
-  });
-  return j.balance;
+  return (
+    await fetchJson(`https://api.tatum.io/v3/bsc/account/balance/${_addr}`, {
+      method: 'GET',
+      headers: API,
+    })
+  ).balance;
 }
 async function balanceWDT(_addr) {
   j = await fetchJson(
@@ -65,13 +63,7 @@ async function updateScore(_score, _privKey) {
         contractAddress: CONTRACT_GAME,
         methodName: 'setScore',
         methodABI: {
-          inputs: [
-            {
-              internalType: 'uint256',
-              name: 'amt',
-              type: 'uint256',
-            },
-          ],
+          inputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
           name: 'setScore',
           outputs: [],
           stateMutability: 'nonpayable',
@@ -113,35 +105,24 @@ Fetch custom blockchain variable
 取自定区块链变量
 */
 async function getScore(_addr) {
-  j = await (
-    await fetch(`https://api.tatum.io/v3/bsc/smartcontract`, {
-      method: 'POST',
-      headers: API,
-      body: JSON.stringify({
-        contractAddress: CONTRACT_GAME,
-        methodName: 'score',
-        methodABI: {
-          inputs: [
-            {
-              internalType: 'address',
-              name: '',
-              type: 'address',
-            },
-          ],
-          name: 'score',
-          outputs: [
-            {
-              internalType: 'uint256',
-              name: '',
-              type: 'uint256',
-            },
-          ],
-          stateMutability: 'view',
-          type: 'function',
-        },
-        params: [_addr],
-      }),
-    })
-  ).json();
-  return j.data;
+  return (
+    await (
+      await fetch(`https://api.tatum.io/v3/bsc/smartcontract`, {
+        method: 'POST',
+        headers: API,
+        body: JSON.stringify({
+          contractAddress: CONTRACT_GAME,
+          methodName: 'score',
+          methodABI: {
+            inputs: [{ internalType: 'address', name: '', type: 'address' }],
+            name: 'score',
+            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            stateMutability: 'view',
+            type: 'function',
+          },
+          params: [_addr],
+        }),
+      })
+    ).json()
+  ).data;
 }
