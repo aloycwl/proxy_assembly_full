@@ -30,16 +30,12 @@
       $('#lblKey').html(await walletKey(mnemonic));
       $('#lblAddress').html(getAddress($('#lblKey').html()));
     });
-    /*Generate Random
-    生成随机
+    /*
+    I have memorised
+    我记得了
     */
-    $('#btnRandom').on('click', async function (event) {
-      arr = ran(words);
-      $('#lblRandom').html(
-        arr
-          .map((w, i) => `<button id=btn${i} onclick=move(${i})>${w}</button>`)
-          .join('')
-      );
+    $('#btnRandom').on('click', function (event) {
+      genRanBtns(words, `#lblRandom`);
     });
     /*
     Check the mnemonic sequence
@@ -47,9 +43,9 @@
     */
     function move(n) {
       n = $(`#btn${n}`);
-      if (n.parent().attr('id') == 'lblRandom')
-        n.detach().appendTo('#lblCorrect');
-      else n.detach().appendTo('#lblRandom');
+      pos = n.parent().attr('id') == 'lblRandom';
+      n.detach().appendTo(`#lbl${pos ? 'Correct' : 'Random'}`);
+      
       arr = $('#lblCorrect')
         .children()
         .map(function () {

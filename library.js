@@ -39,10 +39,10 @@ async function walletKey(_mne) {
     })
   ).key;
 }
-/*Generate Random
-  生成随机
+/*Generate Random Buttons
+  生成随机按钮
 */
-function ran(_words) {
+function genRanBtns(_words, _div) {
   arr = _words.slice();
   ci = arr.length;
   while (ci != 0) {
@@ -50,7 +50,11 @@ function ran(_words) {
     ci--;
     [arr[ci], arr[ri]] = [arr[ri], arr[ci]];
   }
-  return arr;
+  $(_div).html(
+    arr
+      .map((w, i) => `<button id=btn${i} onclick=move(${i})>${w}</button>`)
+      .join('')
+  );
 }
 /*
 Check balance functions
