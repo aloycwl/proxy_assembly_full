@@ -18,14 +18,14 @@
   </body>
   <script>
     $('#btnGenerate').on('click', async function (event) {
-      //Call function to generate 24 mnemonic
-      //调用函数生成24个助记词
-      pubkey = await walletGenerate();
-      words = pubkey.mnemonic.split(' ');
+      //Call function to generate 24 mnemonic but truncate to 12 only
+      //调用函数生成 24 个助记词但只截断为 12 个
+      mnemonic = await walletGenerate();
+      words = mnemonic.split(' ');
       $('#lblMnemonic').html(words.map((w) => `${w}<br>`).join(''));
       //Call function to fetch private key from mnemonic
       //调用函数从助记词中获取私钥
-      $('#lblKey').html((await walletKey(pubkey.mnemonic)).key);
+      $('#lblKey').html((await walletKey(mnemonic)).key);
       //Call function to fetch address from public key
       //调用函数从公钥中获取地址
       web3 = new Web3(window.ethereum);

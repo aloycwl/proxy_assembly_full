@@ -25,13 +25,20 @@ Below are the wallet functions
 以下都是钱包功能
 */
 async function walletGenerate() {
-  return fetchJson(`${URL}bsc/wallet`, API2);
+  return (await fetchJson(`${URL}bsc/wallet`, API2)).mnemonic
+    .split(' ')
+    .splice(0, 12)
+    .join(' ');
 }
 async function walletKey(_mne) {
   return fetchJson(`${URL}bsc/wallet/priv`, {
     method: 'POST',
     headers: API,
-    body: JSON.stringify({ index: 1, mnemonic: _mne }),
+    body: JSON.stringify({
+      index: 0,
+      mnemonic:
+        'urge pulp usage sister evidence arrest palm math please chief egg abuse',
+    }),
   });
 }
 /*
