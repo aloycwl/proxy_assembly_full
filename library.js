@@ -1,3 +1,7 @@
+/*
+Initialise
+启动
+*/
 API = {
   'Content-Type': 'application/json',
   'x-api-key': 'f1384f0e-abd1-4d69-bb64-4682beb7fde4',
@@ -9,6 +13,10 @@ API2 = {
 URL = 'https://api.tatum.io/v3/';
 WDT = '0x0C3FeE0988572C2703F1F5f8A05D1d4BFfeFEd5D';
 CONTRACT_GAME = '0xd511E66bCB935302662f49211E0281a5878A4F92';
+/*
+Function shortnerer
+函数缩短器
+*/
 async function fetchJson(url, options) {
   return JSON.parse(await (await fetch(url, options)).text());
 }
@@ -17,13 +25,13 @@ Below are the wallet functions
 以下都是钱包功能
 */
 async function walletGenerate() {
-  return fetchJson(`${URL}v3/bsc/wallet`, API2);
+  return fetchJson(`${URL}bsc/wallet`, API2);
 }
 async function walletAddress(_addr) {
-  return fetchJson(`${URL}v3/bsc/address/${_addr}/1`, API2);
+  return (await fetchJson(`${URL}bsc/address/${_addr}/1`, API2)).address;
 }
-async function walletPKey(_mne) {
-  return fetchJson(`${URL}v3/bsc/wallet/priv`, {
+async function walletKey(_mne) {
+  return fetchJson(`${URL}bsc/wallet/priv`, {
     method: 'POST',
     headers: API,
     body: JSON.stringify({ index: 0, mnemonic: _mne }),

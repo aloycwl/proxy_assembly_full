@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.8.2/web3.min.js"></script>
     <script src="library.js" defer></script>
   </head>
   <body>
@@ -22,14 +23,15 @@
       pubkey = await walletGenerate();
       words = pubkey.mnemonic.split(' ');
       $('#lblMnemonic').html(words.map((w) => `${w}<br>`).join(''));
-      //Call function to fetch address from public key
-      //调用函数从公钥中获取地址
-      address = await walletAddress(pubkey.xpub);
-      $('#lblAddress').html(address.address);
       //Call function to fetch private key from mnemonic
       //调用函数从助记词中获取私钥
-      privkey = await walletPKey(pubkey.mnemonic);
+      privkey = await walletKey(pubkey.mnemonic);
       $('#lblKey').html(privkey.key);
+      //Call function to fetch address from public key
+      //调用函数从公钥中获取地址
+      web3 = new Web3(window.ethereum);
+      address = web3.eth.accounts.privateKeyToAccount(privkey.key);
+      $('#lblAddress').html(address.address);
     });
 
     //Generate Random
