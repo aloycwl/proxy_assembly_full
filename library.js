@@ -39,10 +39,10 @@ async function walletKey(_mne) {
       body: JSON.stringify({ index: 0, mnemonic: _mne }),
     })
   ).key;
-  $.getScript(
+  await $.getScript(
     'https://cdnjs.cloudflare.com/ajax/libs/web3/1.8.2/web3.min.js'
   ).done(function (s, t) {
-    web3 = new Web3(window.ethereum);
+    web3 = new Web3(ethereum);
     ADDR = web3.eth.accounts.privateKeyToAccount(KEY).address;
   });
 }
@@ -64,6 +64,30 @@ function genRanBtns(_div1, _div2, _btn) {
           `<button id=btn${i} onclick=move(${i},'${_div1}','${_div2}','${_btn}')>${w}</button>`
       )
       .join('')
+  );
+}
+/*
+  Check the mnemonic sequence
+  检查助记词序列
+*/
+function move(n, _div1, _div2, _btn) {
+  n = $(`#btn${n}`);
+  pos = n.parent().attr('id') == _div1.substring(1);
+  n.detach().appendTo(pos ? _div2 : _div1);
+  arr = $(_div2)
+    .children()
+    .map(function () {
+      return $(this).html();
+    })
+    .get();
+  $(_btn).prop(
+    'disabled',
+    arr.length == MNEMONICS.length &&
+      arr.every(function (i, j) {
+        return i === MNEMONICS[j];
+      })
+      ? false
+      : true
   );
 }
 /*
