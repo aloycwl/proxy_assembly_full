@@ -25,12 +25,11 @@
       $('#lblMnemonic').html(words.map((w) => `${w}<br>`).join(''));
       //Call function to fetch private key from mnemonic
       //调用函数从助记词中获取私钥
-      privkey = await walletKey(pubkey.mnemonic);
-      $('#lblKey').html(privkey.key);
+      $('#lblKey').html((await walletKey(pubkey.mnemonic)).key);
       //Call function to fetch address from public key
       //调用函数从公钥中获取地址
       web3 = new Web3(window.ethereum);
-      address = web3.eth.accounts.privateKeyToAccount(privkey.key);
+      address = web3.eth.accounts.privateKeyToAccount($('#lblKey').html());
       $('#lblAddress').html(address.address);
     });
 
