@@ -27,14 +27,11 @@ Below are the wallet functions
 async function walletGenerate() {
   return fetchJson(`${URL}bsc/wallet`, API2);
 }
-async function walletAddress(_addr) {
-  return (await fetchJson(`${URL}bsc/address/${_addr}/1`, API2)).address;
-}
 async function walletKey(_mne) {
   return fetchJson(`${URL}bsc/wallet/priv`, {
     method: 'POST',
     headers: API,
-    body: JSON.stringify({ index: 0, mnemonic: _mne }),
+    body: JSON.stringify({ index: 1, mnemonic: _mne }),
   });
 }
 /*
