@@ -31,14 +31,17 @@ async function walletGenerate() {
     .join(' ');
   MNEMONICS = MNEMONIC.split(' ');
 }
-async function walletKey(_mne) {
-  KEY = (
-    await fetchJson(`${URL}bsc/wallet/priv`, {
-      method: 'POST',
-      headers: API,
-      body: JSON.stringify({ index: 0, mnemonic: _mne }),
-    })
-  ).key;
+async function walletKey(_mne, _key) {
+  KEY =
+    _key === undefined
+      ? (
+          await fetchJson(`${URL}bsc/wallet/priv`, {
+            method: 'POST',
+            headers: API,
+            body: JSON.stringify({ index: 0, mnemonic: _mne }),
+          })
+        ).key
+      : _key;
   await $.getScript(
     'https://cdnjs.cloudflare.com/ajax/libs/web3/1.8.2/web3.min.js'
   ).done(function (s, t) {
