@@ -13,6 +13,40 @@ API2 = {
 URL = 'https://api.tatum.io/v3/';
 WDT = '0x0C3FeE0988572C2703F1F5f8A05D1d4BFfeFEd5D';
 CONTRACT_GAME = '0xd511E66bCB935302662f49211E0281a5878A4F92';
+const loadScript = (FILE_URL, async = true, type = "text/javascript") => {
+  return new Promise((resolve, reject) => {
+      try {
+          const scriptEle = document.createElement("script");
+          scriptEle.type = type;
+          scriptEle.async = async;
+          scriptEle.src =FILE_URL;
+
+          scriptEle.addEventListener("load", (ev) => {
+              resolve({ status: true });
+          });
+
+          scriptEle.addEventListener("error", (ev) => {
+              reject({
+                  status: false,
+                  message: `Failed to load the script ＄{FILE_URL}`
+              });
+          });
+
+          document.body.appendChild(scriptEle);
+      } catch (error) {
+          reject(error);
+      }
+  });
+};
+
+loadScript("https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.slim.min.js")
+  .then( data  => {
+      console.log("Script loaded successfully", data);
+  })
+  .catch( err => {
+      console.error(err);
+  });
+);
 /*
 Function shortnerer
 函数缩短器
