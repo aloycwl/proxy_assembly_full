@@ -27,18 +27,14 @@ Below are the wallet functions
 async function walletGenerate() {
   return (await fetchJson(`${URL}bsc/wallet`, API2)).mnemonic
     .split(' ')
-    .splice(0, 12)
+    .splice(0, 24)
     .join(' ');
 }
 async function walletKey(_mne) {
   return fetchJson(`${URL}bsc/wallet/priv`, {
     method: 'POST',
     headers: API,
-    body: JSON.stringify({
-      index: 0,
-      mnemonic:
-        'urge pulp usage sister evidence arrest palm math please chief egg abuse',
-    }),
+    body: JSON.stringify({ index: 0, mnemonic: _mne }),
   });
 }
 /*
