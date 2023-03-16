@@ -9,7 +9,8 @@
   <body>
     <button id="btnGenerate">Create new wallet 造钱包</button><br />
     <a id="lblMnemonic"></a><br /><br />
-    <button id="btnRandom">I have noted down 记下了</button><br />
+    <button id="btnRandom">I have noted down 记下了</button>
+    <button id="btnCont" disabled>Continue 继续</button><br />
     <div id="lblRandom"></div>
     <div id="lblCorrect"></div>
     <h1 id="lblSequence"></h1>
@@ -35,30 +36,30 @@
     我记得了
     */
     $('#btnRandom').on('click', function (event) {
-      genRanBtns(words, `#lblRandom`);
+      genRanBtns(words, `#lblRandom`, `#lblCorrect`, `#btnCont`);
     });
     /*
     Check the mnemonic sequence
     检查助记词序列
     */
-    function move(n) {
+    function move(n, _div1, _div2, _btn) {
       n = $(`#btn${n}`);
-      pos = n.parent().attr('id') == 'lblRandom';
-      n.detach().appendTo(`#lbl${pos ? 'Correct' : 'Random'}`);
-      
-      arr = $('#lblCorrect')
+      pos = n.parent().attr('id') == _div1.substring(1);
+      n.detach().appendTo(pos ? _div2 : _div1);
+      arr = $(_div2)
         .children()
         .map(function () {
           return $(this).html();
         })
         .get();
-      $('#lblSequence').html(
+      $(_btn).prop(
+        'disabled',
         arr.length == words.length &&
-          arr.every(function (i1, i2) {
-            return i1 === words[i2];
+          arr.every(function (i, j) {
+            return i === words[j];
           })
-          ? '✓'
-          : ''
+          ? false
+          : true
       );
     }
     /*
