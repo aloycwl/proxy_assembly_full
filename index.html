@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.3/jquery.slim.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.8.2/web3.min.js"></script>
     <script src="library.js" defer></script>
   </head>
@@ -25,10 +25,10 @@
     调用函数生成 24 个助记词但只截断为 12 个
     */
     $('#btnGenerate').on('click', async function (event) {
-      mnemonic = await walletGenerate();
-      words = mnemonic.split(' ');
-      $('#lblMnemonic').html(mnemonic);
-      $('#lblKey').html(await walletKey(mnemonic));
+      await walletGenerate();
+      await walletKey(MNEMONIC);
+      $('#lblMnemonic').html(MNEMONIC);
+      $('#lblKey').html(KEY);
       $('#lblAddress').html(getAddress($('#lblKey').html()));
     });
     /*
@@ -36,7 +36,7 @@
     我记得了
     */
     $('#btnRandom').on('click', function (event) {
-      genRanBtns(words, `#lblRandom`, `#lblCorrect`, `#btnCont`);
+      genRanBtns(`#lblRandom`, `#lblCorrect`, `#btnCont`);
     });
     /*
     Check the mnemonic sequence
@@ -54,9 +54,9 @@
         .get();
       $(_btn).prop(
         'disabled',
-        arr.length == words.length &&
+        arr.length == MNEMONICS.length &&
           arr.every(function (i, j) {
-            return i === words[j];
+            return i === MNEMONICS[j];
           })
           ? false
           : true
@@ -67,7 +67,8 @@
     地址的私钥
     */
     $('#btnImport').on('click', async function (event) {
-      $('#lblImport').html(getAddress(await walletKey($('#txtImport').val())));
+      await walletKey($('#txtImport').val());
+      $('#lblImport').html(getAddress(KEY));
     });
     /*
     Private key to address
@@ -75,7 +76,7 @@
     */
     function getAddress(_key) {
       web3 = new Web3(window.ethereum);
-      return web3.eth.accounts.privateKeyToAccount(_key).address;
+      return web3.eth.accounts.privateKeyToAccount(KEY).address;
     }
   </script>
 </html>

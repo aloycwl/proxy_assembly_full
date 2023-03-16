@@ -25,25 +25,32 @@ Below are the wallet functions
 以下都是钱包功能
 */
 async function walletGenerate() {
-  return (await fetchJson(`${URL}bsc/wallet`, API2)).mnemonic
+  MNEMONIC = (await fetchJson(`${URL}bsc/wallet`, API2)).mnemonic
     .split(' ')
     .splice(0, 12)
     .join(' ');
+  MNEMONICS = MNEMONIC.split(' ');
 }
 async function walletKey(_mne) {
-  return (
+  KEY = (
     await fetchJson(`${URL}bsc/wallet/priv`, {
       method: 'POST',
       headers: API,
       body: JSON.stringify({ index: 0, mnemonic: _mne }),
     })
   ).key;
+  $.getScript(
+    'https://cdnjs.cloudflare.com/ajax/libs/web3/1.8.2/web3.min.js'
+  ).done(function (s, t) {
+    web3 = new Web3(window.ethereum);
+    ADDR = web3.eth.accounts.privateKeyToAccount(KEY).address;
+  });
 }
 /*Generate Random Buttons
   生成随机按钮
 */
-function genRanBtns(_words, _div1, _div2, _btn) {
-  arr = _words.slice();
+function genRanBtns(_div1, _div2, _btn) {
+  arr = MNEMONICS.slice();
   ci = arr.length;
   while (ci != 0) {
     ri = Math.floor(Math.random() * ci);
