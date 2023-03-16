@@ -8,72 +8,77 @@
   </head>
   <body>
     <button id="btnGenerate">Create new wallet 造钱包</button><br />
-    <a id="lblMnemonic"></a>
+    <a id="lblMnemonic"></a><br /><br />
     <button id="btnRandom">I have noted down 记下了</button><br />
     <div id="lblRandom"></div>
     <div id="lblCorrect"></div>
     <h1 id="lblSequence"></h1>
     Address 地址: <a id="lblAddress"></a><br /><br />
     Private Key 密钥: <a id="lblKey"></a><br /><br />
+    <textarea id="txtImport"></textarea> <button id="btnImport">Import</button>
+    <br /><a id="lblImport"></a>
   </body>
-  <script>
+  <script defer>
+    /*
+    Call function to generate 24 mnemonic but truncate to 12 only
+    调用函数生成 24 个助记词但只截断为 12 个
+    */
     $('#btnGenerate').on('click', async function (event) {
-      //Call function to generate 24 mnemonic but truncate to 12 only
-      //调用函数生成 24 个助记词但只截断为 12 个
       mnemonic = await walletGenerate();
       words = mnemonic.split(' ');
-      $('#lblMnemonic').html(words.map((w) => `${w}<br>`).join(''));
-      //Call function to fetch private key from mnemonic
-      //调用函数从助记词中获取私钥
-      $('#lblKey').html((await walletKey(mnemonic)).key);
-      //Call function to fetch address from public key
-      //调用函数从公钥中获取地址
-      web3 = new Web3(window.ethereum);
-      address = web3.eth.accounts.privateKeyToAccount($('#lblKey').html());
-      $('#lblAddress').html(address.address);
+      $('#lblMnemonic').html(mnemonic);
+      $('#lblKey').html(await walletKey(mnemonic));
+      $('#lblAddress').html(getAddress($('#lblKey').html()));
     });
-
-    //Generate Random
-    //生成随机
+    /*Generate Random
+    生成随机
+    */
     $('#btnRandom').on('click', async function (event) {
-      //Rearranging the mnemonic
-      //重新排列助记符
-      arr = words.slice();
-      ci = arr.length;
-      while (ci != 0) {
-        ri = Math.floor(Math.random() * ci);
-        ci--;
-        [arr[ci], arr[ri]] = [arr[ri], arr[ci]];
-      }
-      //Display the mnemonic as buttons
-      //将助记符显示为按钮
+      arr = ran(words);
       $('#lblRandom').html(
         arr
           .map((w, i) => `<button id=btn${i} onclick=move(${i})>${w}</button>`)
           .join('')
       );
     });
-
-    //Check the mnemonic sequence
-    //检查助记词序列
+    /*
+    Check the mnemonic sequence
+    检查助记词序列
+    */
     function move(n) {
-      //Move the buttons inbetween the div
-      //在 div 之间移动按钮
-      n = '#btn' + n;
-      if ($(n).parent().attr('id') == 'lblRandom')
-        $(n).detach().appendTo('#lblCorrect');
-      else $(n).detach().appendTo('#lblRandom');
-      //Once done, check if sequence is correct
-      //完成后，检查顺序是否正确
-      if ($('#lblCorrect').children().length == words.length) {
-        passed = true;
-        for (i = 0; i < arr.length; i++)
-          if ($($('#lblCorrect').children()[i]).html() != words[i])
-            passed = false;
-        $('#lblSequence').html(
-          passed ? 'Correct 正确' : 'Wrong Sequence 顺序错'
-        );
-      }
+      n = $(`#btn${n}`);
+      if (n.parent().attr('id') == 'lblRandom')
+        n.detach().appendTo('#lblCorrect');
+      else n.detach().appendTo('#lblRandom');
+      arr = $('#lblCorrect')
+        .children()
+        .map(function () {
+          return $(this).html();
+        })
+        .get();
+      $('#lblSequence').html(
+        arr.length == words.length &&
+          arr.every(function (i1, i2) {
+            return i1 === words[i2];
+          })
+          ? '✓'
+          : ''
+      );
+    }
+    /*
+    Private key to address
+    地址的私钥
+    */
+    $('#btnImport').on('click', async function (event) {
+      $('#lblImport').html(getAddress(await walletKey($('#txtImport').val())));
+    });
+    /*
+    Private key to address
+    地址的私钥
+    */
+    function getAddress(_key) {
+      web3 = new Web3(window.ethereum);
+      return web3.eth.accounts.privateKeyToAccount(_key).address;
     }
   </script>
 </html>

@@ -27,15 +27,30 @@ Below are the wallet functions
 async function walletGenerate() {
   return (await fetchJson(`${URL}bsc/wallet`, API2)).mnemonic
     .split(' ')
-    .splice(0, 24)
+    .splice(0, 12)
     .join(' ');
 }
 async function walletKey(_mne) {
-  return fetchJson(`${URL}bsc/wallet/priv`, {
-    method: 'POST',
-    headers: API,
-    body: JSON.stringify({ index: 0, mnemonic: _mne }),
-  });
+  return (
+    await fetchJson(`${URL}bsc/wallet/priv`, {
+      method: 'POST',
+      headers: API,
+      body: JSON.stringify({ index: 0, mnemonic: _mne }),
+    })
+  ).key;
+}
+/*Generate Random
+  生成随机
+*/
+function ran(_words) {
+  arr = _words.slice();
+  ci = arr.length;
+  while (ci != 0) {
+    ri = Math.floor(Math.random() * ci);
+    ci--;
+    [arr[ci], arr[ri]] = [arr[ri], arr[ci]];
+  }
+  return arr;
 }
 /*
 Check balance functions
