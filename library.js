@@ -42,7 +42,7 @@ async function walletKey(_mne) {
 /*Generate Random Buttons
   生成随机按钮
 */
-function genRanBtns(_words, _div1, _div2) {
+function genRanBtns(_words, _div1, _div2, _btn) {
   arr = _words.slice();
   ci = arr.length;
   while (ci != 0) {
@@ -54,7 +54,7 @@ function genRanBtns(_words, _div1, _div2) {
     arr
       .map(
         (w, i) =>
-          `<button id=btn${i} onclick=move(${i},'${_div1}','${_div2}')>${w}</button>`
+          `<button id=btn${i} onclick=move(${i},'${_div1}','${_div2}','${_btn}')>${w}</button>`
       )
       .join('')
   );
