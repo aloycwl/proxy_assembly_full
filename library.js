@@ -215,3 +215,17 @@ async function getScore(_addr) {
     ).json()
   ).data;
 }
+/*
+Set and get cookie
+设置和提取cookie
+*/
+function setCookie(_var, _val) {
+  cookie = `${_var}=${_val}`;
+}
+function getCookie(_var) {
+  cookies = cookie.split('; ');
+  for (cookie of cookies) {
+    [cookieName, cookieValue] = cookie.split('=');
+    if (cookieName == _var) return decodeURIComponent(cookieValue);
+  }
+}

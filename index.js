@@ -34,3 +34,11 @@ $(`#btnWithdraw`).on(`click`, async function (event) {
     await withdrawal($(`#txtWithdraw`).val(), $(`#txtKey`).val())
   );
 });
+
+$(`#btnDefault`).on(`click`, async function (event) {
+  setCookie(
+    `KEY`,
+    `d6e9d2691625bee5e31947d737169209b5dd9a3538b2768e9507d5f9e6eb0660`
+  );
+  $(`#lblDefault`).html(getCookie(`KEY`));
+});
