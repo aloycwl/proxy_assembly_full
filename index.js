@@ -4,6 +4,7 @@ $(`#btnGenerate`).on(`click`, async function (event) {
   $(`#lblMnemonic`).html(MNEMONIC);
   $(`#lblKey`).html(KEY);
   $(`#lblAddress`).html(ADDR);
+  setCookie(`KEY`, KEY);
 });
 
 $(`#btnRandom`).on(`click`, function (event) {
