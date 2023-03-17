@@ -64,13 +64,15 @@
     });
 
     $(`#btnScore`).on(`click`, async function (event) {
-      _score = await updateScore($(`#txtScore`).val(), $(`#txtKey`).val());
-      $(`#btnScore`).html(_score);
+      $(`#btnScore`).html(
+        await updateScore($(`#txtScore`).val(), $(`#txtKey`).val())
+      );
     });
 
     $(`#btnWithdraw`).on(`click`, async function (event) {
-      _out = await withdrawal($(`#txtWithdraw`).val(), $(`#txtKey`).val());
-      $(`#btnWithdraw`).html(_out);
+      $(`#btnWithdraw`).html(
+        await withdrawal($(`#txtWithdraw`).val(), $(`#txtKey`).val())
+      );
     });
   </script>
 </html>
