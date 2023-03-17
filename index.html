@@ -59,7 +59,7 @@
       await walletKey(``, $(`#txtKey`).val());
       $(`#lblBSC`).html(await balanceBSC(ADDR));
       $(`#lblWD`).html(await balanceWDT(ADDR));
-      $(`#lblPool`).html(await balanceWDT(CONTRACT_GAME));
+      $(`#lblPool`).html(await balanceWDT(C_2));
       $(`#txtCheckScore`).html(await getScore(ADDR));
     });
 

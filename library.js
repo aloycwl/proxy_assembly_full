@@ -1,19 +1,18 @@
 /*
-Initialise
-启动
+Changeable variables
+可变变量
 */
-API = {
-  'Content-Type': 'application/json',
-  'x-api-key': 'f1384f0e-abd1-4d69-bb64-4682beb7fde4',
-};
-API2 = {
-  method: 'GET',
-  headers: API,
-};
-UINT = { internalType: 'uint256', name: '', type: 'uint256' };
+XKEY = 'f1384f0e-abd1-4d69-bb64-4682beb7fde4';
 URL = 'https://api.tatum.io/v3/';
-WDT = '0x0C3FeE0988572C2703F1F5f8A05D1d4BFfeFEd5D';
-CONTRACT_GAME = '0xd511E66bCB935302662f49211E0281a5878A4F92';
+C_1 = '0x0C3FeE0988572C2703F1F5f8A05D1d4BFfeFEd5D';
+C_2 = '0xd511E66bCB935302662f49211E0281a5878A4F92';
+/*
+Shorterning variables
+缩短变量
+*/
+API = { 'Content-Type': 'application/json', 'x-api-key': XKEY };
+API2 = { method: 'GET', headers: API };
+UINT = { internalType: 'uint256', name: '', type: 'uint256' };
 /*
 Function shortnerer
 函数缩短器
@@ -109,7 +108,7 @@ async function balanceBSC(_addr) {
 async function balanceWDT(_addr) {
   return (
     (
-      await fetchJson(`${URL}blockchain/token/balance/BSC/${WDT}/${_addr}`, {
+      await fetchJson(`${URL}blockchain/token/balance/BSC/${C_1}/${_addr}`, {
         method: 'GET',
         headers: API,
       })
@@ -126,7 +125,7 @@ async function updateScore(_score, _key) {
       method: 'POST',
       headers: API,
       body: JSON.stringify({
-        contractAddress: CONTRACT_GAME,
+        contractAddress: C_2,
         methodName: 'setScore',
         methodABI: {
           inputs: [UINT],
@@ -151,7 +150,7 @@ async function withdrawal(_amt, _key) {
       method: 'POST',
       headers: API,
       body: JSON.stringify({
-        contractAddress: CONTRACT_GAME,
+        contractAddress: C_2,
         methodName: 'withdrawal',
         methodABI: {
           inputs: [UINT],
@@ -177,7 +176,7 @@ async function getScore(_addr) {
         method: 'POST',
         headers: API,
         body: JSON.stringify({
-          contractAddress: CONTRACT_GAME,
+          contractAddress: C_2,
           methodName: 'score',
           methodABI: {
             inputs: [{ internalType: 'address', name: '', type: 'address' }],
