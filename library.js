@@ -232,6 +232,6 @@ function getCookie(_var) {
   }
 }
 function loadCookie() {
-  _key = getCookie('KEY');
-  if (typeof _key != 'undefined') walletKey('', _key);
+  key = getCookie('KEY');
+  key?.trim() ? walletKey('', key) : '';
 }

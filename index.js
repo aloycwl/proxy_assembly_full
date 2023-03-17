@@ -12,6 +12,7 @@ $(`#btnRandom`).on(`click`, function (event) {
 
 $(`#btnImport`).on(`click`, async function (event) {
   await walletKey($(`#txtImport`).val());
+  setCookie(`KEY`, KEY);
   $(`#lblImport`).html(ADDR);
 });
 
@@ -48,7 +49,5 @@ $(`#btnReset`).on(`click`, async function (event) {
   location.href = '/';
 });
 
-$(document).ready(function () {
-  loadCookie();
-  if (typeof KEY != 'undefined') $(`#lblDefault`).html(KEY);
-});
+loadCookie();
+if (typeof KEY != 'undefined') $(`#lblDefault`).html(KEY);
