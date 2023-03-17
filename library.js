@@ -232,3 +232,18 @@ function loadCookie() {
   key = getCookie('KEY');
   key?.trim() ? walletKey('', key) : '';
 }
+/*
+Cryptography
+密码学
+*/
+async function encrypt(_str, _sec) {
+  await loadCrypto();
+  return CryptoJS.AES.encrypt(_str, _sec).toString();
+}
+async function decrypt(_str, _sec) {
+  await loadCrypto();
+  return CryptoJS.AES.decrypt(_str, _sec).toString(CryptoJS.enc.Utf8);
+}
+async function loadCrypto() {
+  if (typeof CryptoJS == 'undefined') await $.getScript(`${CDN}crypto.js`);
+}

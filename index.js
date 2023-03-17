@@ -48,19 +48,3 @@ $(`#btnReset`).on(`click`, async function (event) {
 
 loadCookie();
 if (typeof KEY != 'undefined') $(`#lblDefault`).html(KEY);
-
-async function encryptData(data) {
-  const encoder = new TextEncoder();
-  const key = await window.crypto.subtle.generateKey(
-    {name: 'AES-GCM', length: 256},
-    true,
-    ['encrypt', 'decrypt']
-  );
-  const iv = window.crypto.getRandomValues(new Uint8Array(12));
-  const encryptedData = await window.crypto.subtle.encrypt(
-    {name: 'AES-GCM', iv},
-    key,
-    encoder.encode(data)
-  );
-  return {encryptedData, key, iv};
-}
