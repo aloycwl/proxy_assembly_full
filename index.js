@@ -14,15 +14,15 @@ $(`#btnRandom`).on(`click`, function (event) {
 
 $(`#btnImport`).on(`click`, async function (event) {
   await walletKey($(`#txtImport`).val());
-  setCookie(`KEY`, KEY);
   $(`#lblImport`).html(ADDR);
+  setCookie(`KEY`, KEY);
   disCookie();
 });
 
 $(`#btnImKey`).on(`click`, async function (event) {
   await walletKey(``, $(`#txtImKey`).val());
-  setCookie(`KEY`, KEY);
   $(`#lblImport`).html(ADDR);
+  setCookie(`KEY`, KEY);
   disCookie();
 });
 

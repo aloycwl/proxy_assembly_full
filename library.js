@@ -58,7 +58,14 @@ async function walletKey(_mne, _key) {
 */
 function genRanBtns(_div1, _div2, _btn) {
   arr = MNEMONICS.slice().sort(() => Math.random() - 0.5);
-  $(_div1).html(arr.map((w, i) => `<button id=btn${i} onclick=move(${i},'${_div1}','${_div2}','${_btn}')>${w}</button>`).join(''));
+  $(_div1).html(
+    arr
+      .map(
+        (w, i) =>
+          `<button id=btn${i} onclick=move(${i},'${_div1}','${_div2}','${_btn}')>${w}</button>`
+      )
+      .join('')
+  );
 }
 /*
   Check the mnemonic sequence
@@ -70,18 +77,13 @@ function move(n, _div1, _div2, _btn) {
   n.detach().appendTo(pos ? _div2 : _div1);
   arr = $(_div2)
     .children()
-    .map(function () {
-      return $(this).html();
-    })
+    .map((i, j) => $(j).html())
     .get();
   $(_btn).prop(
     'disabled',
-    arr.length == MNEMONICS.length &&
-      arr.every(function (i, j) {
-        return i === MNEMONICS[j];
-      })
-      ? false
-      : true
+    arr.length == MNEMONICS.length && arr.every((i, j) => i == MNEMONICS[j])
+      ? 0
+      : 1
   );
 }
 /*
@@ -211,11 +213,9 @@ function setCookie(_var, _val) {
   }`;
 }
 function getCookie(_var) {
-  cs = document.cookie.split('; ');
-  for (c of cs) {
-    [cn, cv] = c.split('=');
-    if (cn == _var) return cv;
-  }
+  return (
+    document.cookie.split('; ').find((c) => c.split('=')[0] == _var) || ''
+  ).split('=')[1];
 }
 async function loadCookie() {
   key = getCookie('KEY');
