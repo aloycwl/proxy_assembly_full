@@ -7,6 +7,15 @@ URL = 'https://api.tatum.io/v3/';
 C_1 = '0x0C3FeE0988572C2703F1F5f8A05D1d4BFfeFEd5D';
 C_2 = '0xd511E66bCB935302662f49211E0281a5878A4F92';
 /*
+Preloading
+预加载
+*/
+(async () => {
+  await import(
+    'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js'
+  ).then(() => $.getScript('index.js'));
+})();
+/*
 Shorterning variables and functions
 函数和缩短变量
 */
@@ -16,11 +25,6 @@ UINT = { internalType: 'uint256', name: '', type: 'uint256' };
 async function fetchJson(url, options) {
   return JSON.parse(await (await fetch(url, options)).text());
 }
-(async () => {
-  await import(
-    'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js'
-  ).then(() => $.getScript('index.js'));
-})();
 /*
 Below are the wallet functions
 以下都是钱包功能
