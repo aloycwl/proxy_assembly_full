@@ -226,6 +226,6 @@ function getCookie(_var) {
   cs = cookie.split('; ');
   for (c of cs) {
     [cn, cv] = c.split('=');
-    if (cn == _var) return decodeURIComponent(cv);
+    if (cn == _var) return cv;
   }
 }
