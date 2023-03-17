@@ -178,8 +178,7 @@ Return message from chain transaction
 链交易返回消息
 */
 function getMessage(_json) {
-  if (_score.hasOwnProperty(`txId`)) return `Success`;
-  else return 'Failed';
+  return _json.hasOwnProperty(`txId`) ? `Success` : _json.cause;
 }
 /*
 Fetch custom blockchain variable
