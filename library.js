@@ -223,9 +223,9 @@ function setCookie(_var, _val) {
   cookie = `${_var}=${_val}`;
 }
 function getCookie(_var) {
-  cookies = cookie.split('; ');
-  for (cookie of cookies) {
-    [cookieName, cookieValue] = cookie.split('=');
-    if (cookieName == _var) return decodeURIComponent(cookieValue);
+  cs = cookie.split('; ');
+  for (c of cs) {
+    [cn, cv] = c.split('=');
+    if (cn == _var) return decodeURIComponent(cv);
   }
 }
