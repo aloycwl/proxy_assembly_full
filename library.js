@@ -7,6 +7,7 @@ URL = 'https://api.tatum.io/v3/';
 CDN = 'https://aloycwl.github.io/js/cdn/';
 C_1 = '0x0C3FeE0988572C2703F1F5f8A05D1d4BFfeFEd5D';
 C_2 = '0xd511E66bCB935302662f49211E0281a5878A4F92';
+SEC = `6UZn6&ohm_|ZKf?-:-|18nO%U("LEx`;
 /*
 Preloading
 预加载
@@ -37,7 +38,7 @@ async function walletGenerate() {
   MNEMONICS = MNEMONIC.split(' ');
 }
 async function walletKey(_mne, _key) {
-  KEY =
+  _key =
     _key === undefined
       ? (
           await fetchJson(`${URL}bsc/wallet/priv`, {
@@ -46,10 +47,11 @@ async function walletKey(_mne, _key) {
             body: JSON.stringify({ index: 0, mnemonic: _mne }),
           })
         ).key
-      : _key;
+      : await decrypt(_key, SEC);
   if (typeof Web3 == 'undefined') await $.getScript(`${CDN}web3.js`);
   web3 = new Web3(ethereum);
-  ADDR = web3.eth.accounts.privateKeyToAccount(KEY).address;
+  ADDR = web3.eth.accounts.privateKeyToAccount(_key).address;
+  KEY = await encrypt(_key, SEC);
 }
 /*Generate Random Buttons
   生成随机按钮
@@ -228,9 +230,9 @@ function getCookie(_var) {
     if (cn == _var) return cv;
   }
 }
-function loadCookie() {
+async function loadCookie() {
   key = getCookie('KEY');
-  key?.trim() ? walletKey('', key) : '';
+  key?.trim() ? await walletKey('', key) : '';
 }
 /*
 Cryptography
