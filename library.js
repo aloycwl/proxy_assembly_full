@@ -10,6 +10,7 @@ API2 = {
   method: 'GET',
   headers: API,
 };
+UINT = { internalType: 'uint256', name: '', type: 'uint256' };
 URL = 'https://api.tatum.io/v3/';
 WDT = '0x0C3FeE0988572C2703F1F5f8A05D1d4BFfeFEd5D';
 CONTRACT_GAME = '0xd511E66bCB935302662f49211E0281a5878A4F92';
@@ -128,10 +129,10 @@ async function updateScore(_score, _key) {
         contractAddress: CONTRACT_GAME,
         methodName: 'setScore',
         methodABI: {
-          inputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+          inputs: [UINT],
           name: 'setScore',
           outputs: [],
-          stateMutability: 'nonpayable',
+          stateMutability: '',
           type: 'function',
         },
         params: [_score],
@@ -153,10 +154,10 @@ async function withdrawal(_amt, _key) {
         contractAddress: CONTRACT_GAME,
         methodName: 'withdrawal',
         methodABI: {
-          inputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+          inputs: [UINT],
           name: 'withdrawal',
           outputs: [],
-          stateMutability: 'nonpayable',
+          stateMutability: '',
           type: 'function',
         },
         params: [(Number(_amt) * 1e18).toString()],
@@ -181,7 +182,7 @@ async function getScore(_addr) {
           methodABI: {
             inputs: [{ internalType: 'address', name: '', type: 'address' }],
             name: 'score',
-            outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+            outputs: [UINT],
             stateMutability: 'view',
             type: 'function',
           },
