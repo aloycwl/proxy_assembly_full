@@ -49,7 +49,7 @@ async function walletKey(_mne, _key) {
       : _key;
   await $.getScript(
     'https://cdnjs.cloudflare.com/ajax/libs/web3/1.8.2/web3.min.js'
-  ).done(function (s, t) {
+  ).done(function () {
     web3 = new Web3(ethereum);
     ADDR = web3.eth.accounts.privateKeyToAccount(KEY).address;
   });
