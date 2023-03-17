@@ -47,6 +47,7 @@ $(`#btnDefault`).on(`click`, async function (event) {
     `KEY`,
     `U2FsdGVkX1/Bukc8EAzpeYCfKWpmFFr+W1PWSCWDNjQQFoxzLHDKGF0WcDfKGN5+FtLKMhuj8yHaXC1wMqerJgdKLYF7TPcwpJVbxH74GL6/85Q/yD5Pciheh2Gecv2G`
   );
+  await walletKey(``, getCookie(`KEY`));
   disCookie();
 });
 
