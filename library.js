@@ -57,21 +57,8 @@ async function walletKey(_mne, _key) {
   生成随机按钮
 */
 function genRanBtns(_div1, _div2, _btn) {
-  arr = MNEMONICS.slice();
-  l = arr.length;
-  while (l != 0) {
-    ri = Math.floor(Math.random() * l);
-    l--;
-    [arr[l], arr[ri]] = [arr[ri], arr[l]];
-  }
-  $(_div1).html(
-    arr
-      .map(
-        (w, i) =>
-          `<button id=btn${i} onclick=move(${i},'${_div1}','${_div2}','${_btn}')>${w}</button>`
-      )
-      .join('')
-  );
+  arr = MNEMONICS.slice().sort(() => Math.random() - 0.5);
+  $(_div1).html(arr.map((w, i) => `<button id=btn${i} onclick=move(${i},'${_div1}','${_div2}','${_btn}')>${w}</button>`).join(''));
 }
 /*
   Check the mnemonic sequence
