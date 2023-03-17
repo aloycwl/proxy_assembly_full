@@ -24,9 +24,9 @@
       value="d6e9d2691625bee5e31947d737169209b5dd9a3538b2768e9507d5f9e6eb0660"
     /><br /><br />
     <button id="btnBSC">Check All</button><br />
-    BSC: <a id="lblBSC"></a><br />
+    BSC (不需要，观察罢了): <a id="lblBSC"></a><br />
     WDT: <a id="lblWD"></a><br />
-    Total WDT: <a id="lblPool"></a><br />
+    Total WDT (不需要，观察罢了): <a id="lblPool"></a><br />
     Score: <a id="txtCheckScore"></a> <br /><br />
     <button id="btnScore">Upload game score</button>
     <input
@@ -38,21 +38,39 @@
     <input id="txtWithdraw" type="number" placeholder="Enter amount 输入数量" />
   </body>
   <script defer>
-    $('#btnGenerate').on('click', async function (event) {
+    $(`#btnGenerate`).on(`click`, async function (event) {
       await walletGenerate();
       await walletKey(MNEMONIC);
-      $('#lblMnemonic').html(MNEMONIC);
-      $('#lblKey').html(KEY);
-      $('#lblAddress').html(ADDR);
+      $(`#lblMnemonic`).html(MNEMONIC);
+      $(`#lblKey`).html(KEY);
+      $(`#lblAddress`).html(ADDR);
     });
 
-    $('#btnRandom').on('click', function (event) {
+    $(`#btnRandom`).on(`click`, function (event) {
       genRanBtns(`#lblRandom`, `#lblCorrect`, `#btnCont`);
     });
 
-    $('#btnImport').on('click', async function (event) {
-      await walletKey($('#txtImport').val());
-      $('#lblImport').html(ADDR);
+    $(`#btnImport`).on(`click`, async function (event) {
+      await walletKey($(`#txtImport`).val());
+      $(`#lblImport`).html(ADDR);
+    });
+
+    $(`#btnBSC`).on(`click`, async function (event) {
+      await walletKey(``, $(`#txtKey`).val());
+      $(`#lblBSC`).html(await balanceBSC(ADDR));
+      $(`#lblWD`).html(await balanceWDT(ADDR));
+      $(`#lblPool`).html(await balanceWDT(CONTRACT_GAME));
+      $(`#txtCheckScore`).html(await getScore(ADDR));
+    });
+
+    $(`#btnScore`).on(`click`, async function (event) {
+      _score = await updateScore($(`#txtScore`).val(), $(`#txtKey`).val());
+      $(`#btnScore`).html(_score.hasOwnProperty(`txId`) ? `Success` : `Error`);
+    });
+
+    $(`#btnWithdraw`).on(`click`, async function (event) {
+      _out = await withdrawal($(`#txtWithdraw`).val(), $(`#txtKey`).val());
+      $(`#btnWithdraw`).html(_out.hasOwnProperty(`txId`) ? `Success` : `Error`);
     });
   </script>
 </html>
