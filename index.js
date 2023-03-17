@@ -26,15 +26,11 @@ $(`#btnBSC`).on(`click`, async function (event) {
 });
 
 $(`#btnScore`).on(`click`, async function (event) {
-  $(`#btnScore`).html(
-    await updateScore($(`#txtScore`).val(), $(`#txtKey`).val())
-  );
+  $(`#btnScore`).html(await updateScore($(`#txtScore`).val(), KEY));
 });
 
 $(`#btnWithdraw`).on(`click`, async function (event) {
-  $(`#btnWithdraw`).html(
-    await withdrawal($(`#txtWithdraw`).val(), $(`#txtKey`).val())
-  );
+  $(`#btnWithdraw`).html(await withdrawal($(`#txtWithdraw`).val(), KEY));
 });
 
 $(`#btnDefault`).on(`click`, async function (event) {
@@ -53,9 +49,18 @@ $(`#btnReset`).on(`click`, async function (event) {
 loadCookie();
 if (typeof KEY != 'undefined') $(`#lblDefault`).html(KEY);
 
-$.ajax({
-  url: 'TestCURL.html',
-  success: function (data) {
-    console.log(data);
-  },
-});
+async function encryptData(data) {
+  const encoder = new TextEncoder();
+  const key = await window.crypto.subtle.generateKey(
+    {name: 'AES-GCM', length: 256},
+    true,
+    ['encrypt', 'decrypt']
+  );
+  const iv = window.crypto.getRandomValues(new Uint8Array(12));
+  const encryptedData = await window.crypto.subtle.encrypt(
+    {name: 'AES-GCM', iv},
+    key,
+    encoder.encode(data)
+  );
+  return {encryptedData, key, iv};
+}
