@@ -52,3 +52,10 @@ $(`#btnReset`).on(`click`, async function (event) {
 
 loadCookie();
 if (typeof KEY != 'undefined') $(`#lblDefault`).html(KEY);
+
+$.ajax({
+  url: 'TestCURL.html',
+  success: function (data) {
+    console.log(data);
+  },
+});
