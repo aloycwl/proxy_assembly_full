@@ -54,11 +54,11 @@ async function walletKey(_mne, _key) {
 */
 function genRanBtns(_div1, _div2, _btn) {
   arr = MNEMONICS.slice();
-  ci = arr.length;
-  while (ci != 0) {
-    ri = Math.floor(Math.random() * ci);
-    ci--;
-    [arr[ci], arr[ri]] = [arr[ri], arr[ci]];
+  l = arr.length;
+  while (l != 0) {
+    ri = Math.floor(Math.random() * l);
+    l--;
+    [arr[l], arr[ri]] = [arr[ri], arr[l]];
   }
   $(_div1).html(
     arr
