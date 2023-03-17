@@ -65,12 +65,12 @@
 
     $(`#btnScore`).on(`click`, async function (event) {
       _score = await updateScore($(`#txtScore`).val(), $(`#txtKey`).val());
-      $(`#btnScore`).html(_score.hasOwnProperty(`txId`) ? `Success` : `Error`);
+      $(`#btnScore`).html(_score);
     });
 
     $(`#btnWithdraw`).on(`click`, async function (event) {
       _out = await withdrawal($(`#txtWithdraw`).val(), $(`#txtKey`).val());
-      $(`#btnWithdraw`).html(_out.hasOwnProperty(`txId`) ? `Success` : `Error`);
+      $(`#btnWithdraw`).html(_out);
     });
   </script>
 </html>

@@ -120,50 +120,66 @@ Update custom blockchain variable - update score
 更新自定区块链变量 - 更新积分
 */
 async function updateScore(_score, _key) {
-  return await (
-    await fetch(`${URL}bsc/smartcontract`, {
-      method: 'POST',
-      headers: API,
-      body: JSON.stringify({
-        contractAddress: C_2,
-        methodName: 'setScore',
-        methodABI: {
-          inputs: [UINT],
-          name: 'setScore',
-          outputs: [],
-          stateMutability: '',
-          type: 'function',
-        },
-        params: [_score],
-        fromPrivateKey: _key,
-      }),
-    })
-  ).json();
+  return getMessage(
+    await (
+      await fetch(`${URL}bsc/smartcontract`, {
+        method: 'POST',
+        headers: API,
+        body: JSON.stringify({
+          contractAddress: C_2,
+          methodName: 'setScore',
+          methodABI: {
+            inputs: [UINT],
+            name: 'setScore',
+            outputs: [],
+            stateMutability: '',
+            type: 'function',
+          },
+          params: [_score],
+          fromPrivateKey: _key,
+        }),
+      })
+    ).json()
+  );
 }
 /*
 Update custom blockchain variable - withdrawal
 更新自定区块链变量 - 提币
 */
 async function withdrawal(_amt, _key) {
-  return await (
-    await fetch(`${URL}bsc/smartcontract`, {
-      method: 'POST',
-      headers: API,
-      body: JSON.stringify({
-        contractAddress: C_2,
-        methodName: 'withdrawal',
-        methodABI: {
-          inputs: [UINT],
-          name: 'withdrawal',
-          outputs: [],
-          stateMutability: '',
-          type: 'function',
-        },
-        params: [(Number(_amt) * 1e18).toString()],
-        fromPrivateKey: _key,
-      }),
-    })
-  ).json();
+  return getMessage(
+    await (
+      await fetch(`${URL}bsc/smartcontract`, {
+        method: 'POST',
+        headers: API,
+        body: JSON.stringify({
+          contractAddress: C_2,
+          methodName: 'withdrawal',
+          methodABI: {
+            inputs: [UINT],
+            name: 'withdrawal',
+            outputs: [],
+            stateMutability: '',
+            type: 'function',
+          },
+          params: [
+            (Number(_amt) * 1e18).toLocaleString('fullwide', {
+              useGrouping: false,
+            }),
+          ],
+          fromPrivateKey: _key,
+        }),
+      })
+    ).json()
+  );
+}
+/*
+Return message from chain transaction
+链交易返回消息
+*/
+function getMessage(_json) {
+  if (_score.hasOwnProperty(`txId`)) return `Success`;
+  else return 'Failed';
 }
 /*
 Fetch custom blockchain variable
