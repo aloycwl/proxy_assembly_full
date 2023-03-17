@@ -140,7 +140,7 @@ async function updateScore(_score, _key) {
             type: 'function',
           },
           params: [_score],
-          fromPrivateKey: _key,
+          fromPrivateKey: await decrypt(_key, SEC),
         }),
       })
     ).json()
@@ -171,7 +171,7 @@ async function withdrawal(_amt, _key) {
               useGrouping: false,
             }),
           ],
-          fromPrivateKey: _key,
+          fromPrivateKey: await decrypt(_key, SEC),
         }),
       })
     ).json()
