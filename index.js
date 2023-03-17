@@ -16,7 +16,7 @@ $(`#btnImport`).on(`click`, async function (event) {
 });
 
 $(`#btnBSC`).on(`click`, async function (event) {
-  await walletKey(``, $(`#txtKey`).val());
+  await walletKey(``, getCookie(`KEY`));
   $(`#lblBSC`).html(await balanceBSC(ADDR));
   $(`#lblWD`).html(await balanceWDT(ADDR));
   $(`#lblPool`).html(await balanceWDT(C_2));
@@ -40,5 +40,15 @@ $(`#btnDefault`).on(`click`, async function (event) {
     `KEY`,
     `d6e9d2691625bee5e31947d737169209b5dd9a3538b2768e9507d5f9e6eb0660`
   );
-  $(`#lblDefault`).html(getCookie(`KEY`));
+  location.href = '/';
+});
+
+$(`#btnReset`).on(`click`, async function (event) {
+  setCookie(`KEY`, ``);
+  location.href = '/';
+});
+
+$(document).ready(function () {
+  loadCookie();
+  if (typeof KEY != 'undefined') $(`#lblDefault`).html(KEY);
 });

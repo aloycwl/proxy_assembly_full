@@ -220,12 +220,18 @@ Set and get cookie
 设置和提取cookie
 */
 function setCookie(_var, _val) {
-  cookie = `${_var}=${_val}`;
+  document.cookie = `${_var}=${_val}${
+    _val == `` ? `;expires=Thu, 01 Jan 1970 00:00:00 GMT` : ``
+  }`;
 }
 function getCookie(_var) {
-  cs = cookie.split('; ');
+  cs = document.cookie.split('; ');
   for (c of cs) {
     [cn, cv] = c.split('=');
     if (cn == _var) return cv;
   }
+}
+function loadCookie() {
+  _key = getCookie('KEY');
+  if (typeof _key != 'undefined') walletKey('', _key);
 }
