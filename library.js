@@ -4,6 +4,7 @@ Changeable variables
 */
 XKEY = 'f1384f0e-abd1-4d69-bb64-4682beb7fde4';
 URL = 'https://api.tatum.io/v3/';
+CDN = 'https://aloycwl.github.io/js/cdn/';
 C_1 = '0x0C3FeE0988572C2703F1F5f8A05D1d4BFfeFEd5D';
 C_2 = '0xd511E66bCB935302662f49211E0281a5878A4F92';
 /*
@@ -11,9 +12,7 @@ Preloading
 预加载
 */
 (async () => {
-  await import(
-    'https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js'
-  );
+  await import(`${CDN}jquery.js`);
   await $.getScript('index.js');
 })();
 /*
@@ -48,12 +47,9 @@ async function walletKey(_mne, _key) {
           })
         ).key
       : _key;
-  await $.getScript(
-    'https://cdnjs.cloudflare.com/ajax/libs/web3/1.8.2/web3.min.js'
-  ).done(function () {
-    web3 = new Web3(ethereum);
-    ADDR = web3.eth.accounts.privateKeyToAccount(KEY).address;
-  });
+  await $.getScript(`${CDN}web3.js`);
+  web3 = new Web3(ethereum);
+  ADDR = web3.eth.accounts.privateKeyToAccount(KEY).address;
 }
 /*Generate Random Buttons
   生成随机按钮
