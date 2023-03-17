@@ -38,20 +38,20 @@ async function walletGenerate() {
   MNEMONICS = MNEMONIC.split(' ');
 }
 async function walletKey(_mne, _key) {
-  _tk =
-    _key == undefined
-      ? (
-          await fetchJson(`${URL}bsc/wallet/priv`, {
-            method: 'POST',
-            headers: API,
-            body: JSON.stringify({ index: 0, mnemonic: _mne }),
-          })
-        ).key
-      : await decrypt(_key, SEC);
+  _b = _key == undefined;
+  _tk = _b
+    ? (
+        await fetchJson(`${URL}bsc/wallet/priv`, {
+          method: 'POST',
+          headers: API,
+          body: JSON.stringify({ index: 0, mnemonic: _mne }),
+        })
+      ).key
+    : await decrypt(_key, SEC);
   if (typeof Web3 == 'undefined') await $.getScript(`${CDN}web3.js`);
   web3 = new Web3(ethereum);
   ADDR = web3.eth.accounts.privateKeyToAccount(_tk).address;
-  KEY = _key == undefined ? await encrypt(_tk, SEC) : _key;
+  KEY = _b ? await encrypt(_tk, SEC) : _key;
 }
 /*Generate Random Buttons
   生成随机按钮
