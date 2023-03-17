@@ -47,7 +47,7 @@ async function walletKey(_mne, _key) {
           })
         ).key
       : _key;
-  await $.getScript(`${CDN}web3.js`);
+  if (typeof Web3 == 'undefined') await $.getScript(`${CDN}web3.js`);
   web3 = new Web3(ethereum);
   ADDR = web3.eth.accounts.privateKeyToAccount(KEY).address;
 }
