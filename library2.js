@@ -62,9 +62,29 @@ class WD {
       arr
         .map(
           (w, i) =>
-            `<button id=btn${i} onclick=move(${i},'${_div1}','${_div2}','${_btn}')>${w}</button>`
+            `<button id=btn${i} onclick=wd.move(${i},'${_div1}','${_div2}','${_btn}')>${w}</button>`
         )
         .join('')
+    );
+  }
+  /*
+    Check the mnemonic sequence
+    检查助记词序列
+  */
+  move(n, _div1, _div2, _btn) {
+    n = $(`#btn${n}`);
+    var pos = n.parent().attr('id') == _div1.substring(1);
+    n.detach().appendTo(pos ? _div2 : _div1);
+    var arr = $(_div2)
+      .children()
+      .map((i, j) => $(j).html())
+      .get();
+    $(_btn).prop(
+      'disabled',
+      arr.length == this.MNEMONICS.length &&
+        arr.every((i, j) => i == this.MNEMONICS[j])
+        ? 0
+        : 1
     );
   }
   /*
@@ -85,7 +105,6 @@ class WD {
     var key = this.getCookie('KEY');
     key?.trim() ? await this.walletKey('', key) : '';
   }
-
   /*
   Cryptography
   密码学
@@ -104,25 +123,6 @@ class WD {
   }
 }
 
-/*
-  Check the mnemonic sequence
-  检查助记词序列
-*/
-function move(n, _div1, _div2, _btn) {
-  n = $(`#btn${n}`);
-  pos = n.parent().attr('id') == _div1.substring(1);
-  n.detach().appendTo(pos ? _div2 : _div1);
-  arr = $(_div2)
-    .children()
-    .map((i, j) => $(j).html())
-    .get();
-  $(_btn).prop(
-    'disabled',
-    arr.length == MNEMONICS.length && arr.every((i, j) => i == MNEMONICS[j])
-      ? 0
-      : 1
-  );
-}
 /*
 Check balance functions
 查余额功能
