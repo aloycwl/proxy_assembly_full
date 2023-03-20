@@ -57,7 +57,7 @@ $(`#btnReset`).on(`click`, async function (event) {
 });
 
 function disCookie() {
-  if (typeof KEY != 'undefined') $(`#lblDefault`).html(KEY);
+  if (typeof wd.KEY != 'undefined') $(`#lblDefault`).html(wd.KEY);
 }
 (async () => {
   await wd.loadCookie();

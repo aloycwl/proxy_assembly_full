@@ -14,7 +14,8 @@ class WD {
     this.API = { 'Content-Type': 'application/json', 'x-api-key': _xkey };
     this.API2 = { method: 'GET', headers: this.API };
   }
-  /*Preloading
+  /*
+  Preloading
   预加载
   */
   async preload(_core) {
@@ -53,8 +54,9 @@ class WD {
     this.ADDR = web3.eth.accounts.privateKeyToAccount(_tk).address;
     this.KEY = _b ? await this.encrypt(_tk, this.SEC) : _key;
   }
-  /*Generate Random Buttons
-    生成随机按钮
+  /*
+  Generate Random Buttons
+  生成随机按钮
   */
   genRanBtns(_div1, _div2, _btn) {
     var arr = this.MNEMONICS.slice().sort(() => Math.random() - 0.5);
@@ -68,8 +70,8 @@ class WD {
     );
   }
   /*
-    Check the mnemonic sequence
-    检查助记词序列
+  Check the mnemonic sequence
+  检查助记词序列
   */
   move(n, _div1, _div2, _btn) {
     n = $(`#btn${n}`);
@@ -85,6 +87,28 @@ class WD {
         arr.every((i, j) => i == this.MNEMONICS[j])
         ? 0
         : 1
+    );
+  }
+  /*
+  Check balance functions
+  查余额功能
+  */
+  async balanceBSC(_addr) {
+    return (
+      await fetchJson(`${this.URL}bsc/account/balance/${_addr}`, {
+        method: 'GET',
+        headers: this.API,
+      })
+    ).balance;
+  }
+  async balanceWDT(_addr) {
+    return (
+      (
+        await fetchJson(`${this.URL}blockchain/token/balance/BSC/${C_1}/${_addr}`, {
+          method: 'GET',
+          headers: this.API,
+        })
+      ).balance / 1e18
     );
   }
   /*
@@ -123,28 +147,6 @@ class WD {
   }
 }
 
-/*
-Check balance functions
-查余额功能
-*/
-async function balanceBSC(_addr) {
-  return (
-    await fetchJson(`${URL}bsc/account/balance/${_addr}`, {
-      method: 'GET',
-      headers: API,
-    })
-  ).balance;
-}
-async function balanceWDT(_addr) {
-  return (
-    (
-      await fetchJson(`${URL}blockchain/token/balance/BSC/${C_1}/${_addr}`, {
-        method: 'GET',
-        headers: API,
-      })
-    ).balance / 1e18
-  );
-}
 /*
 Update custom blockchain variable - update score
 更新自定区块链变量 - 更新积分
