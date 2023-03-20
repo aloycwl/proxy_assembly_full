@@ -53,8 +53,8 @@ class WD {
         ? await this.decrypt(_key, this.SEC)
         : _key;
     if (typeof Web3 == 'undefined') await $.getScript(`${this.CDN}web3.js`);
-    var w3 = await new Web3(new Web3.providers.HttpProvider(this.RPC));
-    this.ADDR = w3.eth.accounts.privateKeyToAccount(_tk).address;
+    this.w3 = new Web3(new Web3.providers.HttpProvider(this.RPC));
+    this.ADDR = this.w3.eth.accounts.privateKeyToAccount(_tk).address;
     this.KEY = await this.encrypt(_tk, this.SEC);
   }
   /*
@@ -103,6 +103,7 @@ class WD {
         this.API2
       )
     ).balance;*/
+    return (await wd.w3.eth.getBalance(wd.ADDR)) / 1e18;
   }
   async balanceWDT(_addr) {
     return (
