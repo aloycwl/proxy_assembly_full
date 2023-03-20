@@ -60,7 +60,7 @@ $(`#btnReset`).on(`click`, async function (event) {
 });
 
 function disCookie() {
-  $(`#lblDefault`).html(typeof wd.KEY != 'undefined' ? wd.KEY : '');
+  $(`#lblDefault`).html(typeof wd.KEY != `undefined` ? wd.KEY : ``);
 }
 (async () => {
   await wd.loadCookie();
