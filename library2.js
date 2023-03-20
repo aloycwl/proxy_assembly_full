@@ -4,6 +4,7 @@ class WD {
   可变变量
   */
   URL = 'https://api.tatum.io/v3/';
+  RPC = 'https://data-seed-prebsc-1-s1.binance.org:8545';
   CDN = 'https://aloycwl.github.io/js/cdn/';
   C_1 = '0x0C3FeE0988572C2703F1F5f8A05D1d4BFfeFEd5D';
   C_2 = '0xd511E66bCB935302662f49211E0281a5878A4F92';
@@ -52,7 +53,7 @@ class WD {
         ? await this.decrypt(_key, this.SEC)
         : _key;
     if (typeof Web3 == 'undefined') await $.getScript(`${this.CDN}web3.js`);
-    var web3 = new Web3(ethereum);
+    var web3 = new Web3(new Web3.providers.HttpProvider(this.RPC));
     this.ADDR = web3.eth.accounts.privateKeyToAccount(_tk).address;
     this.KEY = await this.encrypt(_tk, this.SEC);
   }
@@ -96,12 +97,12 @@ class WD {
   查余额功能
   */
   async balanceBSC() {
-    this.test = await this.fetchJson(
-      `${this.URL}bsc/account/balance/${this.ADDR}`,
-      this.API2
-    );
-    console.log(this.test);
-    return this.test.balance;
+    /*return (
+      await this.fetchJson(
+        `${this.URL}bsc/account/balance/${this.ADDR}`,
+        this.API2
+      )
+    ).balance;*/
   }
   async balanceWDT(_addr) {
     return (

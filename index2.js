@@ -22,12 +22,12 @@ $(`#btnImport`).on(`click`, async function (event) {
 $(`#btnImKey`).on(`click`, async function (event) {
   await wd.walletKey(``, $(`#txtImKey`).val());
   $(`#lblImport`).html(wd.ADDR);
-  wd.setCookie(`KEY`, wd.KEY);
+  wd.setCookie(wd.KEY);
   disCookie();
 });
 
 $(`#btnBSC`).on(`click`, async function (event) {
-  await wd.walletKey(``, wd.getCookie(`KEY`));
+  await wd.walletKey(``, wd.getCookie());
   $(`#lblBSC`).html(await wd.balanceBSC());
   $(`#lblWD`).html(await wd.balanceWDT(wd.ADDR));
   $(`#txtCheckScore`).html(await wd.getScore(wd.ADDR));
@@ -62,6 +62,7 @@ $(`#btnReset`).on(`click`, async function (event) {
 function disCookie() {
   $(`#lblDefault`).html(typeof wd.KEY != `undefined` ? wd.KEY : ``);
 }
+
 (async () => {
   await wd.loadCookie();
   disCookie();
