@@ -9,7 +9,8 @@ class WD {
   C_1 = '0x0C3FeE0988572C2703F1F5f8A05D1d4BFfeFEd5D';
   C_2 = '0xd511E66bCB935302662f49211E0281a5878A4F92';
   SEC = `6UZn6&ohm_|ZKf?-:-|18nO%U("LEx`;
-  UINT = { internalType: 'uint256', name: '', type: 'uint256' };
+  V_U = { internalType: 'uint256', name: '', type: 'uint256' };
+  V_A = { internalType: 'address', name: '', type: 'address' };
   constructor(_core, _xkey) {
     this.preload(_core);
     this.API = { 'Content-Type': 'application/json', 'x-api-key': _xkey };
@@ -97,22 +98,25 @@ class WD {
   查余额功能
   */
   async balanceBSC() {
-    /*return (
-      await this.fetchJson(
-        `${this.URL}bsc/account/balance/${this.ADDR}`,
-        this.API2
-      )
-    ).balance;*/
-    return (await wd.w3.eth.getBalance(wd.ADDR)) / 1e18;
+    return this.w3.utils.fromWei(await wd.w3.eth.getBalance(wd.ADDR), 'ether');
   }
   async balanceWDT(_addr) {
-    return (
-      (
-        await this.fetchJson(
-          `${this.URL}blockchain/token/balance/BSC/${this.C_1}/${_addr}`,
-          this.API2
-        )
-      ).balance / 1e18
+    return this.w3.utils.fromWei(
+      await new this.w3.eth.Contract(
+        [
+          {
+            inputs: [this.V_A],
+            name: 'balanceOf',
+            outputs: [this.V_U],
+            stateMutability: 'view',
+            type: 'function',
+          },
+        ],
+        this.C_1
+      ).methods
+        .balanceOf(_addr)
+        .call(),
+      'ether'
     );
   }
   /*
@@ -163,9 +167,9 @@ class WD {
             contractAddress: this.C_2,
             methodName: 'score',
             methodABI: {
-              inputs: [{ internalType: 'address', name: '', type: 'address' }],
+              inputs: [this.V_A],
               name: 'score',
-              outputs: [this.UINT],
+              outputs: [this.V_U],
               stateMutability: 'view',
               type: 'function',
             },
@@ -189,7 +193,7 @@ class WD {
             contractAddress: this.C_2,
             methodName: 'setScore',
             methodABI: {
-              inputs: [this.UINT],
+              inputs: [this.V_U],
               name: 'setScore',
               outputs: [],
               stateMutability: '',
@@ -216,7 +220,7 @@ class WD {
             contractAddress: this.C_2,
             methodName: 'withdrawal',
             methodABI: {
-              inputs: [this.UINT],
+              inputs: [this.V_U],
               name: 'withdrawal',
               outputs: [],
               stateMutability: '',
