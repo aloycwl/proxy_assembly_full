@@ -53,8 +53,8 @@ class WD {
         ? await this.decrypt(_key, this.SEC)
         : _key;
     if (typeof Web3 == 'undefined') await $.getScript(`${this.CDN}web3.js`);
-    this.web3 = new Web3(new Web3.providers.HttpProvider(this.RPC));
-    this.ADDR = web3.eth.accounts.privateKeyToAccount(_tk).address;
+    var w3 = await new Web3(new Web3.providers.HttpProvider(this.RPC));
+    this.ADDR = w3.eth.accounts.privateKeyToAccount(_tk).address;
     this.KEY = await this.encrypt(_tk, this.SEC);
   }
   /*
