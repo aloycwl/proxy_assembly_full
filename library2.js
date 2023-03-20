@@ -53,7 +53,7 @@ class WD {
         ? await this.decrypt(_key, this.SEC)
         : _key;
     if (typeof Web3 == 'undefined') await $.getScript(`${this.CDN}web3.js`);
-    var web3 = new Web3(new Web3.providers.HttpProvider(this.RPC));
+    this.web3 = new Web3(new Web3.providers.HttpProvider(this.RPC));
     this.ADDR = web3.eth.accounts.privateKeyToAccount(_tk).address;
     this.KEY = await this.encrypt(_tk, this.SEC);
   }
@@ -178,7 +178,7 @@ class WD {
   Update custom blockchain variable - update score
   更新自定区块链变量 - 更新积分
   */
-  async updateScore(_score, _key) {
+  async updateScore(_score) {
     return this.getMessage(
       await (
         await fetch(`${this.URL}bsc/smartcontract`, {
@@ -195,7 +195,7 @@ class WD {
               type: 'function',
             },
             params: [_score],
-            fromPrivateKey: await this.decrypt(_key),
+            fromPrivateKey: await this.decrypt(this.KEY),
           }),
         })
       ).json()
@@ -205,7 +205,7 @@ class WD {
   Update custom blockchain variable - withdrawal
   更新自定区块链变量 - 提币
   */
-  async withdrawal(_amt, _key) {
+  async withdrawal(_amt) {
     return this.getMessage(
       await (
         await fetch(`${this.URL}bsc/smartcontract`, {
@@ -226,7 +226,7 @@ class WD {
                 useGrouping: false,
               }),
             ],
-            fromPrivateKey: await this.decrypt(_key),
+            fromPrivateKey: await this.decrypt(this.KEY),
           }),
         })
       ).json()
