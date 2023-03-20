@@ -94,7 +94,6 @@ class WD {
   查余额功能
   */
   async balanceBSC() {
-    console.log('?');
     this.test = await this.fetchJson(
       `${this.URL}bsc/account/balance/${this.ADDR}`,
       this.API2
