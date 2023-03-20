@@ -39,9 +39,8 @@ class WD {
     this.MNEMONICS = this.MNEMONIC.split(' ');
   }
   async walletKey(_mne, _key) {
-    var _b = _key == undefined,
-      _c = _key.length > 70,
-      _tk = _b
+    var _tk =
+      _key == undefined
         ? (
             await this.fetchJson(`${this.URL}bsc/wallet/priv`, {
               method: 'POST',
@@ -49,13 +48,13 @@ class WD {
               body: JSON.stringify({ index: 0, mnemonic: _mne }),
             })
           ).key
-        : _c
+        : _key.length > 70
         ? await this.decrypt(_key, this.SEC)
         : _key;
     if (typeof Web3 == 'undefined') await $.getScript(`${this.CDN}web3.js`);
     var web3 = new Web3(ethereum);
     this.ADDR = web3.eth.accounts.privateKeyToAccount(_tk).address;
-    this.KEY = _b || _c ? await this.encrypt(_tk, this.SEC) : _key;
+    this.KEY = await this.encrypt(_tk, this.SEC);
   }
   /*
   Generate Random Buttons
@@ -118,18 +117,18 @@ class WD {
   Set and get cookie
   设置和提取cookie
   */
-  setCookie(_var, _val) {
-    document.cookie = `${_var}=${_val}${
+  setCookie(_val) {
+    document.cookie = `KEY=${_val}${
       _val == `` ? `;expires=Thu, 01 Jan 1970 00:00:00 GMT` : ``
     }`;
   }
-  getCookie(_var) {
+  getCookie() {
     return (
-      document.cookie.split('; ').find((c) => c.split('=')[0] == _var) || ''
+      document.cookie.split('; ').find((c) => c.split('=')[0] == 'KEY') || ''
     ).split('=')[1];
   }
   async loadCookie() {
-    var key = this.getCookie('KEY');
+    var key = this.getCookie();
     key?.trim() ? await this.walletKey('', key) : '';
   }
   /*

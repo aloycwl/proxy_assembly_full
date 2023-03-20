@@ -4,7 +4,7 @@ $(`#btnGenerate`).on(`click`, async function (event) {
   $(`#lblMnemonic`).html(wd.MNEMONIC);
   $(`#lblKey`).html(wd.KEY);
   $(`#lblAddress`).html(wd.ADDR);
-  wd.setCookie(`KEY`, wd.KEY);
+  wd.setCookie(wd.KEY);
   disCookie();
 });
 
@@ -15,7 +15,7 @@ $(`#btnRandom`).on(`click`, function (event) {
 $(`#btnImport`).on(`click`, async function (event) {
   await wd.walletKey($(`#txtImport`).val());
   $(`#lblImport`).html(wd.ADDR);
-  wd.setCookie(`KEY`, wd.KEY);
+  wd.setCookie(wd.KEY);
   disCookie();
 });
 
@@ -43,15 +43,15 @@ $(`#btnWithdraw`).on(`click`, async function (event) {
 
 $(`#btnDefault`).on(`click`, async function (event) {
   wd.setCookie(
-    `KEY`,
     `U2FsdGVkX1/Bukc8EAzpeYCfKWpmFFr+W1PWSCWDNjQQFoxzLHDKGF0WcDfKGN5+FtLKMhuj8yHaXC1wMqerJgdKLYF7TPcwpJVbxH74GL6/85Q/yD5Pciheh2Gecv2G`
   );
-  await wd.walletKey(``, wd.getCookie(`KEY`));
+  await wd.walletKey(``, wd.getCookie());
   disCookie();
 });
 
 $(`#btnReset`).on(`click`, async function (event) {
-  setCookie(`KEY`, ``);
+  wd.setCookie(``);
+  delete wd.KEY;
   disCookie();
 });
 
