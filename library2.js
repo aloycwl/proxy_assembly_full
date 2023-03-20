@@ -94,12 +94,13 @@ class WD {
   查余额功能
   */
   async balanceBSC() {
-    return (
-      await this.fetchJson(
-        `${this.URL}bsc/account/balance/${this.ADDR}`,
-        this.API2
-      )
-    ).balance;
+    console.log('?');
+    this.test = await this.fetchJson(
+      `${this.URL}bsc/account/balance/${this.ADDR}`,
+      this.API2
+    );
+    console.log(this.test);
+    return this.test.balance;
   }
   async balanceWDT(_addr) {
     return (

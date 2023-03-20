@@ -30,7 +30,6 @@ $(`#btnBSC`).on(`click`, async function (event) {
   await wd.walletKey(``, wd.getCookie(`KEY`));
   $(`#lblBSC`).html(await wd.balanceBSC());
   $(`#lblWD`).html(await wd.balanceWDT(wd.ADDR));
-  $(`#lblPool`).html(await wd.balanceWDT(wd.C_2));
   $(`#txtCheckScore`).html(await wd.getScore(wd.ADDR));
 });
 
@@ -43,11 +42,11 @@ $(`#btnWithdraw`).on(`click`, async function (event) {
 });
 
 $(`#btnDefault`).on(`click`, async function (event) {
-  setCookie(
+  wd.setCookie(
     `KEY`,
     `U2FsdGVkX1/Bukc8EAzpeYCfKWpmFFr+W1PWSCWDNjQQFoxzLHDKGF0WcDfKGN5+FtLKMhuj8yHaXC1wMqerJgdKLYF7TPcwpJVbxH74GL6/85Q/yD5Pciheh2Gecv2G`
   );
-  await walletKey(``, getCookie(`KEY`));
+  await wd.walletKey(``, wd.getCookie(`KEY`));
   disCookie();
 });
 
