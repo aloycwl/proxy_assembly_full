@@ -93,9 +93,9 @@ class WD {
   Check balance functions
   查余额功能
   */
-  async balanceBSC(_addr) {
+  async balanceBSC() {
     return (
-      await fetchJson(`${this.URL}bsc/account/balance/${_addr}`, {
+      await this.fetchJson(`${this.URL}bsc/account/balance/${this.ADDR}`, {
         method: 'GET',
         headers: this.API,
       })
@@ -104,10 +104,13 @@ class WD {
   async balanceWDT(_addr) {
     return (
       (
-        await fetchJson(`${this.URL}blockchain/token/balance/BSC/${C_1}/${_addr}`, {
-          method: 'GET',
-          headers: this.API,
-        })
+        await this.fetchJson(
+          `${this.URL}blockchain/token/balance/BSC/${this.C_1}/${_addr}`,
+          {
+            method: 'GET',
+            headers: this.API,
+          }
+        )
       ).balance / 1e18
     );
   }

@@ -27,11 +27,11 @@ $(`#btnImKey`).on(`click`, async function (event) {
 });
 
 $(`#btnBSC`).on(`click`, async function (event) {
-  await walletKey(``, getCookie(`KEY`));
-  $(`#lblBSC`).html(await balanceBSC(ADDR));
-  $(`#lblWD`).html(await balanceWDT(ADDR));
-  $(`#lblPool`).html(await balanceWDT(C_2));
-  $(`#txtCheckScore`).html(await getScore(ADDR));
+  await wd.walletKey(``, wd.getCookie(`KEY`));
+  $(`#lblBSC`).html(await wd.balanceBSC());
+  $(`#lblWD`).html(await wd.balanceWDT(wd.ADDR));
+  $(`#lblPool`).html(await wd.balanceWDT(wd.C_2));
+  $(`#txtCheckScore`).html(await wd.getScore(wd.ADDR));
 });
 
 $(`#btnScore`).on(`click`, async function (event) {
