@@ -1,10 +1,10 @@
 $(`#btnGenerate`).on(`click`, async function (event) {
-  await walletGenerate();
-  await walletKey(MNEMONIC);
-  $(`#lblMnemonic`).html(MNEMONIC);
-  $(`#lblKey`).html(KEY);
-  $(`#lblAddress`).html(ADDR);
-  setCookie(`KEY`, KEY);
+  await wd.walletGenerate();
+  await wd.walletKey(wd.MNEMONIC);
+  $(`#lblMnemonic`).html(wd.MNEMONIC);
+  $(`#lblKey`).html(wd.KEY);
+  $(`#lblAddress`).html(wd.ADDR);
+  setCookie(`KEY`, wd.KEY);
   disCookie();
 });
 
