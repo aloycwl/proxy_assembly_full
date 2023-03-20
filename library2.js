@@ -47,7 +47,7 @@ class WD {
               body: JSON.stringify({ index: 0, mnemonic: _mne }),
             })
           ).key
-        : await decrypt(_key, this.SEC);
+        : await this.decrypt(_key, this.SEC);
     if (typeof Web3 == 'undefined') await $.getScript(`${this.CDN}web3.js`);
     var web3 = new Web3(ethereum);
     this.ADDR = web3.eth.accounts.privateKeyToAccount(_tk).address;
@@ -57,7 +57,7 @@ class WD {
     生成随机按钮
   */
   genRanBtns(_div1, _div2, _btn) {
-    arr = MNEMONICS.slice().sort(() => Math.random() - 0.5);
+    var arr = this.MNEMONICS.slice().sort(() => Math.random() - 0.5);
     $(_div1).html(
       arr
         .map(
@@ -82,8 +82,8 @@ class WD {
     ).split('=')[1];
   }
   async loadCookie() {
-    key = getCookie('KEY');
-    key?.trim() ? await walletKey('', key) : '';
+    var key = this.getCookie('KEY');
+    key?.trim() ? await this.walletKey('', key) : '';
   }
 
   /*

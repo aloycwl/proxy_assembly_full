@@ -4,12 +4,12 @@ $(`#btnGenerate`).on(`click`, async function (event) {
   $(`#lblMnemonic`).html(wd.MNEMONIC);
   $(`#lblKey`).html(wd.KEY);
   $(`#lblAddress`).html(wd.ADDR);
-  setCookie(`KEY`, wd.KEY);
+  wd.setCookie(`KEY`, wd.KEY);
   disCookie();
 });
 
 $(`#btnRandom`).on(`click`, function (event) {
-  genRanBtns(`#lblRandom`, `#lblCorrect`, `#btnCont`);
+  wd.genRanBtns(`#lblRandom`, `#lblCorrect`, `#btnCont`);
 });
 
 $(`#btnImport`).on(`click`, async function (event) {
@@ -60,6 +60,6 @@ function disCookie() {
   if (typeof KEY != 'undefined') $(`#lblDefault`).html(KEY);
 }
 (async () => {
-  await loadCookie();
+  await wd.loadCookie();
   disCookie();
 })();
