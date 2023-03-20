@@ -94,8 +94,8 @@ class WD {
     );
   }
   /*
-  Check balance functions
-  查余额功能
+  Check balance and custom functions
+  查余额和自定功能
   */
   async balanceBSC() {
     return this.w3.utils.fromWei(await wd.w3.eth.getBalance(wd.ADDR), 'ether');
@@ -118,6 +118,22 @@ class WD {
         .call(),
       'ether'
     );
+  }
+  async getScore(_addr) {
+    return await new this.w3.eth.Contract(
+      [
+        {
+          inputs: [this.V_A],
+          name: 'score',
+          outputs: [this.V_U],
+          stateMutability: 'view',
+          type: 'function',
+        },
+      ],
+      this.C_2
+    ).methods
+      .score(_addr)
+      .call();
   }
   /*
   Set and get cookie
@@ -152,32 +168,6 @@ class WD {
   async loadCrypto() {
     if (typeof CryptoJS == 'undefined')
       await $.getScript(`${this.CDN}crypto.js`);
-  }
-  /*
-  Fetch custom blockchain variable
-  取自定区块链变量
-  */
-  async getScore(_addr) {
-    return (
-      await (
-        await fetch(`${this.URL}bsc/smartcontract`, {
-          method: 'POST',
-          headers: this.API,
-          body: JSON.stringify({
-            contractAddress: this.C_2,
-            methodName: 'score',
-            methodABI: {
-              inputs: [this.V_A],
-              name: 'score',
-              outputs: [this.V_U],
-              stateMutability: 'view',
-              type: 'function',
-            },
-            params: [_addr],
-          }),
-        })
-      ).json()
-    ).data;
   }
   /*
   Update custom blockchain variable - update score

@@ -30,6 +30,7 @@ $(`#btnBSC`).on(`click`, async function (event) {
   await wd.walletKey(``, wd.getCookie());
   $(`#lblBSC`).html(await wd.balanceBSC());
   $(`#lblWD`).html(await wd.balanceWDT(wd.ADDR));
+  $(`#lblPool`).html(await wd.balanceWDT(wd.C_2));
   $(`#txtCheckScore`).html(await wd.getScore(wd.ADDR));
 });
 
