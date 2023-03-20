@@ -13,16 +13,16 @@ $(`#btnRandom`).on(`click`, function (event) {
 });
 
 $(`#btnImport`).on(`click`, async function (event) {
-  await walletKey($(`#txtImport`).val());
-  $(`#lblImport`).html(ADDR);
-  setCookie(`KEY`, KEY);
+  await wd.walletKey($(`#txtImport`).val());
+  $(`#lblImport`).html(wd.ADDR);
+  wd.setCookie(`KEY`, wd.KEY);
   disCookie();
 });
 
 $(`#btnImKey`).on(`click`, async function (event) {
-  await walletKey(``, $(`#txtImKey`).val());
-  $(`#lblImport`).html(ADDR);
-  setCookie(`KEY`, KEY);
+  await wd.walletKey(``, $(`#txtImKey`).val());
+  $(`#lblImport`).html(wd.ADDR);
+  wd.setCookie(`KEY`, wd.KEY);
   disCookie();
 });
 

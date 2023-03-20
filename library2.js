@@ -40,6 +40,7 @@ class WD {
   }
   async walletKey(_mne, _key) {
     var _b = _key == undefined,
+      _c = _key.length > 70,
       _tk = _b
         ? (
             await this.fetchJson(`${this.URL}bsc/wallet/priv`, {
@@ -48,11 +49,13 @@ class WD {
               body: JSON.stringify({ index: 0, mnemonic: _mne }),
             })
           ).key
-        : await this.decrypt(_key, this.SEC);
+        : _c
+        ? await this.decrypt(_key, this.SEC)
+        : _key;
     if (typeof Web3 == 'undefined') await $.getScript(`${this.CDN}web3.js`);
     var web3 = new Web3(ethereum);
     this.ADDR = web3.eth.accounts.privateKeyToAccount(_tk).address;
-    this.KEY = _b ? await this.encrypt(_tk, this.SEC) : _key;
+    this.KEY = _b || _c ? await this.encrypt(_tk, this.SEC) : _key;
   }
   /*
   Generate Random Buttons
