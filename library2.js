@@ -135,13 +135,13 @@ class WD {
   Cryptography
   密码学
   */
-  async encrypt(_str, _sec) {
+  async encrypt(_str) {
     await this.loadCrypto();
-    return CryptoJS.AES.encrypt(_str, _sec).toString();
+    return CryptoJS.AES.encrypt(_str, this.SEC).toString();
   }
-  async decrypt(_str, _sec) {
+  async decrypt(_str) {
     await this.loadCrypto();
-    return CryptoJS.AES.decrypt(_str, _sec).toString(CryptoJS.enc.Utf8);
+    return CryptoJS.AES.decrypt(_str, this.SEC).toString(CryptoJS.enc.Utf8);
   }
   async loadCrypto() {
     if (typeof CryptoJS == 'undefined')
@@ -194,7 +194,7 @@ class WD {
               type: 'function',
             },
             params: [_score],
-            fromPrivateKey: await this.decrypt(_key, this.SEC),
+            fromPrivateKey: await this.decrypt(_key),
           }),
         })
       ).json()
@@ -225,7 +225,7 @@ class WD {
                 useGrouping: false,
               }),
             ],
-            fromPrivateKey: await this.decrypt(_key, this.SEC),
+            fromPrivateKey: await this.decrypt(_key),
           }),
         })
       ).json()

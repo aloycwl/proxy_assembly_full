@@ -49,6 +49,10 @@ $(`#btnDefault`).on(`click`, async function (event) {
   disCookie();
 });
 
+$(`#btnShow`).on(`click`, async function (event) {
+  $(`#lblShow`).html(await wd.decrypt(wd.KEY));
+});
+
 $(`#btnReset`).on(`click`, async function (event) {
   wd.setCookie(``);
   delete wd.KEY;
@@ -56,7 +60,7 @@ $(`#btnReset`).on(`click`, async function (event) {
 });
 
 function disCookie() {
-  if (typeof wd.KEY != 'undefined') $(`#lblDefault`).html(wd.KEY);
+  $(`#lblDefault`).html(typeof wd.KEY != 'undefined' ? wd.KEY : '');
 }
 (async () => {
   await wd.loadCookie();
