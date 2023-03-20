@@ -145,6 +145,32 @@ class WD {
     if (typeof CryptoJS == 'undefined')
       await $.getScript(`${this.CDN}crypto.js`);
   }
+  /*
+  Fetch custom blockchain variable
+  取自定区块链变量
+  */
+  async getScore(_addr) {
+    return (
+      await (
+        await fetch(`${this.URL}bsc/smartcontract`, {
+          method: 'POST',
+          headers: this.API,
+          body: JSON.stringify({
+            contractAddress: this.C_2,
+            methodName: 'score',
+            methodABI: {
+              inputs: [{ internalType: 'address', name: '', type: 'address' }],
+              name: 'score',
+              outputs: [this.UINT],
+              stateMutability: 'view',
+              type: 'function',
+            },
+            params: [_addr],
+          }),
+        })
+      ).json()
+    ).data;
+  }
 }
 
 /*
@@ -215,30 +241,4 @@ function getMessage(_json) {
     : _json.hasOwnProperty(`cause`)
     ? _json.cause
     : _json.message;
-}
-/*
-Fetch custom blockchain variable
-取自定区块链变量
-*/
-async function getScore(_addr) {
-  return (
-    await (
-      await fetch(`${URL}bsc/smartcontract`, {
-        method: 'POST',
-        headers: API,
-        body: JSON.stringify({
-          contractAddress: C_2,
-          methodName: 'score',
-          methodABI: {
-            inputs: [{ internalType: 'address', name: '', type: 'address' }],
-            name: 'score',
-            outputs: [UINT],
-            stateMutability: 'view',
-            type: 'function',
-          },
-          params: [_addr],
-        }),
-      })
-    ).json()
-  ).data;
 }
