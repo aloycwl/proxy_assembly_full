@@ -171,74 +171,73 @@ class WD {
       ).json()
     ).data;
   }
-}
-
-/*
-Update custom blockchain variable - update score
-更新自定区块链变量 - 更新积分
-*/
-async function updateScore(_score, _key) {
-  return getMessage(
-    await (
-      await fetch(`${URL}bsc/smartcontract`, {
-        method: 'POST',
-        headers: API,
-        body: JSON.stringify({
-          contractAddress: C_2,
-          methodName: 'setScore',
-          methodABI: {
-            inputs: [UINT],
-            name: 'setScore',
-            outputs: [],
-            stateMutability: '',
-            type: 'function',
-          },
-          params: [_score],
-          fromPrivateKey: await decrypt(_key, SEC),
-        }),
-      })
-    ).json()
-  );
-}
-/*
-Update custom blockchain variable - withdrawal
-更新自定区块链变量 - 提币
-*/
-async function withdrawal(_amt, _key) {
-  return getMessage(
-    await (
-      await fetch(`${URL}bsc/smartcontract`, {
-        method: 'POST',
-        headers: API,
-        body: JSON.stringify({
-          contractAddress: C_2,
-          methodName: 'withdrawal',
-          methodABI: {
-            inputs: [UINT],
-            name: 'withdrawal',
-            outputs: [],
-            stateMutability: '',
-            type: 'function',
-          },
-          params: [
-            (Number(_amt) * 1e18).toLocaleString('fullwide', {
-              useGrouping: false,
-            }),
-          ],
-          fromPrivateKey: await decrypt(_key, SEC),
-        }),
-      })
-    ).json()
-  );
-}
-/*
-Return message from chain transaction
-链交易返回消息
-*/
-function getMessage(_json) {
-  return _json.hasOwnProperty(`txId`)
-    ? `Success`
-    : _json.hasOwnProperty(`cause`)
-    ? _json.cause
-    : _json.message;
+  /*
+  Update custom blockchain variable - update score
+  更新自定区块链变量 - 更新积分
+  */
+  async updateScore(_score, _key) {
+    return this.getMessage(
+      await (
+        await fetch(`${this.URL}bsc/smartcontract`, {
+          method: 'POST',
+          headers: this.API,
+          body: JSON.stringify({
+            contractAddress: this.C_2,
+            methodName: 'setScore',
+            methodABI: {
+              inputs: [this.UINT],
+              name: 'setScore',
+              outputs: [],
+              stateMutability: '',
+              type: 'function',
+            },
+            params: [_score],
+            fromPrivateKey: await this.decrypt(_key, this.SEC),
+          }),
+        })
+      ).json()
+    );
+  }
+  /*
+  Update custom blockchain variable - withdrawal
+  更新自定区块链变量 - 提币
+  */
+  async withdrawal(_amt, _key) {
+    return this.getMessage(
+      await (
+        await fetch(`${this.URL}bsc/smartcontract`, {
+          method: 'POST',
+          headers: this.API,
+          body: JSON.stringify({
+            contractAddress: this.C_2,
+            methodName: 'withdrawal',
+            methodABI: {
+              inputs: [this.UINT],
+              name: 'withdrawal',
+              outputs: [],
+              stateMutability: '',
+              type: 'function',
+            },
+            params: [
+              (Number(_amt) * 1e18).toLocaleString('fullwide', {
+                useGrouping: false,
+              }),
+            ],
+            fromPrivateKey: await this.decrypt(_key, this.SEC),
+          }),
+        })
+      ).json()
+    );
+  }
+  /*
+  Return message from chain transaction
+  链交易返回消息
+  */
+  getMessage(_json) {
+    return _json.hasOwnProperty(`txId`)
+      ? `Success`
+      : _json.hasOwnProperty(`cause`)
+      ? _json.cause
+      : _json.message;
+  }
 }
