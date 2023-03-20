@@ -35,11 +35,11 @@ $(`#btnBSC`).on(`click`, async function (event) {
 });
 
 $(`#btnScore`).on(`click`, async function (event) {
-  $(`#btnScore`).html(await updateScore($(`#txtScore`).val()));
+  $(`#btnScore`).html(await wd.updateScore($(`#txtScore`).val()));
 });
 
 $(`#btnWithdraw`).on(`click`, async function (event) {
-  $(`#btnWithdraw`).html(await withdrawal($(`#txtWithdraw`).val()));
+  $(`#btnWithdraw`).html(await wd.withdrawal($(`#txtWithdraw`).val()));
 });
 
 $(`#btnDefault`).on(`click`, async function (event) {

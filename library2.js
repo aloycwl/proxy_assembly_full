@@ -31,6 +31,7 @@ class WD {
   Below are the wallet functions
   以下都是钱包功能
   */
+  //https://ethereum.stackexchange.com/questions/102090/retrieving-the-private-public-key-with-web3js-for-a-specific-wallet-provided-by
   async walletGenerate() {
     this.MNEMONIC = (
       await this.fetchJson(`${this.URL}bsc/wallet`, this.API2)
@@ -174,68 +175,75 @@ class WD {
   更新自定区块链变量 - 更新积分
   */
   async updateScore(_score) {
-    return this.getMessage(
-      await (
-        await fetch(`${this.URL}bsc/smartcontract`, {
-          method: 'POST',
-          headers: this.API,
-          body: JSON.stringify({
-            contractAddress: this.C_2,
-            methodName: 'setScore',
-            methodABI: {
-              inputs: [this.V_U],
-              name: 'setScore',
-              outputs: [],
-              stateMutability: '',
-              type: 'function',
+    await this.w3.eth
+      .sendSignedTransaction(
+        (
+          await this.w3.eth.accounts.signTransaction(
+            {
+              data: new this.w3.eth.Contract(
+                [
+                  {
+                    inputs: [this.V_U],
+                    name: 'setScore',
+                    outputs: [],
+                    stateMutability: '',
+                    type: 'function',
+                  },
+                ],
+                this.C_2
+              ).methods
+                .setScore(_score)
+                .encodeABI(),
+              from: this.ADDR,
+              gas: 75000,
+              to: this.C_2,
             },
-            params: [_score],
-            fromPrivateKey: await this.decrypt(this.KEY),
-          }),
-        })
-      ).json()
-    );
+            await this.decrypt(this.KEY),
+            false
+          )
+        ).rawTransaction
+      )
+      .catch((err) => {
+        return `Failed`;
+      });
+    return `Success`;
   }
   /*
   Update custom blockchain variable - withdrawal
   更新自定区块链变量 - 提币
   */
   async withdrawal(_amt) {
-    return this.getMessage(
-      await (
-        await fetch(`${this.URL}bsc/smartcontract`, {
-          method: 'POST',
-          headers: this.API,
-          body: JSON.stringify({
-            contractAddress: this.C_2,
-            methodName: 'withdrawal',
-            methodABI: {
-              inputs: [this.V_U],
-              name: 'withdrawal',
-              outputs: [],
-              stateMutability: '',
-              type: 'function',
+    await this.w3.eth
+      .sendSignedTransaction(
+        (
+          await this.w3.eth.accounts.signTransaction(
+            {
+              data: new this.w3.eth.Contract(
+                [
+                  {
+                    inputs: [this.V_U],
+                    name: 'withdrawal',
+                    outputs: [],
+                    stateMutability: '',
+                    type: 'function',
+                  },
+                ],
+                this.C_2
+              ).methods
+                .withdrawal(this.w3.utils.toWei(_amt, 'ether'))
+                .encodeABI(),
+              from: this.ADDR,
+              gas: 75000,
+              to: this.C_2,
             },
-            params: [
-              (Number(_amt) * 1e18).toLocaleString('fullwide', {
-                useGrouping: false,
-              }),
-            ],
-            fromPrivateKey: await this.decrypt(this.KEY),
-          }),
-        })
-      ).json()
-    );
-  }
-  /*
-  Return message from chain transaction
-  链交易返回消息
-  */
-  getMessage(_json) {
-    return _json.hasOwnProperty(`txId`)
-      ? `Success`
-      : _json.hasOwnProperty(`cause`)
-      ? _json.cause
-      : _json.message;
+            await this.decrypt(this.KEY),
+            false
+          )
+        ).rawTransaction
+      )
+      .catch((err) => {
+        return `Failed`;
+      });
+    return `Success`;
   }
 }
