@@ -95,10 +95,10 @@ class WD {
   */
   async balanceBSC() {
     return (
-      await this.fetchJson(`${this.URL}bsc/account/balance/${this.ADDR}`, {
-        method: 'GET',
-        headers: this.API,
-      })
+      await this.fetchJson(
+        `${this.URL}bsc/account/balance/${this.ADDR}`,
+        this.API2
+      )
     ).balance;
   }
   async balanceWDT(_addr) {
@@ -106,10 +106,7 @@ class WD {
       (
         await this.fetchJson(
           `${this.URL}blockchain/token/balance/BSC/${this.C_1}/${_addr}`,
-          {
-            method: 'GET',
-            headers: this.API,
-          }
+          this.API2
         )
       ).balance / 1e18
     );
