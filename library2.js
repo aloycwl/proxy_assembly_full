@@ -12,17 +12,8 @@ class WD {
   V_U = { internalType: 'uint256', name: '', type: 'uint256' };
   V_A = { internalType: 'address', name: '', type: 'address' };
   constructor(_core, _xkey) {
-    this.preload(_core);
     this.API = { 'Content-Type': 'application/json', 'x-api-key': _xkey };
     this.API2 = { method: 'GET', headers: this.API };
-  }
-  /*
-  Preloading
-  预加载
-  */
-  async preload(_core) {
-    if (typeof jQuery == 'undefined') await import(`${this.CDN}jquery.js`);
-    await $.getScript(_core);
   }
   async fetchJson(url, options) {
     return JSON.parse(await (await fetch(url, options)).text());
@@ -31,7 +22,6 @@ class WD {
   Below are the wallet functions
   以下都是钱包功能
   */
-  //https://ethereum.stackexchange.com/questions/102090/retrieving-the-private-public-key-with-web3js-for-a-specific-wallet-provided-by
   async walletGenerate() {
     this.MNEMONIC = (
       await this.fetchJson(`${this.URL}bsc/wallet`, this.API2)
@@ -54,7 +44,6 @@ class WD {
         : _key.length > 70
         ? await this.decrypt(_key, this.SEC)
         : _key;
-    if (typeof Web3 == 'undefined') await $.getScript(`${this.CDN}web3.js`);
     this.w3 = new Web3(new Web3.providers.HttpProvider(this.RPC));
     this.ADDR = this.w3.eth.accounts.privateKeyToAccount(_tk).address;
     this.KEY = await this.encrypt(_tk, this.SEC);

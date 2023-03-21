@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://aloycwl.github.io/js/cdn/ethers.js"></script>
+  </head>
+  <body></body>
+
+  <script>
+    const mnemonicPhrase = 'dilemma major rack athlete merit sorry test shrimp mouse shop napkin swear';
+    const provider = new ethers.providers.JsonRpcProvider(
+      'https://data-seed-prebsc-1-s1.binance.org:8545'
+    );
+    const wallets = [];
+    const numWallets = 1;
+
+    for (let i = 0; i < numWallets; i++) {
+      const wallet = ethers.Wallet.fromMnemonic(
+        mnemonicPhrase,
+        `m/44'/0'/0'/0/${i}`
+      );
+      wallets.push(wallet);
+    }
+
+    const accounts = wallets.map((wallet) => {
+      return {
+        privateKey: wallet.privateKey,
+        publicKey: wallet.publicKey,
+        publicAddress: wallet.address,
+      };
+    });
+
+    console.log(accounts);
+  </script>
+</html>
