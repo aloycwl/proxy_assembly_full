@@ -6,14 +6,12 @@
   <body></body>
 
   <script>
-    const mnemonicPhrase =
-      'make glance mandate anchor enlist scrap length best capable first wheat obscure';
-    /*const provider = new ethers.providers.JsonRpcProvider(
+    const provider = new ethers.providers.JsonRpcProvider(
       'https://data-seed-prebsc-1-s1.binance.org:8545'
-    );*/
+    );
 
     const wallet = ethers.Wallet.fromMnemonic(
-      mnemonicPhrase,
+      'make glance mandate anchor enlist scrap length best capable first wheat obscure',
       `m/44'/60'/0'/0/0`
     );
 

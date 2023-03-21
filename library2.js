@@ -23,12 +23,7 @@ class WD {
   以下都是钱包功能
   */
   async walletGenerate() {
-    this.MNEMONIC = (
-      await this.fetchJson(`${this.URL}bsc/wallet`, this.API2)
-    ).mnemonic
-      .split(' ')
-      .splice(0, 12)
-      .join(' ');
+    this.MNEMONIC = ethers.Wallet.createRandom().mnemonic.phrase;
     this.MNEMONICS = this.MNEMONIC.split(' ');
   }
   async walletKey(_mne, _key) {
