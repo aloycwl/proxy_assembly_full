@@ -37,35 +37,27 @@ class WD {
   生成随机按钮
   */
   genRanBtns(_div1, _div2, _btn) {
-    var arr = this.MNEMONICS.slice().sort(() => Math.random() - 0.5);
-    $(_div1).html(
-      arr
-        .map(
-          (w, i) =>
-            `<button id=btn${i} onclick=wd.move(${i},'${_div1}','${_div2}','${_btn}')>${w}</button>`
-        )
-        .join('')
-    );
+    document.querySelector(_div1).innerHTML = this.MNEMONICS.slice()
+      .sort(() => Math.random() - 0.5)
+      .map(
+        (w, i) =>
+          `<button id="btn${i}" onclick="wd.move(${i},'${_div1}','${_div2}','${_btn}')">${w}</button>`
+      )
+      .join('');
   }
   /*
   Check the mnemonic sequence
   检查助记词序列
   */
   move(n, _div1, _div2, _btn) {
-    n = $(`#btn${n}`);
-    var pos = n.parent().attr('id') == _div1.substring(1);
-    n.detach().appendTo(pos ? _div2 : _div1);
-    var arr = $(_div2)
-      .children()
-      .map((i, j) => $(j).html())
-      .get();
-    $(_btn).prop(
-      'disabled',
-      arr.length == this.MNEMONICS.length &&
-        arr.every((i, j) => i == this.MNEMONICS[j])
-        ? 0
-        : 1
+    n = document.getElementById(`btn${n}`);
+    var pos = n.parentElement.id == _div1.substring(1);
+    document.querySelector(pos ? _div2 : _div1).appendChild(n);
+    var arr = Array.from(document.querySelector(_div2).children).map(
+      (j) => j.innerHTML
     );
+    document.getElementById(_btn.substring(1)).disabled =
+      arr.length > 11 && arr.every((i, j) => i == this.MNEMONICS[j]) ? 0 : 1;
   }
   /*
   Check balance and custom functions
