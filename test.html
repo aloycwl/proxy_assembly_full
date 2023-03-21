@@ -6,18 +6,31 @@
   <body></body>
 
   <script>
-    const provider = new ethers.providers.JsonRpcProvider(
-      'https://data-seed-prebsc-1-s1.binance.org:8545'
-    );
+    async function load() {
+      const provider = new ethers.providers.JsonRpcProvider(
+        'https://data-seed-prebsc-1-s1.binance.org:8545'
+      );
 
-    const wallet = ethers.Wallet.fromMnemonic(
-      'make glance mandate anchor enlist scrap length best capable first wheat obscure',
-      `m/44'/60'/0'/0/0`
-    );
+      // Get the balance of the user's tokens
+      const balance = ethers.utils.formatEther(
+        await new ethers.Contract(
+          '0x0C3FeE0988572C2703F1F5f8A05D1d4BFfeFEd5D',
+          [
+            {
+              inputs: [{ internalType: 'address', name: '', type: 'address' }],
+              name: 'balanceOf',
+              outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+              stateMutability: 'view',
+              type: 'function',
+            },
+          ],
+          provider
+        ).balanceOf('0x2b89c69bC7bAACe9862a0F1f862F4b8ce5A6aB4d')
+      );
 
-    console.log(wallet.privateKey);
-    console.log(wallet.address);
-
-    console.log(ethers.Wallet.createRandom().mnemonic.phrase);
+      // Print the resulting balance to the console
+      console.log('Balance:', balance.toString());
+    }
+    load();
   </script>
 </html>

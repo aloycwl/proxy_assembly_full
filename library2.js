@@ -3,7 +3,6 @@ class WD {
   Changeable variables
   可变变量
   */
-  URL = 'https://api.tatum.io/v3/';
   RPC = 'https://data-seed-prebsc-1-s1.binance.org:8545';
   CDN = 'https://aloycwl.github.io/js/cdn/';
   C_1 = '0x0C3FeE0988572C2703F1F5f8A05D1d4BFfeFEd5D';
@@ -11,9 +10,10 @@ class WD {
   SEC = `6UZn6&ohm_|ZKf?-:-|18nO%U("LEx`;
   V_U = { internalType: 'uint256', name: '', type: 'uint256' };
   V_A = { internalType: 'address', name: '', type: 'address' };
-  constructor(_core, _xkey) {
-    this.API = { 'Content-Type': 'application/json', 'x-api-key': _xkey };
-    this.API2 = { method: 'GET', headers: this.API };
+  constructor() {
+    //temp
+    this.w3 = new Web3(new Web3.providers.HttpProvider(this.RPC));
+    this.ep = new ethers.providers.JsonRpcProvider(this.RPC);
   }
   async fetchJson(url, options) {
     return JSON.parse(await (await fetch(url, options)).text());
@@ -29,18 +29,11 @@ class WD {
   async walletKey(_mne, _key) {
     var _tk =
       _key == undefined
-        ? (
-            await this.fetchJson(`${this.URL}bsc/wallet/priv`, {
-              method: 'POST',
-              headers: this.API,
-              body: JSON.stringify({ index: 0, mnemonic: _mne }),
-            })
-          ).key
+        ? ethers.Wallet.fromMnemonic(_mne, `m/44'/60'/0'/0/0`).privateKey
         : _key.length > 70
         ? await this.decrypt(_key, this.SEC)
         : _key;
-    this.w3 = new Web3(new Web3.providers.HttpProvider(this.RPC));
-    this.ADDR = this.w3.eth.accounts.privateKeyToAccount(_tk).address;
+    this.ADDR = new ethers.Wallet(_tk).address;
     this.KEY = await this.encrypt(_tk, this.SEC);
   }
   /*
@@ -83,11 +76,12 @@ class WD {
   查余额和自定功能
   */
   async balanceBSC() {
-    return this.w3.utils.fromWei(await wd.w3.eth.getBalance(wd.ADDR), 'ether');
+    return ethers.utils.formatEther(await this.ep.getBalance(wd.ADDR));
   }
   async balanceWDT(_addr) {
-    return this.w3.utils.fromWei(
-      await new this.w3.eth.Contract(
+    return ethers.utils.formatEther(
+      await new ethers.Contract(
+        this.C_1,
         [
           {
             inputs: [this.V_A],
@@ -97,28 +91,27 @@ class WD {
             type: 'function',
           },
         ],
-        this.C_1
-      ).methods
-        .balanceOf(_addr)
-        .call(),
-      'ether'
+        this.ep
+      ).balanceOf(_addr)
     );
   }
   async getScore(_addr) {
-    return await new this.w3.eth.Contract(
-      [
-        {
-          inputs: [this.V_A],
-          name: 'score',
-          outputs: [this.V_U],
-          stateMutability: 'view',
-          type: 'function',
-        },
-      ],
-      this.C_2
-    ).methods
-      .score(_addr)
-      .call();
+    return ethers.utils.formatUnits(
+      await new ethers.Contract(
+        this.C_2,
+        [
+          {
+            inputs: [this.V_A],
+            name: 'score',
+            outputs: [this.V_U],
+            stateMutability: 'view',
+            type: 'function',
+          },
+        ],
+        this.ep
+      ).score(_addr),
+      'wei'
+    );
   }
   /*
   Set and get cookie
