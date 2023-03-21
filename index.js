@@ -1,65 +1,72 @@
+wd = new WD(`index2.js`, `f1384f0e-abd1-4d69-bb64-4682beb7fde4`);
+
 $(`#btnGenerate`).on(`click`, async function (event) {
-  await walletGenerate();
-  await walletKey(MNEMONIC);
-  $(`#lblMnemonic`).html(MNEMONIC);
-  $(`#lblKey`).html(KEY);
-  $(`#lblAddress`).html(ADDR);
-  setCookie(`KEY`, KEY);
+  await wd.walletGenerate();
+  await wd.walletKey(wd.MNEMONIC);
+  $(`#lblMnemonic`).html(wd.MNEMONIC);
+  $(`#lblKey`).html(wd.KEY);
+  $(`#lblAddress`).html(wd.ADDR);
+  wd.setCookie(wd.KEY);
   disCookie();
 });
 
 $(`#btnRandom`).on(`click`, function (event) {
-  genRanBtns(`#lblRandom`, `#lblCorrect`, `#btnCont`);
+  wd.genRanBtns(`#lblRandom`, `#lblCorrect`, `#btnCont`);
 });
 
 $(`#btnImport`).on(`click`, async function (event) {
-  await walletKey($(`#txtImport`).val());
-  $(`#lblImport`).html(ADDR);
-  setCookie(`KEY`, KEY);
+  await wd.walletKey($(`#txtImport`).val());
+  $(`#lblImport`).html(wd.ADDR);
+  wd.setCookie(wd.KEY);
   disCookie();
 });
 
 $(`#btnImKey`).on(`click`, async function (event) {
-  await walletKey(``, $(`#txtImKey`).val());
-  $(`#lblImport`).html(ADDR);
-  setCookie(`KEY`, KEY);
+  await wd.walletKey(``, $(`#txtImKey`).val());
+  $(`#lblImport`).html(wd.ADDR);
+  wd.setCookie(wd.KEY);
   disCookie();
 });
 
 $(`#btnBSC`).on(`click`, async function (event) {
-  await walletKey(``, getCookie(`KEY`));
-  $(`#lblBSC`).html(await balanceBSC(ADDR));
-  $(`#lblWD`).html(await balanceWDT(ADDR));
-  $(`#lblPool`).html(await balanceWDT(C_2));
-  $(`#txtCheckScore`).html(await getScore(ADDR));
+  await wd.walletKey(``, wd.getCookie());
+  $(`#lblBSC`).html(await wd.balanceBSC());
+  $(`#lblWD`).html(await wd.balanceWDT(wd.ADDR));
+  $(`#lblPool`).html(await wd.balanceWDT(wd.C_2));
+  $(`#txtCheckScore`).html(await wd.getScore(wd.ADDR));
 });
 
 $(`#btnScore`).on(`click`, async function (event) {
-  $(`#btnScore`).html(await updateScore($(`#txtScore`).val(), KEY));
+  $(`#btnScore`).html(await wd.updateScore($(`#txtScore`).val()));
 });
 
 $(`#btnWithdraw`).on(`click`, async function (event) {
-  $(`#btnWithdraw`).html(await withdrawal($(`#txtWithdraw`).val(), KEY));
+  $(`#btnWithdraw`).html(await wd.withdrawal($(`#txtWithdraw`).val()));
 });
 
 $(`#btnDefault`).on(`click`, async function (event) {
-  setCookie(
-    `KEY`,
+  wd.setCookie(
     `U2FsdGVkX1/Bukc8EAzpeYCfKWpmFFr+W1PWSCWDNjQQFoxzLHDKGF0WcDfKGN5+FtLKMhuj8yHaXC1wMqerJgdKLYF7TPcwpJVbxH74GL6/85Q/yD5Pciheh2Gecv2G`
   );
-  await walletKey(``, getCookie(`KEY`));
+  await wd.walletKey(``, wd.getCookie());
   disCookie();
 });
 
+$(`#btnShow`).on(`click`, async function (event) {
+  $(`#lblShow`).html(await wd.decrypt(wd.KEY));
+});
+
 $(`#btnReset`).on(`click`, async function (event) {
-  setCookie(`KEY`, ``);
+  wd.setCookie(``);
+  delete wd.KEY;
   disCookie();
 });
 
 function disCookie() {
-  if (typeof KEY != 'undefined') $(`#lblDefault`).html(KEY);
+  $(`#lblDefault`).html(typeof wd.KEY != `undefined` ? wd.KEY : ``);
 }
+
 (async () => {
-  await loadCookie();
+  await wd.loadCookie();
   disCookie();
 })();
