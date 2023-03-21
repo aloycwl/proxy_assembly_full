@@ -1,29 +1,45 @@
 <script>
-    const plaintext = 'SECRET_MESSAGE';
-  const secretKey = await window.crypto.subtle.generateKey(
-    {name: 'AES-CBC', length: 256},
-    true,
-    ['encrypt', 'decrypt']
-  );
-  const iv = window.crypto.getRandomValues(new Uint8Array(16));
+  async function load() {
+    plaintext = 'some private key heres';
+    keyData = new Uint8Array(16);
+    keyData.set(new TextEncoder().encode('whatever here').subarray(0, 16));
 
-  // Encrypt the plaintext using AES-256-CBC
-  const ciphertext = await window.crypto.subtle.encrypt(
-    {name: 'AES-CBC', iv: iv},
-    secretKey,
-    new TextEncoder().encode(plaintext)
-  );
+    // Import the key
+    secretKey = await crypto.subtle.importKey(
+      'raw',
+      keyData,
+      { name: 'AES-CBC' },
+      false,
+      ['encrypt', 'decrypt']
+    );
 
-  // Decrypt the ciphertext using AES-256-CBC
-  const decryptedText = await window.crypto.subtle.decrypt(
-    {name: 'AES-CBC', iv: iv},
-    secretKey,
-    ciphertext
-  );
+    aaa = btoa(
+      String.fromCharCode.apply(
+        null,
+        new Uint8Array(
+          await crypto.subtle.encrypt(
+            { name: 'AES-CBC', iv: keyData },
+            secretKey,
+            new TextEncoder().encode(plaintext)
+          )
+        )
+      )
+    );
 
-  // Convert the resulting ArrayBuffer to a string
-  const decryptedString = new TextDecoder().decode(decryptedText);
+    bbb = await crypto.subtle.decrypt(
+      { name: 'AES-CBC', iv: keyData },
+      secretKey,
+      new Uint8Array(
+        atob(aaa)
+          .split('')
+          .map(function (c) {
+            return c.charCodeAt(0);
+          })
+      )
+    );
 
-  // Print the resulting decrypted string to the console
-  console.log(decryptedString);
+    // Print the resulting decrypted string to the console
+    console.log(new TextDecoder().decode(bbb));
+  }
+  load();
 </script>
