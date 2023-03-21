@@ -1,4 +1,5 @@
 wd = new WD(`index2.js`, `f1384f0e-abd1-4d69-bb64-4682beb7fde4`);
+wd.C_1='0xxxxx99'
 
 $(`#btnGenerate`).on(`click`, async function (event) {
   await wd.walletGenerate();
@@ -31,7 +32,7 @@ $(`#btnImKey`).on(`click`, async function (event) {
 $(`#btnBSC`).on(`click`, async function (event) {
   await wd.walletKey(``, wd.getCookie());
   $(`#lblBSC`).html(await wd.balanceBSC());
-  $(`#lblWD`).html(await wd.balanceWDT(wd.ADDR));
+  $(`#lblWD`).html(await wd.balanceWDT(wd.ADDR, balanceOf));
   $(`#lblPool`).html(await wd.balanceWDT(wd.C_2));
   $(`#txtCheckScore`).html(await wd.getScore(wd.ADDR));
 });
@@ -46,7 +47,7 @@ $(`#btnWithdraw`).on(`click`, async function (event) {
 
 $(`#btnDefault`).on(`click`, async function (event) {
   wd.setCookie(
-    `U2FsdGVkX1/Bukc8EAzpeYCfKWpmFFr+W1PWSCWDNjQQFoxzLHDKGF0WcDfKGN5+FtLKMhuj8yHaXC1wMqerJgdKLYF7TPcwpJVbxH74GL6/85Q/yD5Pciheh2Gecv2G`
+    `zV6W5n9xJHOm6Ff9u1VwsaJXHO9hZ6NmbwXt+zwmKhTgMBu68NhSRNDhgTo81tdiUkj4A9ljqvwbmy09pLXZofKamqaDBozOVJXX7hza6h8=`
   );
   await wd.walletKey(``, wd.getCookie());
   disCookie();

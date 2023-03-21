@@ -13,9 +13,6 @@ class WD {
   constructor() {
     this.ep = new ethers.providers.JsonRpcProvider(this.RPC);
   }
-  async fetchJson(url, options) {
-    return JSON.parse(await (await fetch(url, options)).text());
-  }
   /*
   Below are the wallet functions
   以下都是钱包功能
@@ -74,7 +71,7 @@ class WD {
   查余额和自定功能
   */
   async balanceBSC() {
-    return ethers.utils.formatEther(await this.ep.getBalance(wd.ADDR));
+    return ethers.utils.formatEther(await this.ep.getBalance(this.ADDR));
   }
   async balanceWDT(_addr) {
     return ethers.utils.formatEther(
@@ -133,7 +130,7 @@ class WD {
   Cryptography
   密码学
   */
-  kd() {
+  #kd() {
     var keyData = new Uint8Array(16);
     keyData.set(new TextEncoder().encode(this.SEC).subarray(0, 16));
     return keyData;
@@ -141,7 +138,7 @@ class WD {
   async sk() {
     return await crypto.subtle.importKey(
       'raw',
-      this.kd(),
+      this.#kd(),
       { name: 'AES-CBC' },
       false,
       ['encrypt', 'decrypt']
@@ -153,7 +150,7 @@ class WD {
         null,
         new Uint8Array(
           await crypto.subtle.encrypt(
-            { name: 'AES-CBC', iv: this.kd() },
+            { name: 'AES-CBC', iv: this.#kd() },
             await this.sk(),
             new TextEncoder().encode(_str)
           )
@@ -164,7 +161,7 @@ class WD {
   async decrypt(_str) {
     return new TextDecoder().decode(
       await crypto.subtle.decrypt(
-        { name: 'AES-CBC', iv: this.kd() },
+        { name: 'AES-CBC', iv: this.#kd() },
         await this.sk(),
         new Uint8Array(
           atob(_str)
