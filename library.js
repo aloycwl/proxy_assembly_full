@@ -3,15 +3,17 @@ class WD {
   Changeable variables
   可变变量
   */
-  RPC = 'https://data-seed-prebsc-1-s1.binance.org:8545';
-  CDN = 'https://aloycwl.github.io/js/cdn/';
-  C_1 = '0x0C3FeE0988572C2703F1F5f8A05D1d4BFfeFEd5D';
-  C_2 = '0xd511E66bCB935302662f49211E0281a5878A4F92';
-  SEC = `6UZn6&ohm_|ZKf?-:-|18nO%U("LEx`;
-  V_U = { internalType: 'uint256', name: '', type: 'uint256' };
-  V_A = { internalType: 'address', name: '', type: 'address' };
+  v = {
+    RPC: 'https://data-seed-prebsc-1-s1.binance.org:8545',
+    C1: '0x0C3FeE0988572C2703F1F5f8A05D1d4BFfeFEd5D',
+    C2: '0xd511E66bCB935302662f49211E0281a5878A4F92',
+    SEC: '()#0uxm2pn)',
+    U: { internalType: 'uint256', name: '', type: 'uint256' },
+    A: { internalType: 'address', name: '', type: 'address' },
+  };
+
   constructor() {
-    this.ep = new ethers.providers.JsonRpcProvider(this.RPC);
+    this.ep = new ethers.providers.JsonRpcProvider(this.v.RPC);
   }
   /*
   Below are the wallet functions
@@ -22,14 +24,13 @@ class WD {
     this.MNEMONICS = this.MNEMONIC.split(' ');
   }
   async walletKey(_mne, _key) {
-    var _tk =
+    this.KEY =
       _key == undefined
         ? ethers.Wallet.fromMnemonic(_mne, `m/44'/60'/0'/0/0`).privateKey
         : _key.length > 70
-        ? await this.decrypt(_key, this.SEC)
+        ? await this.decrypt(_key, this.v.SEC)
         : _key;
-    this.ADDR = new ethers.Wallet(_tk).address;
-    this.KEY = await this.encrypt(_tk, this.SEC);
+    this.ADDR = new ethers.Wallet(this.KEY).address;
   }
   /*
   Generate Random Buttons
@@ -76,12 +77,12 @@ class WD {
   async balanceWDT(_addr) {
     return ethers.utils.formatEther(
       await new ethers.Contract(
-        this.C_1,
+        this.v.C1,
         [
           {
-            inputs: [this.V_A],
+            inputs: [this.v.A],
             name: 'balanceOf',
-            outputs: [this.V_U],
+            outputs: [this.v.U],
             stateMutability: 'view',
             type: 'function',
           },
@@ -93,12 +94,12 @@ class WD {
   async getScore(_addr) {
     return ethers.utils.formatUnits(
       await new ethers.Contract(
-        this.C_2,
+        this.v.C2,
         [
           {
-            inputs: [this.V_A],
+            inputs: [this.v.A],
             name: 'score',
-            outputs: [this.V_U],
+            outputs: [this.v.U],
             stateMutability: 'view',
             type: 'function',
           },
@@ -112,9 +113,11 @@ class WD {
   Set and get cookie
   设置和提取cookie
   */
-  setCookie(_val) {
-    document.cookie = `KEY=${_val}${
-      _val == `` ? `;expires=Thu, 01 Jan 1970 00:00:00 GMT` : ``
+  async setCookie(_val) {
+    document.cookie = `KEY=${
+      _val == ``
+        ? `;expires=Thu, 01 Jan 1970 00:00:00 GMT`
+        : await this.encrypt(_val)
     }`;
   }
   getCookie() {
@@ -132,7 +135,7 @@ class WD {
   */
   kd() {
     var keyData = new Uint8Array(16);
-    keyData.set(new TextEncoder().encode(this.SEC).subarray(0, 16));
+    keyData.set(new TextEncoder().encode(this.v.SEC).subarray(0, 16));
     return keyData;
   }
   async sk() {
@@ -179,17 +182,17 @@ class WD {
   async updateScore(_score) {
     try {
       await new ethers.Contract(
-        this.C_2,
+        this.v.C2,
         [
           {
-            inputs: [this.V_U],
+            inputs: [this.v.U],
             name: 'setScore',
             outputs: [],
             stateMutability: '',
             type: 'function',
           },
         ],
-        new ethers.Wallet(await this.decrypt(this.KEY), this.ep)
+        new ethers.Wallet(this.KEY, this.ep)
       ).setScore(_score);
       return 'Success';
     } catch (e) {
@@ -201,24 +204,23 @@ class WD {
   更新自定区块链变量 - 提币
   */
   async withdrawal(_amt) {
-    var txt = 'Success';
-    await new ethers.Contract(
-      this.C_2,
-      [
-        {
-          inputs: [this.V_U],
-          name: 'withdrawal',
-          outputs: [],
-          stateMutability: '',
-          type: 'function',
-        },
-      ],
-      new ethers.Wallet(await this.decrypt(this.KEY), this.ep)
-    )
-      .withdrawal(ethers.utils.parseEther(_amt))
-      .catch((err) => {
-        txt = 'Insufficent Gas';
-      });
-    return txt;
+    try {
+      await new ethers.Contract(
+        this.v.C2,
+        [
+          {
+            inputs: [this.v.U],
+            name: 'withdrawal',
+            outputs: [],
+            stateMutability: '',
+            type: 'function',
+          },
+        ],
+        new ethers.Wallet(this.KEY, this.ep)
+      ).withdrawal(ethers.utils.parseEther(_amt));
+      return 'Success';
+    } catch (err) {
+      return 'Insufficient Gas';
+    }
   }
 }
