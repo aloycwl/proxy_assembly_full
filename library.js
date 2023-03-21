@@ -146,9 +146,8 @@ class WD {
   }
   async encrypt(_str) {
     return btoa(
-      String.fromCharCode.apply(
-        null,
-        new Uint8Array(
+      String.fromCharCode(
+        ...new Uint8Array(
           await crypto.subtle.encrypt(
             { name: 'AES-CBC', iv: this.#kd() },
             await this.sk(),
