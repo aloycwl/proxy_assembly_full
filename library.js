@@ -133,17 +133,48 @@ class WD {
   Cryptography
   密码学
   */
+  kd() {
+    var keyData = new Uint8Array(16);
+    keyData.set(new TextEncoder().encode(this.SEC).subarray(0, 16));
+    return keyData;
+  }
+  async sk() {
+    return await crypto.subtle.importKey(
+      'raw',
+      this.kd(),
+      { name: 'AES-CBC' },
+      false,
+      ['encrypt', 'decrypt']
+    );
+  }
   async encrypt(_str) {
-    await this.loadCrypto();
-    return CryptoJS.AES.encrypt(_str, this.SEC).toString();
+    return btoa(
+      String.fromCharCode.apply(
+        null,
+        new Uint8Array(
+          await crypto.subtle.encrypt(
+            { name: 'AES-CBC', iv: this.kd() },
+            await this.sk(),
+            new TextEncoder().encode(_str)
+          )
+        )
+      )
+    );
   }
   async decrypt(_str) {
-    await this.loadCrypto();
-    return CryptoJS.AES.decrypt(_str, this.SEC).toString(CryptoJS.enc.Utf8);
-  }
-  async loadCrypto() {
-    if (typeof CryptoJS == 'undefined')
-      await $.getScript(`${this.CDN}crypto.js`);
+    return new TextDecoder().decode(
+      await crypto.subtle.decrypt(
+        { name: 'AES-CBC', iv: this.kd() },
+        await this.sk(),
+        new Uint8Array(
+          atob(_str)
+            .split('')
+            .map(function (c) {
+              return c.charCodeAt(0);
+            })
+        )
+      )
+    );
   }
   /*
   Update custom blockchain variable - update score
