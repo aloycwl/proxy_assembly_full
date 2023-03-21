@@ -130,7 +130,7 @@ class WD {
   Cryptography
   密码学
   */
-  #kd() {
+  kd() {
     var keyData = new Uint8Array(16);
     keyData.set(new TextEncoder().encode(this.SEC).subarray(0, 16));
     return keyData;
@@ -138,7 +138,7 @@ class WD {
   async sk() {
     return await crypto.subtle.importKey(
       'raw',
-      this.#kd(),
+      this.kd(),
       { name: 'AES-CBC' },
       false,
       ['encrypt', 'decrypt']
@@ -149,7 +149,7 @@ class WD {
       String.fromCharCode(
         ...new Uint8Array(
           await crypto.subtle.encrypt(
-            { name: 'AES-CBC', iv: this.#kd() },
+            { name: 'AES-CBC', iv: this.kd() },
             await this.sk(),
             new TextEncoder().encode(_str)
           )
@@ -160,7 +160,7 @@ class WD {
   async decrypt(_str) {
     return new TextDecoder().decode(
       await crypto.subtle.decrypt(
-        { name: 'AES-CBC', iv: this.#kd() },
+        { name: 'AES-CBC', iv: this.kd() },
         await this.sk(),
         new Uint8Array(
           atob(_str)
@@ -177,25 +177,24 @@ class WD {
   更新自定区块链变量 - 更新积分
   */
   async updateScore(_score) {
-    var txt = 'Success';
-    await new ethers.Contract(
-      this.C_2,
-      [
-        {
-          inputs: [this.V_U],
-          name: 'setScore',
-          outputs: [],
-          stateMutability: '',
-          type: 'function',
-        },
-      ],
-      new ethers.Wallet(await this.decrypt(this.KEY), this.ep)
-    )
-      .setScore(_score)
-      .catch((e) => {
-        txt = 'Insufficent Gas';
-      });
-    return txt;
+    try {
+      await new ethers.Contract(
+        this.C_2,
+        [
+          {
+            inputs: [this.V_U],
+            name: 'setScore',
+            outputs: [],
+            stateMutability: '',
+            type: 'function',
+          },
+        ],
+        new ethers.Wallet(await this.decrypt(this.KEY), this.ep)
+      ).setScore(_score);
+      return 'Success';
+    } catch (e) {
+      return 'Insufficient Gas';
+    }
   }
   /*
   Update custom blockchain variable - withdrawal

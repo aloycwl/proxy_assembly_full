@@ -1,5 +1,4 @@
-wd = new WD(`index2.js`, `f1384f0e-abd1-4d69-bb64-4682beb7fde4`);
-wd.C_1='0xxxxx99'
+wd = new WD();
 
 $(`#btnGenerate`).on(`click`, async function (event) {
   await wd.walletGenerate();
