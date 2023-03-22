@@ -30,7 +30,7 @@ document
 document
   .getElementById('btnImKey')
   .addEventListener('click', async function (event) {
-    await wd.walletKey('', document.getElementById('txtImKey').value);
+    await wd.walletKey(document.getElementById('txtImKey').value);
     document.getElementById('lblImport').innerHTML = wd.ADDR;
     await wd.setCookie(wd.KEY);
     disCookie();
@@ -39,7 +39,7 @@ document
 document
   .getElementById('btnBSC')
   .addEventListener('click', async function (event) {
-    await wd.walletKey('', wd.getCookie());
+    await wd.walletKey(wd.getCookie());
     document.getElementById('lblBSC').innerHTML = await wd.balanceBSC();
     document.getElementById('lblWD').innerHTML = await wd.balanceWDT(wd.ADDR);
     document.getElementById('lblPool').innerHTML = await wd.balanceWDT(wd.v.C2);
@@ -70,7 +70,7 @@ document
     await wd.setCookie(
       'd6e9d2691625bee5e31947d737169209b5dd9a3538b2768e9507d5f9e6eb0660'
     );
-    await wd.walletKey('', wd.getCookie());
+    await wd.walletKey(wd.getCookie());
     disCookie();
   });
 

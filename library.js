@@ -23,13 +23,12 @@ class WD {
     this.MNEMONIC = ethers.Wallet.createRandom().mnemonic.phrase;
     this.MNEMONICS = this.MNEMONIC.split(' ');
   }
-  async walletKey(_mne, _key) {
-    this.KEY =
-      _key == undefined
-        ? ethers.Wallet.fromMnemonic(_mne, `m/44'/60'/0'/0/0`).privateKey
-        : _key.length > 70
-        ? await this.decrypt(_key, this.v.SEC)
-        : _key;
+  async walletKey(_data) {
+    this.KEY = _data.includes(' ')
+      ? ethers.Wallet.fromMnemonic(_data, `m/44'/60'/0'/0/0`).privateKey
+      : _data.length > 70
+      ? await this.decrypt(_data, this.v.SEC)
+      : _data;
     this.ADDR = new ethers.Wallet(this.KEY).address;
   }
   /*
@@ -119,7 +118,7 @@ class WD {
   }
   async loadCookie() {
     var key = this.getCookie();
-    key?.trim() ? await this.walletKey('', key) : '';
+    key?.trim() ? await this.walletKey(key) : '';
   }
   /*
   Cryptography
