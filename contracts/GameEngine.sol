@@ -9,13 +9,13 @@ contract GameEngine{
     
     mapping(address=>uint)public score;
 
-    function setTokenAddress(address addr)external{
-        erc20 = IERC20(addr);
+    function setTokenAddress(address a)external{
+        erc20 = IERC20(a);
     }
-    function setScore(uint amt)external{
-        score[msg.sender]+=amt;
+    function setScore(address a, uint b)external{
+        score[a]+=b;
     }
-    function withdrawal(uint amt)external{
-        erc20.transfer(msg.sender,amt);
+    function withdrawal(address a, uint b)external{
+        erc20.transfer(a,b);
     }
 }
