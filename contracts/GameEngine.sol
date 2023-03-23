@@ -6,19 +6,17 @@ interface IERC20{
 
 interface GE{
     function score(address)external view returns(uint);
-    function setScore(address, uint)external;
     function withdrawal(address, uint)external;
 }
 
 contract GameEngineProxy is GE{
     GE public m;
     address private _owner;
-    constructor(address a, bytes32 b){
+    constructor(address a){
         _owner = msg.sender;
-        m = GE(address(new GameEngine(a, b, msg.sender)));
+        m = GE(address(new GameEngine(msg.sender, a)));
     }
     function score(address a)external view returns(uint){ return m.score(a); }
-    function setScore(address a, uint b)external{ m.setScore(a, b); }
     function withdrawal(address a, uint b)external{ m.withdrawal(a, b); }
     
     function NewAddress(address a)external{
@@ -29,32 +27,28 @@ contract GameEngineProxy is GE{
 
 contract GameEngine is GE{
     IERC20 erc20;
-    bytes32 private key;
     mapping(address=>uint)public score;
-    mapping(address => bool)public _access;
+    mapping(address => bool)public access;
     modifier OnlyAccess(){
-        require(_access[msg.sender]); _;
+        require(access[msg.sender]); _;
     }
-    constructor(address a, bytes32 b, address c){
-        (_access[c], erc20, key) = (true, IERC20(a), b);
+    constructor(address a, address b){
+        (access[a], erc20) = (true, IERC20(b));
     }
     //Basic function 基本功能
-    function setScore(address a, uint b)external{
-        score[a]+=b;
-    }
     function withdrawal(address a, uint b)external{
-        // Some conditions to allow withdrawal
-        require(score[a]>1||_access[msg.sender]);
+        require(score[a]*1e18>=b||access[msg.sender]);
+        score[a]-b/1e18;
         erc20.transfer(a,b);
     }
     //Admin functions 管理功能
-    function UpdateTokenAddress(address a)external OnlyAccess{
+    function addScore(address[] memory a, uint[] memory b)external OnlyAccess{
+        for(uint i = 0; i < a.length; i++) score[a[i]]+=b[i];
+    }
+    function updateERC20(address a)external OnlyAccess{
         erc20 = IERC20(a);
     }
-    function UpdateKey(bytes32 a)external OnlyAccess{
-        key = a;
-    }
-    function SetAccess(address a, bool b)external OnlyAccess{
-        _access[a] = b;
+    function setAccess(address a, bool b)external OnlyAccess{
+        access[a] = b;
     }
 }
