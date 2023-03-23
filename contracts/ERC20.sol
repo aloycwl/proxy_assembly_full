@@ -19,7 +19,6 @@ contract ERC20AC{
     modifier OnlyAccess(){
         require(_access[msg.sender]); _;
     }
-
     /*
     Standard functions for ERC20
     ERC20基本函数 
@@ -32,28 +31,27 @@ contract ERC20AC{
         require(!u[addr].blocked, "Suspended");
         return u[addr].bal;
     }
-    function transfer(address addr, uint amt)external returns(bool){
-        return transferFrom(msg.sender, addr, amt);
-    }
     function allowance(address addr_a, address addr_b)external view returns(uint){
         return u[addr_a].allow[addr_b];
     }
-    function approve(address addr, uint amt)external returns(bool){
-        u[msg.sender].allow[addr] = amt;
-        emit Approval(msg.sender, addr, amt);
+    function approve(address a, uint b, address c)external returns(bool){
+        u[c].allow[a] = b;
+        emit Approval(c, a, b);
         return true;
     }
-    function transferFrom(address from, address to, uint amt)public returns(bool){unchecked{
-        (User storage sender,  User storage recipient) = (u[from],  u[to]);
-        require(sender.bal >= amt,  "Insufficient balance");
-        require(from == msg.sender || sender.allow[to] >= amt,  "Insufficient allowance");
-        require(!Suspended && !sender.blocked,  "Suspended");
-        if (from != msg.sender) sender.allow[to] -= amt;
-        (sender.bal -= amt,  recipient.bal += amt);
-        emit Transfer(from,  to,  amt);
+    function transfer(address a, uint b, address c)external returns(bool){
+        return transferFrom(c, a, b, c);
+    }
+    function transferFrom(address a, address b, uint c, address d)public returns(bool){unchecked{
+        (User storage sender, User storage recipient) = (u[a], u[b]);
+        require(sender.bal >= c, "Insufficient balance");
+        require(a == d || sender.allow[b] >= c, "Insufficient allowance");
+        require(!Suspended && !sender.blocked, "Suspended");
+        if(sender.allow[b] >= c) sender.allow[b] -= c;
+        (sender.bal -= c, recipient.bal += c);
+        emit Transfer(a, b, c);
         return true;
     }}
-
     /*
     Custom functions
     自定函数
@@ -69,7 +67,7 @@ contract ERC20AC{
     }
     function Burn(uint amt)external OnlyAccess{unchecked{
         require(u[msg.sender].bal >= amt, "Insufficient balance");
-        transferFrom(msg.sender, address(0), amt);
+        transferFrom(msg.sender, address(0), amt, msg.sender);
         totalSupply -= amt;
     }}
 }

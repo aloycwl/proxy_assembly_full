@@ -6,10 +6,10 @@ interface ERC20{
     function decimals() external view returns (uint);
     function totalSupply() external view returns (uint);
     function balanceOf(address) external view returns (uint);
-    function transfer(address, uint) external returns (bool);
-    function transferFrom(address, address, uint) external returns (bool);
-    function approve(address, uint) external returns (bool);
     function allowance(address, address) external view returns (uint);
+    function approve(address, uint, address) external returns (bool);
+    function transfer(address, uint, address) external returns (bool);
+    function transferFrom(address, address, uint, address) external returns (bool);
 
     function SetAccess(address a, bool b)external;
     function ToggleSuspend()external;
@@ -28,11 +28,11 @@ contract ERC20Proxy{
     function decimals() external view returns (uint){ return m.decimals(); }
     function totalSupply() external view returns (uint){ return m.totalSupply(); }
     function balanceOf(address a) external view returns (uint){ return m.balanceOf(a); }
-    function transfer(address a, uint b) external returns (bool){ return m.transfer(a, b); }
-    function transferFrom(address a, address b, uint c) external returns (bool) { return m.transferFrom(a, b, c); }
-    function approve(address a, uint b) external returns (bool){ return m.approve(a, b); }
     function allowance(address a, address b) external view returns (uint){ return m.allowance(a, b); }
-
+    function approve(address a, uint b) external returns (bool){ return m.approve(a, b, msg.sender); }
+    function transfer(address a, uint b) external returns (bool){ return m.transfer(a, b, msg.sender); }
+    function transferFrom(address a, address b, uint c) external returns (bool) { return m.transferFrom(a, b, c, msg.sender); }
+    
     function SetAccess(address a, bool b)external{ m.SetAccess(a, b); }
     function ToggleSuspend()external{ m.ToggleSuspend(); }
     function ToggleBlock(address a)external{ m.ToggleBlock(a); }
