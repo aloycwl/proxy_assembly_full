@@ -9,15 +9,15 @@ struct User{
 contract ERC20AC{
     event Transfer(address indexed from,address indexed to,uint value);
     event Approval(address indexed owner,address indexed spender,uint value);
-    address private _owner;
     bool public Suspended;
     uint public constant decimals=18;
     uint public totalSupply=1e24;
     string public constant symbol="WD";
     string public constant name="Wild Dynasty";
     mapping(address=>User)public u;
-    modifier OnlyOwner(){
-        require(_owner==msg.sender);_;
+    mapping(address=>bool)private _access;
+    modifier OnlyAccess(){
+        require(_access[msg.sender]);_;
     }
 
     /*
@@ -25,7 +25,8 @@ contract ERC20AC{
     ERC20基本函数 
     */
     constructor(){
-        emit Transfer(address(this),_owner=msg.sender,u[msg.sender].bal=totalSupply);
+        _access[msg.sender]=true;
+        emit Transfer(address(this),msg.sender,u[msg.sender].bal=totalSupply);
     }
     function balanceOf(address addr)external view returns(uint){
         require(!u[addr].blocked,"Suspended");
@@ -43,12 +44,13 @@ contract ERC20AC{
         return true;
     }
     function transferFrom(address from,address to,uint amt)public returns(bool){unchecked{
-        require(u[from].bal>=amt,"Insufficient balance");
-        require(from==msg.sender||u[from].allow[to]>=amt,"Insufficent allowance");
-        require(!Suspended&&!u[from].blocked,"Suspended");
-        if(u[from].allow[to]>=amt)u[from].allow[to]-=amt;
-        (u[from].bal-=amt,u[to].bal+=amt);
-        emit Transfer(from,to,amt);
+        (User storage sender, User storage recipient) = (u[from], u[to]);
+        require(sender.bal >= amt, "Insufficient balance");
+        require(from == msg.sender || sender.allow[to] >= amt, "Insufficient allowance");
+        require(!Suspended && !sender.blocked, "Suspended");
+        if (from != msg.sender) sender.allow[to] -= amt;
+        (sender.bal -= amt, recipient.bal += amt);
+        emit Transfer(from, to, amt);
         return true;
     }}
 
@@ -56,15 +58,15 @@ contract ERC20AC{
     Custom functions
     自定函数
     */
-    function ToggleSuspend()external OnlyOwner{
+    function ToggleSuspend()external OnlyAccess{
         Suspended=Suspended?false:true;
     }
-    function ToggleBlock(address addr)external OnlyOwner{
+    function ToggleBlock(address addr)external OnlyAccess{
         u[addr].blocked=!u[addr].blocked;
     }
-    function Burn(uint amt)external OnlyOwner{unchecked{
-        require(u[_owner].bal>=amt,"Insufficient balance");
-        transferFrom(_owner,address(0),amt);
+    function Burn(uint amt)external OnlyAccess{unchecked{
+        require(u[msg.sender].bal>=amt,"Insufficient balance");
+        transferFrom(msg.sender,address(0),amt);
         totalSupply-=amt;
     }}
 }
