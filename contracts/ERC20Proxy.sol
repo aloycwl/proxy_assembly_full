@@ -1,4 +1,4 @@
-pragma solidity>0.8.0;//SPDX-License-Identifier:None
+pragma solidity 0.8.19;//SPDX-License-Identifier:None
 
 interface ERC20{
     function name() external view returns (string memory);
@@ -17,7 +17,7 @@ interface ERC20{
     function Burn(uint amt)external;
 }
 
-contract ERC20AC{
+contract ERC20Proxy{
     ERC20 m;
     address private _owner;
     constructor(address a){

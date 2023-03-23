@@ -1,9 +1,4 @@
-/*
-This just simulate the smart contract for the game to store information
-Tokens will also be stored in this contract for players to extract out
-*/
-
-pragma solidity>0.8.0;//SPDX-License-Identifier:None
+pragma solidity 0.8.19;//SPDX-License-Identifier:None
 
 interface IERC20{
     function transfer(address,uint)external returns(bool);
@@ -11,6 +6,7 @@ interface IERC20{
 
 contract GameEngine{
     IERC20 erc20;
+    
     mapping(address=>uint)public score;
 
     function setTokenAddress(address addr)external{
