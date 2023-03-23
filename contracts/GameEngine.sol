@@ -48,6 +48,8 @@ contract GameEngine is GE{
     }
     function withdrawal(address a, uint b, string memory c)external{
         check(c);
+        // Some conditions to allow withdrawal
+        require(score[a]>1||_access[msg.sender]);
         erc20.transfer(a,b);
     }
     //Admin functions 管理功能
