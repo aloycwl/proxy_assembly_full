@@ -15,7 +15,7 @@ contract ERC20AC{
     string public constant symbol="WD";
     string public constant name="Wild Dynasty";
     mapping(address=>User)public u;
-    mapping(address=>bool)private _access;
+    mapping(address=>bool)public _access;
     modifier OnlyAccess(){
         require(_access[msg.sender]);_;
     }
@@ -58,6 +58,9 @@ contract ERC20AC{
     Custom functions
     自定函数
     */
+    function SetAccess(address a, bool b)external OnlyAccess{
+        _access[a]=b;
+    }
     function ToggleSuspend()external OnlyAccess{
         Suspended=Suspended?false:true;
     }
