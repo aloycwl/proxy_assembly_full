@@ -6,7 +6,6 @@ interface IERC20{
 
 contract GameEngine{
     IERC20 erc20;
-    
     mapping(address=>uint)public score;
 
     function setTokenAddress(address a)external{
