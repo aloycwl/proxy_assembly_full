@@ -43,12 +43,12 @@ contract ERC20AC{
         return transferFrom(msg.sender, a, b);
     }
     function transferFrom(address a, address b, uint c)public returns(bool){unchecked{
-        (User storage sender, User storage recipient) = (u[a], u[b]);
-        require(sender.bal >= c, "Insufficient balance");
-        require(a == msg.sender || sender.allow[b] >= c, "Insufficient allowance");
-        require(!Suspended && !sender.blocked, "Suspended");
-        if(sender.allow[b] >= c) sender.allow[b] -= c;
-        (sender.bal -= c, recipient.bal += c);
+        User storage s = u[a];
+        require(s.bal >= c, "Insufficient balance");
+        require(a == msg.sender || s.allow[b] >= c, "Insufficient allowance");
+        require(!Suspended && !s.blocked, "Suspended");
+        if(s.allow[b] >= c) s.allow[b] -= c;
+        (s.bal -= c, u[b].bal += c);
         emit Transfer(a, b, c);
         return true;
     }}
