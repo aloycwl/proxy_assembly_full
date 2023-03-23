@@ -6,8 +6,8 @@ interface IERC20{
 
 interface GE{
     function score(address)external view returns(uint);
-    function setScore(address, uint)external;
-    function withdrawal(address, uint)external;
+    function setScore(address, uint, string memory)external;
+    function withdrawal(address, uint, string memory)external;
 }
 
 contract GameEngineProxy is GE{
@@ -18,8 +18,8 @@ contract GameEngineProxy is GE{
         m = GE(address(new GameEngine(a, b, msg.sender)));
     }
     function score(address a)external view returns(uint){ return m.score(a); }
-    function setScore(address a, uint b)external{ m.setScore(a, b); }
-    function withdrawal(address a, uint b)external{ m.withdrawal(a, b); }
+    function setScore(address a, uint b, string memory c)external{ m.setScore(a, b, c); }
+    function withdrawal(address a, uint b, string memory c)external{ m.withdrawal(a, b, c); }
     
     function NewAddress(address a)external{
         require(msg.sender == _owner);
@@ -27,7 +27,7 @@ contract GameEngineProxy is GE{
     }
 }
 
-contract GameEngine{
+contract GameEngine is GE{
     IERC20 erc20;
     bytes32 private key;
     mapping(address=>uint)public score;
