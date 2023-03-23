@@ -15,7 +15,7 @@ contract GameEngineProxy is GE{
     address private _owner;
     constructor(address a, bytes32 b){
         _owner = msg.sender;
-        m = GE(address(new GameEngine(a, b)));
+        m = GE(address(new GameEngine(a, b, msg.sender)));
     }
     function score(address a)external view returns(uint){ return m.score(a); }
     function setScore(address a, uint b)external{ m.setScore(a, b); }
@@ -35,22 +35,29 @@ contract GameEngine{
     modifier OnlyAccess(){
         require(_access[msg.sender]); _;
     }
-
-    constructor(address a, bytes32 b){
-        (_access[msg.sender], erc20, key) = (true, IERC20(a), b);
+    constructor(address a, bytes32 b, address c){
+        (_access[c], erc20, key) = (true, IERC20(a), b);
     }
-
+    //Basic function 基本功能
+    function check(string memory a)private view{
+        require(keccak256(abi.encodePacked(a))==key);
+    }
+    function setScore(address a, uint b, string memory c)external{
+        check(c);
+        score[a]+=b;
+    }
+    function withdrawal(address a, uint b, string memory c)external{
+        check(c);
+        erc20.transfer(a,b);
+    }
+    //Admin functions 管理功能
     function UpdateTokenAddress(address a)external OnlyAccess{
         erc20 = IERC20(a);
     }
     function UpdateKey(bytes32 a)external OnlyAccess{
         key = a;
     }
-    function setScore(address a, uint b)external{
-        
-        score[a]+=b;
-    }
-    function withdrawal(address a, uint b)external{
-        erc20.transfer(a,b);
+    function SetAccess(address a, bool b)external OnlyAccess{
+        _access[a] = b;
     }
 }
