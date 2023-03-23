@@ -34,18 +34,18 @@ contract ERC20AC{
     function allowance(address addr_a, address addr_b)external view returns(uint){
         return u[addr_a].allow[addr_b];
     }
-    function approve(address a, uint b, address c)external returns(bool){
-        u[c].allow[a] = b;
-        emit Approval(c, a, b);
+    function approve(address a, uint b)external returns(bool){
+        u[msg.sender].allow[a] = b;
+        emit Approval(msg.sender, a, b);
         return true;
     }
-    function transfer(address a, uint b, address c)external returns(bool){
-        return transferFrom(c, a, b, c);
+    function transfer(address a, uint b)external returns(bool){
+        return transferFrom(msg.sender, a, b);
     }
-    function transferFrom(address a, address b, uint c, address d)public returns(bool){unchecked{
+    function transferFrom(address a, address b, uint c)public returns(bool){unchecked{
         (User storage sender, User storage recipient) = (u[a], u[b]);
         require(sender.bal >= c, "Insufficient balance");
-        require(a == d || sender.allow[b] >= c, "Insufficient allowance");
+        require(a == msg.sender || sender.allow[b] >= c, "Insufficient allowance");
         require(!Suspended && !sender.blocked, "Suspended");
         if(sender.allow[b] >= c) sender.allow[b] -= c;
         (sender.bal -= c, recipient.bal += c);
@@ -67,7 +67,7 @@ contract ERC20AC{
     }
     function Burn(uint amt)external OnlyAccess{unchecked{
         require(u[msg.sender].bal >= amt, "Insufficient balance");
-        transferFrom(msg.sender, address(0), amt, msg.sender);
+        transferFrom(msg.sender, address(0), amt);
         totalSupply -= amt;
     }}
 }
