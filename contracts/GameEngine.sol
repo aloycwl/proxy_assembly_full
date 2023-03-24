@@ -39,11 +39,10 @@ contract GameEngineProxy is GE, Util {
         contAddr = GE(a);
     }
     function score(address a) external view returns(uint b){
-        return 99;
-       // return contAddr.score[a];
+        return contAddr.score(a);
     }
     function available(address a) external view returns(uint b){
-        //return contAddr.available[a];
+        return contAddr.available(a);
     }
 }
 //游戏引擎
