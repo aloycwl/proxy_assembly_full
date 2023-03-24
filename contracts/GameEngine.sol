@@ -6,6 +6,8 @@ interface IERC20 {
 interface GE {
     function addScore(address, uint) external;
     function withdrawal(address, uint) external;
+    function score(address) external view returns(uint);
+    function available(address) external view returns(uint);
 }
 // 设置对合约的访问
 contract Util {
@@ -35,6 +37,13 @@ contract GameEngineProxy is GE, Util {
     }
     function updateContract(address a) external OnlyAccess() {
         contAddr = GE(a);
+    }
+    function score(address a) external view returns(uint b){
+        return 99;
+       // return contAddr.score[a];
+    }
+    function available(address a) external view returns(uint b){
+        //return contAddr.available[a];
     }
 }
 //游戏引擎
