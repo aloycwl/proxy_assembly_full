@@ -54,14 +54,14 @@ contract GameEngine is GE, Util {
     function withdrawal(address a, uint b) external {
         unchecked {
             require(gu[a].available >= b);
-            gu[a].available -= b;
             contAddr.transfer(a, b);
+            gu[a].available -= b;
         }
     }
     // 管理功能
     function addScore(address a, uint b) external OnlyAccess {
         unchecked {
-            gu[a].score += b;
+            (gu[a].score += b, gu[a].available += b);
         }
     }
     function updateContract(address a) external OnlyAccess {
