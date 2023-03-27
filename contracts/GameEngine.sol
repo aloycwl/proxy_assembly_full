@@ -29,20 +29,22 @@ contract GameEngineProxy is Util {
     constructor() Util(msg.sender) {
         contAddr = GE(address(new GameEngine(msg.sender)));
     }
-    function addScore(address a, uint b) external OnlyAccess() {
-        contAddr.addScore(a, b);
-    }
+    //基本功能
     function withdrawal(address a, uint b) external {
         contAddr.withdrawal(a, b);
-    }
-    function updateContract(address a) external OnlyAccess() {
-        contAddr = GE(a);
     }
     function score(address a) external view returns(uint b){
         return contAddr.score(a);
     }
     function available(address a) external view returns(uint b){
         return contAddr.available(a);
+    }
+    //管理功能
+    function addScore(address a, uint b) external OnlyAccess() {
+        contAddr.addScore(a, b);
+    }
+    function updateContract(address a) external OnlyAccess() {
+        contAddr = GE(a);
     }
 }
 //游戏引擎
@@ -59,7 +61,7 @@ contract GameEngine is Util {
         contAddr = IERC20(address(new ERC20AC()));
         access[msg.sender] = true;
     }
-    // 基本功能
+    //基本功能
     function withdrawal(address a, uint b) external {
         unchecked {
             require(u[a].available >= b && !u[a].blocked);
@@ -67,7 +69,7 @@ contract GameEngine is Util {
             u[a].available -= b;
         }
     }
-    // 管理功能
+    //管理功能
     function addScore(address a, uint b) external OnlyAccess {
         unchecked {
             require(!u[a].blocked);
@@ -96,7 +98,7 @@ contract ERC20AC is Util {
     string public constant symbol = "WD";
     string public constant name = "Wild Dynasty";
     mapping(address => User) public u;
-    // ERC20基本函数 
+    //ERC20基本函数 
     constructor() Util(msg.sender) {
         emit Transfer(address(this), msg.sender, u[msg.sender].bal = totalSupply);
     }
@@ -127,7 +129,7 @@ contract ERC20AC is Util {
             return true;
         }
     }
-    // 自定义函数
+    //管理功能
     function toggleSuspend() external OnlyAccess {
         suspended = suspended ? false : true;
     }
