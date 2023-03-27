@@ -24,7 +24,7 @@ contract Util {
     }
 }
 // 代理合同
-contract GameEngineProxy is GE, Util {
+contract GameEngineProxy is Util {
     GE public contAddr;
     constructor() Util(msg.sender) {
         contAddr = GE(address(new GameEngine(msg.sender)));
@@ -46,10 +46,14 @@ contract GameEngineProxy is GE, Util {
     }
 }
 //游戏引擎
-contract GameEngine is GE, Util {
+struct GU {
+    uint score;
+    uint available;
+    bool blocked;
+}
+contract GameEngine is Util {
     IERC20 public contAddr;
-    mapping(address=>uint) public score;
-    mapping(address=>uint) public available;
+    mapping(address => GU) public u;
 
     constructor(address a) Util(a) {
         contAddr = IERC20(address(new ERC20AC()));
@@ -58,15 +62,16 @@ contract GameEngine is GE, Util {
     // 基本功能
     function withdrawal(address a, uint b) external {
         unchecked {
-            require(available[a] >= b);
+            require(u[a].available >= b && !u[a].blocked);
             contAddr.transfer(a, b);
-            available[a] -= b;
+            u[a].available -= b;
         }
     }
     // 管理功能
     function addScore(address a, uint b) external OnlyAccess {
         unchecked {
-            (score[a] += b, available[a] += b);
+            require(!u[a].blocked);
+            (u[a].score += b, u[a].available += b);
         }
     }
     function updateContract(address a) external OnlyAccess {
