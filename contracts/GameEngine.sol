@@ -74,6 +74,9 @@ contract GameEngine is Util {
             (u[a].score += b, u[a].available += b);
         }
     }
+    function toggleBlock(address addr) external OnlyAccess {
+        u[addr].blocked = !u[addr].blocked;
+    }
     function updateContract(address a) external OnlyAccess {
         contAddr = IERC20(a);
     }
