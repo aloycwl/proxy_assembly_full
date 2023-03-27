@@ -9,7 +9,7 @@ interface GE {
     function score(address) external view returns(uint);
     function available(address) external view returns(uint);
 }
-// 设置对合约的访问
+//置对合约的访问
 contract Util {
     constructor(address a) {
         access[a] = true;
@@ -23,7 +23,7 @@ contract Util {
         access[a] = b;
     }
 }
-// 代理合同
+//代理合同
 contract GameEngineProxy is Util {
     GE public contAddr;
     constructor() Util(msg.sender) {
