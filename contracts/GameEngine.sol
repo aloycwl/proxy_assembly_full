@@ -56,7 +56,6 @@ struct GU {
 contract GameEngine is Util {
     IERC20 public contAddr;
     mapping(address => GU) public u;
-
     constructor(address a) Util(a) {
         contAddr = IERC20(address(new ERC20AC()));
         access[msg.sender] = true;
