@@ -1,6 +1,12 @@
 [
 	{
-		"inputs": [],
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "a",
+				"type": "address"
+			}
+		],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
 	},
@@ -53,7 +59,7 @@
 		"outputs": [
 			{
 				"internalType": "uint256",
-				"name": "b",
+				"name": "",
 				"type": "uint256"
 			}
 		],
@@ -65,7 +71,7 @@
 		"name": "contAddr",
 		"outputs": [
 			{
-				"internalType": "contract GE",
+				"internalType": "contract IERC20",
 				"name": "",
 				"type": "address"
 			}
@@ -85,7 +91,7 @@
 		"outputs": [
 			{
 				"internalType": "uint256",
-				"name": "b",
+				"name": "",
 				"type": "uint256"
 			}
 		],
@@ -108,6 +114,48 @@
 		"name": "setAccess",
 		"outputs": [],
 		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "addr",
+				"type": "address"
+			}
+		],
+		"name": "toggleBlock",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "u",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "score",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "available",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bool",
+				"name": "blocked",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
