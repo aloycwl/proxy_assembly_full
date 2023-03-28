@@ -75,6 +75,9 @@ contract GameEngine is Util {
     function available(address a) external view returns (uint) {
         return u[a].available;
     }
+    function getBlocked(address a) external view returns (bool) {
+        return u[a].blocked;
+    }
     //管理功能
     function addScore(address a, uint b) external OnlyAccess {
         unchecked {
@@ -136,6 +139,9 @@ contract ERC20AC is Util {
         }
     }
     //管理功能
+    function getBlocked(address a) external view returns (bool) {
+        return u[a].blocked;
+    }
     function toggleSuspend() external OnlyAccess {
         suspended = suspended ? false : true;
     }
