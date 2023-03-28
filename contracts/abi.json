@@ -1,75 +1,8 @@
 [
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "a",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "b",
-				"type": "uint256"
-			}
-		],
-		"name": "addScore",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "a",
-				"type": "address"
-			},
-			{
-				"internalType": "bool",
-				"name": "b",
-				"type": "bool"
-			}
-		],
-		"name": "setAccess",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "a",
-				"type": "address"
-			}
-		],
-		"name": "updateContract",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "a",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "b",
-				"type": "uint256"
-			}
-		],
-		"name": "withdrawal",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
 	},
 	{
 		"inputs": [
@@ -88,6 +21,24 @@
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "a",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "b",
+				"type": "uint256"
+			}
+		],
+		"name": "addScore",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	},
 	{
@@ -139,6 +90,55 @@
 			}
 		],
 		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "a",
+				"type": "address"
+			},
+			{
+				"internalType": "bool",
+				"name": "b",
+				"type": "bool"
+			}
+		],
+		"name": "setAccess",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "a",
+				"type": "address"
+			}
+		],
+		"name": "updateContract",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "a",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "b",
+				"type": "uint256"
+			}
+		],
+		"name": "withdrawal",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	}
 ]

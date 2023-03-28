@@ -2,19 +2,21 @@ pragma solidity 0.8.19;//SPDX-License-Identifier:None
 //被调用的接口
 interface IERC20 {
     function transfer(address, uint) external returns(bool);
+    function balanceOf(address) external returns(uint);
 }
 interface GE {
     function addScore(address, uint) external;
     function withdrawal(address, uint) external;
     function score(address) external view returns(uint);
     function available(address) external view returns(uint);
+    function contAddr() external view returns(address);
 }
 //置对合约的访问
 contract Util {
+    mapping(address => bool) public access;
     constructor(address a) {
         access[a] = true;
     }
-    mapping(address => bool) public access;
     modifier OnlyAccess() {
         require(access[msg.sender], "Insufficient access");
         _;
@@ -57,8 +59,7 @@ contract GameEngine is Util {
     IERC20 public contAddr;
     mapping(address => GU) public u;
     constructor(address a) Util(a) {
-        contAddr = IERC20(address(new ERC20AC()));
-        access[msg.sender] = true;
+        contAddr = IERC20(address(new ERC20AC(a)));
     }
     //基本功能
     function withdrawal(address a, uint b) external {
@@ -98,7 +99,7 @@ contract ERC20AC is Util {
     string public constant name = "Wild Dynasty";
     mapping(address => User) public u;
     //ERC20基本函数 
-    constructor() Util(msg.sender) {
+    constructor(address a) Util(a) {
         emit Transfer(address(this), msg.sender, u[msg.sender].bal = totalSupply);
     }
     function balanceOf(address addr) external view returns(uint) {
