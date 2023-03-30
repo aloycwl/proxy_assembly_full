@@ -9,7 +9,7 @@ interface GE {
     function withdrawal(address, uint) external;
     function score(address) external view returns (uint);
     function available(address) external view returns (uint);
-    function getUpdatable(address a) external view returns (bool);
+    function getUpd(address a) external view returns (bool);
 }
 //置对合约的访问
 contract Util {
@@ -41,8 +41,8 @@ contract GameEngineProxy is Util, GE {
     function available(address a) external view returns(uint){
         return contAddr.available(a);
     }
-    function getUpdatable(address a) external view returns(bool){
-        return contAddr.getUpdatable(a);
+    function getUpd(address a) external view returns(bool){
+        return contAddr.getUpd(a);
     }
     //管理功能
     function addScore(address a, uint b) external OnlyAccess() {
@@ -83,14 +83,14 @@ contract GameEngine is Util, GE {
     function getBlocked(address a) external view returns (bool) {
         return u[a].blocked;
     }
-    function getUpdatable(address a) public view returns (bool) {
+    function getUpd(address a) public view returns (bool) {
         return block.timestamp > u[a].lastUpdate + interval || u[a].lastUpdate == 0;
     }
     //管理功能
     function addScore(address a, uint b) external OnlyAccess {
         GU storage v = u[a];
         unchecked {
-            require(!v.blocked && getUpdatable(a));
+            require(!v.blocked && getUpd(a));
             (v.score += b, v.available += b, v.lastUpdate = block.timestamp);
         }
     }
