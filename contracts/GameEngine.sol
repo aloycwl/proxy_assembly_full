@@ -7,9 +7,9 @@ interface IERC20 {
 interface GE {
     function addScore(address, uint) external;
     function withdrawal(address, uint) external;
-    function score(address) external view returns(uint);
-    function available(address) external view returns(uint);
-    function setAccess(address a, bool b) external;
+    function score(address) external view returns (uint);
+    function available(address) external view returns (uint);
+    function getUpdatable(address a) external view returns (bool);
 }
 //置对合约的访问
 contract Util {
@@ -26,7 +26,7 @@ contract Util {
     }
 }
 //代理合同
-contract GameEngineProxy is Util {
+contract GameEngineProxy is Util, GE {
     GE public contAddr;
     constructor() Util(msg.sender) {
         contAddr = GE(address(new GameEngine(msg.sender)));
@@ -35,17 +35,20 @@ contract GameEngineProxy is Util {
     function withdrawal(address a, uint b) external {
         contAddr.withdrawal(a, b);
     }
-    function score(address a) external view returns(uint b){
+    function score(address a) external view returns(uint){
         return contAddr.score(a);
     }
-    function available(address a) external view returns(uint b){
+    function available(address a) external view returns(uint){
         return contAddr.available(a);
+    }
+    function getUpdatable(address a) external view returns(bool){
+        return contAddr.getUpdatable(a);
     }
     //管理功能
     function addScore(address a, uint b) external OnlyAccess() {
         contAddr.addScore(a, b);
     }
-    function updateContract(address a) external OnlyAccess() {
+    function setContract(address a) external OnlyAccess() {
         contAddr = GE(a);
     }
 }
@@ -53,10 +56,12 @@ contract GameEngineProxy is Util {
 struct GU {
     uint score;
     uint available;
+    uint lastUpdate;
     bool blocked;
 }
-contract GameEngine is Util {
+contract GameEngine is Util, GE {
     IERC20 public contAddr;
+    uint public interval = 1 days;
     mapping(address => GU) public u;
     constructor(address a) Util(a) {
         (access[msg.sender], contAddr) = (true, IERC20(address(new ERC20AC(a))));
@@ -78,17 +83,24 @@ contract GameEngine is Util {
     function getBlocked(address a) external view returns (bool) {
         return u[a].blocked;
     }
+    function getUpdatable(address a) public view returns (bool) {
+        return block.timestamp > u[a].lastUpdate + interval || u[a].lastUpdate == 0;
+    }
     //管理功能
     function addScore(address a, uint b) external OnlyAccess {
+        GU storage v = u[a];
         unchecked {
-            require(!u[a].blocked);
-            (u[a].score += b, u[a].available += b);
+            require(!v.blocked && getUpdatable(a));
+            (v.score += b, v.available += b, v.lastUpdate = block.timestamp);
         }
+    }
+    function setInterval(uint a) external OnlyAccess {
+        interval = a;
     }
     function toggleBlock(address addr) external OnlyAccess {
         u[addr].blocked = !u[addr].blocked;
     }
-    function updateContract(address a) external OnlyAccess {
+    function setContract(address a) external OnlyAccess {
         contAddr = IERC20(a);
     }
 }
