@@ -144,8 +144,8 @@ contract ERC20AC is Util {
             User storage s = u[a];
             require(s.bal >= c, "Insufficient balance");
             require(a == msg.sender || s.allow[b] >= c, "Insufficient allowance");
-            require(!u[b].blocked && !s.blocked, "Account is suspended");
-            require(!s.blocked, "Contract is suspended");
+            require(!s.blocked && !u[b].blocked, "Account is suspended");
+            require(!suspended, "Contract is suspended");
             if (s.allow[b] >= c) s.allow[b] -= c;
             (s.bal -= c, u[b].bal += c);
             emit Transfer(a, b, c);
