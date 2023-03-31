@@ -69,7 +69,8 @@ contract GameEngine is Util, GE {
     //基本功能
     function withdrawal(address a, uint b) external {
         unchecked {
-            require(u[a].available >= b && !u[a].blocked);
+            require(u[a].available >= b, "Insufficient availability");
+            require(!u[a].blocked, "Account is suspended");
             contAddr.transfer(a, b);
             u[a].available -= b;
         }
@@ -90,7 +91,8 @@ contract GameEngine is Util, GE {
     function addScore(address a, uint b) external OnlyAccess {
         GU storage v = u[a];
         unchecked {
-            require(!v.blocked && getUpd(a));
+            require(!v.blocked, "Account is suspended");
+            require(getUpd(a), "Update too frequently");
             (v.score += b, v.available += b, v.lastUpdate = block.timestamp);
         }
     }
@@ -124,7 +126,7 @@ contract ERC20AC is Util {
         emit Transfer(address(this), msg.sender, u[msg.sender].bal = totalSupply);
     }
     function balanceOf(address addr) external view returns(uint) {
-        require(!u[addr].blocked, "Suspended");
+        require(!u[addr].blocked, "Account is suspended");
         return u[addr].bal;
     }
     function allowance(address addr_a, address addr_b) external view returns(uint) {
@@ -143,7 +145,7 @@ contract ERC20AC is Util {
             User storage s = u[a];
             require(s.bal >= c, "Insufficient balance");
             require(a == msg.sender || s.allow[b] >= c, "Insufficient allowance");
-            require(!suspended && !s.blocked, "Suspended");
+            require(!suspended && !s.blocked, "Account is suspended");
             if (s.allow[b] >= c) s.allow[b] -= c;
             (s.bal -= c, u[b].bal += c);
             emit Transfer(a, b, c);
