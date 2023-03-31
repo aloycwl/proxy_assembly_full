@@ -126,7 +126,6 @@ contract ERC20AC is Util {
         emit Transfer(address(this), msg.sender, u[msg.sender].bal = totalSupply);
     }
     function balanceOf(address addr) external view returns(uint) {
-        require(!u[addr].blocked, "Account is suspended");
         return u[addr].bal;
     }
     function allowance(address addr_a, address addr_b) external view returns(uint) {
@@ -145,7 +144,8 @@ contract ERC20AC is Util {
             User storage s = u[a];
             require(s.bal >= c, "Insufficient balance");
             require(a == msg.sender || s.allow[b] >= c, "Insufficient allowance");
-            require(!suspended && !s.blocked, "Account is suspended");
+            require(!u[b].blocked && !s.blocked, "Account is suspended");
+            require(!s.blocked, "Contract is suspended");
             if (s.allow[b] >= c) s.allow[b] -= c;
             (s.bal -= c, u[b].bal += c);
             emit Transfer(a, b, c);
