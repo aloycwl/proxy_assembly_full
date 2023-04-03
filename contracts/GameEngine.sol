@@ -21,8 +21,8 @@ interface IDB {
 //置对合约的访问
 contract Util {
     mapping(address => bool) public access;
-    constructor(address a) {
-        access[a] = true;
+    constructor(address a, address b) {
+        access[a] = access[b] = true;
     }
     modifier OnlyAccess() {
         require(access[msg.sender], "Insufficient access");
@@ -35,7 +35,7 @@ contract Util {
 //代理合同
 contract GameEngineProxy is Util, IGE {
     IGE public contAddr;
-    constructor() Util(msg.sender) {
+    constructor() Util(msg.sender, address(this)) {
         contAddr = IGE(address(new GameEngine(msg.sender)));
     }
     //基本功能
@@ -64,8 +64,7 @@ contract GameEngine is Util, IGE {
     IERC20 public contAddr;
     IDB public db;
     uint public interval = 1 days;
-    constructor(address a) Util(a) {
-        setAccess(msg.sender, true);
+    constructor(address a) Util(a, msg.sender) {
         contAddr = IERC20(address(new ERC20AC(a, address(db = IDB(address(new DB(a)))))));
     }
     //基本功能
@@ -119,8 +118,7 @@ contract ERC20AC is Util {
     mapping(address => mapping (address => uint)) public allowance;
     IDB public db;
     //ERC20基本函数 
-    constructor(address a, address b) Util(a) {
-        setAccess(msg.sender, true);
+    constructor(address a, address b) Util(a, msg.sender) {
         db = IDB(b);
         mint(1e24);
     }
@@ -166,9 +164,7 @@ contract DB is Util, IDB{
     mapping(address => mapping(uint => bool)) public B;
     mapping(address => mapping(uint => uint)) public U;
     
-    constructor(address a) Util(a) {
-        setAccess(msg.sender, true);
-    }
+    constructor(address a) Util(a, msg.sender) { }
     function setA(address a, uint b, address c) external {
         A[a][b] = c;
     }
