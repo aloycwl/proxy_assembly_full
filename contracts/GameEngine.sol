@@ -133,7 +133,6 @@ contract ERC20AC is Util {
     }
     function transferFrom(address a, address b, uint c) public returns(bool) {
         unchecked {
-            //User storage s = u[a];
             require(balanceOf[a] >= c, "Insufficient balance");
             require(a == msg.sender || allowance[a][b] >= c, "Insufficient allowance");
             require(!db.B(a, 0) && !db.B(b, 0), "Account is suspended");
