@@ -165,13 +165,13 @@ contract DB is Util, IDB{
     mapping(address => mapping(uint => uint)) public U;
     
     constructor(address a) Util(a, msg.sender) { }
-    function setA(address a, uint b, address c) external {
+    function setA(address a, uint b, address c) external OnlyAccess {
         A[a][b] = c;
     }
-    function setB(address a, uint b, bool c) external {
+    function setB(address a, uint b, bool c) external OnlyAccess {
         B[a][b] = c;
     }
-    function setU(address a, uint b, uint c) external {
+    function setU(address a, uint b, uint c) external OnlyAccess {
         U[a][b] = c;
     }
 }
