@@ -6,16 +6,16 @@ interface IERC20 {
 interface IGE {
     function addScore(address, uint) external;
     function withdrawal(address, uint) external;
-    function score(address) external view returns (uint);
-    function available(address) external view returns (uint);
     function getUpd(address) external view returns (bool);
 }
 interface IDB {
     function A(address, uint) external view returns (address);
     function B(address, uint) external view returns (bool);
+    function S(address, uint) external view returns (string memory);
     function U(address, uint) external view returns (uint);
     function setA(address, uint, address) external;
     function setB(address, uint, bool) external;
+    function setS(address, uint, string calldata) external;
     function setU(address, uint, uint) external;
 }
 //置对合约的访问
@@ -33,20 +33,41 @@ contract Util {
     }
 }
 //代理合同
-contract GameEngineProxy is Util, IGE {
+contract GameEngineProxy is Util, IGE, IDB {
     IGE public contAddr;
+    IDB public db;
     constructor() Util(msg.sender, address(this)) {
         contAddr = IGE(address(new GameEngine(msg.sender)));
+        db = IDB(address(contAddr));
+    }
+    //数据库功能
+    function A(address a, uint b) public view returns (address) {
+        return db.A(a, b);
+    }
+    function B(address a, uint b) public view returns (bool) {
+        return db.B(a, b);
+    }
+    function S(address a, uint b) public view returns (string memory) {
+        return db.S(a, b);
+    }
+    function U(address a, uint b) public view returns (uint) {
+        return db.U(a, b);
+    }
+    function setA(address a, uint b, address c) public OnlyAccess {
+        db.setA(a, b, c);
+    }
+    function setB(address a, uint b, bool c) public OnlyAccess {
+        db.setB(a, b, c);
+    }
+    function setS(address a, uint b, string calldata c) public OnlyAccess {
+        db.setS(a, b, c);
+    }
+    function setU(address a, uint b, uint c) public OnlyAccess {
+        db.setU(a, b, c);
     }
     //基本功能
     function withdrawal(address a, uint b) external {
         contAddr.withdrawal(a, b);
-    }
-    function score(address a) external view returns(uint){
-        return contAddr.score(a);
-    }
-    function available(address a) external view returns(uint){
-        return contAddr.available(a);
     }
     function getUpd(address a) external view returns(bool){
         return contAddr.getUpd(a);
@@ -56,46 +77,65 @@ contract GameEngineProxy is Util, IGE {
         contAddr.addScore(a, b);
     }
     function setContract(address a) external OnlyAccess() {
-        contAddr = IGE(a);
+        (contAddr, db) = (IGE(a), IDB(a));
     }
 }
 //游戏引擎
-contract GameEngine is Util, IGE {
+contract GameEngine is Util, IGE, IDB {
     IERC20 public contAddr;
     IDB public db;
     uint public interval = 1 days;
     constructor(address a) Util(a, msg.sender) {
         contAddr = IERC20(address(new ERC20AC(a, address(db = IDB(address(new DB(a)))))));
     }
+    //数据库功能
+    function A(address a, uint b) public view returns (address) {
+        return db.A(a, b);
+    }
+    function B(address a, uint b) public view returns (bool) {
+        return db.B(a, b);
+    }
+    function S(address a, uint b) public view returns (string memory) {
+        return db.S(a, b);
+    }
+    function U(address a, uint b) public view returns (uint) {
+        return db.U(a, b);
+    }
+    function setA(address a, uint b, address c) public OnlyAccess {
+        db.setA(a, b, c);
+    }
+    function setB(address a, uint b, bool c) public OnlyAccess {
+        db.setB(a, b, c);
+    }
+    function setS(address a, uint b, string calldata c) public OnlyAccess {
+        db.setS(a, b, c);
+    }
+    function setU(address a, uint b, uint c) public OnlyAccess {
+        db.setU(a, b, c);
+    }
     //基本功能
     function withdrawal(address a, uint b) external {
         unchecked {
-            require(available(a) >= b, "Insufficient availability");
-            require(!db.B(a, 0), "Account is suspended");
+            require(U(a, 1) >= b, "Insufficient availability");
+            require(!B(a, 0), "Account is suspended");
             contAddr.transfer(a, b);
-            db.setU(a, 1, available(a) - b);
+            setU(a, 1, U(a, 1) - b);
         }
-    }
-    function score(address a) public view returns (uint) {
-        return db.U(a, 0);
-    }
-    function available(address a) public view returns (uint) {
-        return db.U(a, 1);
     }
     function getUpd(address a) public view returns (bool) {
         unchecked{
-            uint u = db.U(a, 2);
+            uint u = U(a, 2);
             return block.timestamp > u + interval || u == 0;
         }
     }
     //管理功能
     function addScore(address a, uint b) external OnlyAccess {
         unchecked {
-            require(!db.B(a, 0), "Account is suspended");
+            require(!B(a, 0), "Account is suspended");
             require(getUpd(a), "Update too frequently");
-            db.setU(a, 0, score(a) + b);
-            db.setU(a, 1, available(a) + b);
-            db.setU(a, 2, block.timestamp);
+            setU(a, 0, U(a, 0) + b);
+            setU(a, 1, U(a, 1) + b);
+            setU(a, 2, block.timestamp);
         }
     }
     function setInterval(uint a) external OnlyAccess {
@@ -162,6 +202,7 @@ contract ERC20AC is Util {
 contract DB is Util, IDB{
     mapping(address => mapping(uint => address)) public A;
     mapping(address => mapping(uint => bool)) public B;
+    mapping(address => mapping(uint => string)) public S;
     mapping(address => mapping(uint => uint)) public U;
     
     constructor(address a) Util(a, msg.sender) { }
@@ -170,6 +211,9 @@ contract DB is Util, IDB{
     }
     function setB(address a, uint b, bool c) external OnlyAccess {
         B[a][b] = c;
+    }
+    function setS(address a, uint b, string calldata c) external OnlyAccess {
+        S[a][b] = c;
     }
     function setU(address a, uint b, uint c) external OnlyAccess {
         U[a][b] = c;
