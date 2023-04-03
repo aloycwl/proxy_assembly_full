@@ -2,7 +2,6 @@ pragma solidity 0.8.19;//SPDX-License-Identifier:None
 //被调用的接口
 interface IERC20 {
     function transfer(address, uint) external returns(bool);
-    function setAccess(address a, bool b) external;
 }
 interface IGE {
     function addScore(address, uint) external;
@@ -29,7 +28,7 @@ contract Util {
         require(access[msg.sender], "Insufficient access");
         _;
     }
-    function setAccess(address a, bool b) external OnlyAccess {
+    function setAccess(address a, bool b) public OnlyAccess {
         access[a] = b;
     }
 }
@@ -66,14 +65,14 @@ contract GameEngine is Util, IGE {
     IDB public db;
     uint public interval = 1 days;
     constructor(address a) Util(a) {
-        (access[msg.sender], db) = (true, IDB(address(new DB(a))));
-        contAddr = IERC20(address(new ERC20AC(a, address(db))));
+        setAccess(msg.sender, true);
+        contAddr = IERC20(address(new ERC20AC(a, address(db = IDB(address(new DB(a)))))));
     }
     //基本功能
     function withdrawal(address a, uint b) external {
-        require(available(a) >= b, "Insufficient availability");
-        require(!db.B(a, 0), "Account is suspended");
         unchecked {
+            require(available(a) >= b, "Insufficient availability");
+            require(!db.B(a, 0), "Account is suspended");
             contAddr.transfer(a, b);
             db.setU(a, 1, available(a) - b);
         }
@@ -92,9 +91,9 @@ contract GameEngine is Util, IGE {
     }
     //管理功能
     function addScore(address a, uint b) external OnlyAccess {
-        require(!db.B(a, 0), "Account is suspended");
-        require(getUpd(a), "Update too frequently");
         unchecked {
+            require(!db.B(a, 0), "Account is suspended");
+            require(getUpd(a), "Update too frequently");
             db.setU(a, 0, score(a) + b);
             db.setU(a, 1, available(a) + b);
             db.setU(a, 2, block.timestamp);
@@ -121,7 +120,8 @@ contract ERC20AC is Util {
     IDB public db;
     //ERC20基本函数 
     constructor(address a, address b) Util(a) {
-        (access[msg.sender], db) = (true, IDB(b));
+        setAccess(msg.sender, true);
+        db = IDB(b);
         mint(1e24);
     }
     function approve(address a, uint b) external returns(bool) {
@@ -167,7 +167,7 @@ contract DB is Util, IDB{
     mapping(address => mapping(uint => uint)) public U;
     
     constructor(address a) Util(a) {
-        access[msg.sender] = true;
+        setAccess(msg.sender, true);
     }
     function setA(address a, uint b, address c) external {
         A[a][b] = c;
