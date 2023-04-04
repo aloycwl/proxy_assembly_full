@@ -4,15 +4,12 @@ interface IERC20 {
     function transfer(address, uint) external;
 }
 interface IGE {
-    function addScore(address, uint) external;
+    function addScore(address[] calldata, uint[] calldata) external;
     function withdrawal(address, uint) external;
-    function getUpd(address) external view returns (bool);
     function A(address, uint) external view returns (address);
-    function B(address, uint) external view returns (bool);
     function S(address, uint) external view returns (string memory);
     function U(address, uint) external view returns (uint);
     function setA(address, uint, address) external;
-    function setB(address, uint, bool) external;
     function setS(address, uint, string calldata) external;
     function setU(address, uint, uint) external; 
 }
@@ -40,9 +37,6 @@ contract GameEngineProxy is Util {
     function A(address a, uint b) external view returns (address) {
         return contAddr.A(a, b);
     }
-    function B(address a, uint b) external view returns (bool) {
-        return contAddr.B(a, b);
-    }
     function S(address a, uint b) external view returns (string memory) {
         return contAddr.S(a, b);
     }
@@ -51,9 +45,6 @@ contract GameEngineProxy is Util {
     }
     function setA(address a, uint b, address c) external OnlyAccess {
         contAddr.setA(a, b, c);
-    }
-    function setB(address a, uint b, bool c) external OnlyAccess {
-        contAddr.setB(a, b, c);
     }
     function setS(address a, uint b, string calldata c) external OnlyAccess {
         contAddr.setS(a, b, c);
@@ -65,11 +56,8 @@ contract GameEngineProxy is Util {
     function withdrawal(address a, uint b) external {
         contAddr.withdrawal(a, b);
     }
-    function getUpd(address a) external view returns(bool){
-        return contAddr.getUpd(a);
-    }
     //管理功能
-    function addScore(address a, uint b) external OnlyAccess() {
+    function addScore(address[] calldata a, uint[] calldata b) external OnlyAccess() {
         contAddr.addScore(a, b);
     }
     function setContract(address a) external OnlyAccess() {
@@ -80,16 +68,13 @@ contract GameEngineProxy is Util {
 contract GameEngine is Util {
     IERC20 public contAddr;
     IGE public db;
-    uint public interval = 1 days;
+    uint public interval;
     constructor(address a) Util(a, msg.sender) {
         contAddr = IERC20(address(new ERC20AC(a, address(db = IGE(address(new DB(a)))))));
     }
     //数据库功能
     function A(address a, uint b) public view returns (address) {
         return db.A(a, b);
-    }
-    function B(address a, uint b) public view returns (bool) {
-        return db.B(a, b);
     }
     function S(address a, uint b) public view returns (string memory) {
         return db.S(a, b);
@@ -99,9 +84,6 @@ contract GameEngine is Util {
     }
     function setA(address a, uint b, address c) public OnlyAccess {
         db.setA(a, b, c);
-    }
-    function setB(address a, uint b, bool c) public OnlyAccess {
-        db.setB(a, b, c);
     }
     function setS(address a, uint b, string calldata c) public OnlyAccess {
         db.setS(a, b, c);
@@ -113,29 +95,19 @@ contract GameEngine is Util {
     function withdrawal(address a, uint b) external {
         unchecked {
             require(U(a, 1) >= b, "Insufficient availability");
-            require(!B(a, 0), "Account is suspended");
+            require(U(a, 2) == 0, "Account is suspended");
             contAddr.transfer(a, b);
             setU(a, 1, U(a, 1) - b);
         }
     }
-    function getUpd(address a) public view returns (bool) {
-        unchecked{
-            uint u = U(a, 2);
-            return block.timestamp > u + interval || u == 0;
-        }
-    }
     //管理功能
-    function addScore(address a, uint b) external OnlyAccess {
+    function addScore(address[] calldata a, uint[] calldata b) external OnlyAccess {
         unchecked {
-            require(!B(a, 0), "Account is suspended");
-            require(getUpd(a), "Update too frequently");
-            setU(a, 0, U(a, 0) + b);
-            setU(a, 1, U(a, 1) + b);
-            setU(a, 2, block.timestamp);
+            for (uint i; i < a.length; ++i){
+                setU(a[i], 0, U(a[i], 0) + b[i]);
+                setU(a[i], 1, U(a[i], 1) + b[i]);
+            }
         }
-    }
-    function setInterval(uint a) external OnlyAccess {
-        interval = a;
     }
     function setContract(address a) external OnlyAccess {
         contAddr = IERC20(a);
@@ -169,7 +141,7 @@ contract ERC20AC is Util {
         unchecked {
             require(balanceOf[a] >= c, "Insufficient balance");
             require(a == msg.sender || allowance[a][b] >= c, "Insufficient allowance");
-            require(!db.B(a, 0) && !db.B(b, 0), "Account is suspended");
+            require(db.U(a, 2) == 0 && db.U(b, 2) == 0, "Account is suspended");
             require(suspended == 0, "Contract is suspended");
             if (allowance[a][b] >= c) allowance[a][b] -= c;
             (balanceOf[a] -= c, balanceOf[b] += c);
@@ -196,18 +168,14 @@ contract ERC20AC is Util {
     }
 }
 //储存合约
-//U[addr][0]=score, U[addr][1]=available, U[addr][2]=lastUpdated, B[addr][0]-blocked
+//U[addr][0]=score, U[addr][1]=available, U[addr][2]=blocked
 contract DB is Util {
     mapping(address => mapping(uint => address)) public A;
-    mapping(address => mapping(uint => bool)) public B;
     mapping(address => mapping(uint => string)) public S;
     mapping(address => mapping(uint => uint)) public U;
     constructor(address a) Util(a, msg.sender) { }
     function setA(address a, uint b, address c) external OnlyAccess {
         A[a][b] = c;
-    }
-    function setB(address a, uint b, bool c) external OnlyAccess {
-        B[a][b] = c;
     }
     function setS(address a, uint b, string calldata c) external OnlyAccess {
         S[a][b] = c;
