@@ -6,7 +6,7 @@ contract a{
     mapping(uint => bytes) private aa;
 
     function setAA(string calldata b, uint c)external{
-        aa[c] = abi.encodePacked(b);
+        aa[c] = abi.encode(b);
     }
 
     function getAA(uint c)external view returns (string memory) {
