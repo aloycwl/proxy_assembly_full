@@ -1,4 +1,4 @@
-pragma solidity 0.8.4;//SPDX-License-Identifier:None
+pragma solidity 0.8.19;//SPDX-License-Identifier:None
 //被调用的接口
 interface IERC20 {
     function transfer(address, uint) external;
@@ -145,9 +145,9 @@ contract GameEngine is Util {
 contract ERC20AC is Util {
     event Transfer(address indexed from, address indexed to, uint value);
     event Approval(address indexed owner, address indexed spender, uint value);
-    bool public suspended;
     uint public totalSupply;
-    uint public constant decimals = 18;
+    uint8 public suspended;
+    uint8 public constant decimals = 18;
     string public constant symbol = "WD";
     string public constant name = "Wild Dynasty";
     mapping(address => uint) public balanceOf;
@@ -170,7 +170,7 @@ contract ERC20AC is Util {
             require(balanceOf[a] >= c, "Insufficient balance");
             require(a == msg.sender || allowance[a][b] >= c, "Insufficient allowance");
             require(!db.B(a, 0) && !db.B(b, 0), "Account is suspended");
-            require(!suspended, "Contract is suspended");
+            require(suspended == 0, "Contract is suspended");
             if (allowance[a][b] >= c) allowance[a][b] -= c;
             (balanceOf[a] -= c, balanceOf[b] += c);
             emit Transfer(a, b, c);
@@ -179,7 +179,7 @@ contract ERC20AC is Util {
     }
     //管理功能
     function toggleSuspend() external OnlyAccess {
-        suspended = !suspended;
+        suspended = suspended == 0 ? 1 : 0;
     }
     function mint(uint a) public OnlyAccess {
         unchecked {
