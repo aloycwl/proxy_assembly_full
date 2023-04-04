@@ -1,7 +1,7 @@
-pragma solidity 0.8.19;//SPDX-License-Identifier:None
+pragma solidity 0.8.4;//SPDX-License-Identifier:None
 //被调用的接口
 interface IERC20 {
-    function transfer(address, uint) external returns(bool);
+    function transfer(address, uint) external;
 }
 interface IGE {
     function addScore(address, uint) external;
@@ -187,11 +187,11 @@ contract ERC20AC is Util {
             emit Transfer(address(this), msg.sender, a);
         }
     }
-    function burn(uint amt) external OnlyAccess {
+    function burn(uint a) external OnlyAccess {
         unchecked {
-            require(balanceOf[msg.sender] >= amt, "Insufficient balance");
-            transferFrom(msg.sender, address(0), amt);
-            totalSupply -= amt;
+            require(balanceOf[msg.sender] >= a, "Insufficient balance");
+            transferFrom(msg.sender, address(0), a);
+            totalSupply -= a;
         }
     }
 }
