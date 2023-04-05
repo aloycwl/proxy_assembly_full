@@ -1,25 +1,17 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-// game developer depoloys contract
-contract Verify {
+contract VerifySignature {
+    address public trustedSigner;
 
-    // game developer's account
-    address public owner = 0xdD4c825203f97984e7867F11eeCc813A036089D1;
-    mapping (bytes32 => uint) hm;
+    constructor(address _trustedSigner) {
+        trustedSigner = _trustedSigner;
+    }
 
-    // player claims price
-    function claimPrize(bytes32 _hashedMessage, uint8 _v, bytes32 _r, bytes32 _s) public returns (bool) {
-        require(hm[_hashedMessage] == 0, "Hash is repeated");
-        bytes memory prefix = "\x19Ethereum Signed Message:\n32";
-        bytes32 prefixedHashMessage = keccak256(abi.encodePacked(prefix, _hashedMessage));
-        address signer = ecrecover(prefixedHashMessage, _v, _r, _s);
-    
-        if (signer == owner) {
-            hm[_hashedMessage] = 1;
-            return true;
-        }
-
-        return false;
+    function verify(string memory message, uint8 v, bytes32 r, bytes32 s) public view returns (bool) {
+        bytes32 messageHash = keccak256(abi.encodePacked(message));
+        bytes32 ethSignedMessageHash = keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", messageHash));
+        address recoveredSigner = ecrecover(ethSignedMessageHash, v, r, s);
+        return (recoveredSigner == trustedSigner);
     }
 }
