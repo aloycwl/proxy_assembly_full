@@ -68,7 +68,6 @@ contract GameEngineProxy is Util {
 contract GameEngine is Util {
     IERC20 public contAddr;
     IGE public db;
-    uint public interval;
     constructor(address a) Util(a, msg.sender) {
         contAddr = IERC20(address(new ERC20AC(a, address(db = IGE(address(new DB(a)))))));
     }
