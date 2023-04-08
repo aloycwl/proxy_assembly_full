@@ -4,13 +4,9 @@ interface IERC20 {
     function transfer(address, uint) external;
 }
 interface IGE {
-    function addScore(address, uint) external;
+    function addScore(address, uint, uint8, bytes32, bytes32) external;
     function withdrawal(address, uint) external;
-    function A(address, uint) external view returns (address);
-    function S(address, uint) external view returns (string memory);
     function U(address, uint) external view returns (uint);
-    function setA(address, uint, address) external;
-    function setS(address, uint, string calldata) external;
     function setU(address, uint, uint) external; 
 }
 //置对合约的访问
@@ -34,20 +30,8 @@ contract GameEngineProxy is Util {
         contAddr = IGE(address(new GameEngine(msg.sender)));
     }
     //数据库功能
-    function A(address a, uint b) external view returns (address) {
-        return contAddr.A(a, b);
-    }
-    function S(address a, uint b) external view returns (string memory) {
-        return contAddr.S(a, b);
-    }
     function U(address a, uint b) external view returns (uint) {
         return contAddr.U(a, b);
-    }
-    function setA(address a, uint b, address c) external OnlyAccess {
-        contAddr.setA(a, b, c);
-    }
-    function setS(address a, uint b, string calldata c) external OnlyAccess {
-        contAddr.setS(a, b, c);
     }
     function setU(address a, uint b, uint c) external OnlyAccess {
         contAddr.setU(a, b, c);
@@ -57,8 +41,8 @@ contract GameEngineProxy is Util {
         contAddr.withdrawal(a, b);
     }
     //管理功能
-    function addScore(uint b) external {
-        contAddr.addScore(msg.sender, b);
+    function addScore(uint b, uint8 v, bytes32 r, bytes32 s) external {
+        contAddr.addScore(msg.sender, b, v, r, s);
     }
     function setContract(address a) external OnlyAccess() {
         contAddr = IGE(a);
@@ -68,24 +52,14 @@ contract GameEngineProxy is Util {
 contract GameEngine is Util {
     IERC20 public contAddr;
     IGE public db;
+    address private signer;
     constructor(address a) Util(a, msg.sender) {
-        contAddr = IERC20(address(new ERC20AC(a, address(db = IGE(address(new DB(a)))))));
+        (contAddr, signer) = 
+            (IERC20(address(new ERC20AC(a, address(db = IGE(address(new DB(a))))))), a);
     }
     //数据库功能
-    function A(address a, uint b) public view returns (address) {
-        return db.A(a, b);
-    }
-    function S(address a, uint b) public view returns (string memory) {
-        return db.S(a, b);
-    }
     function U(address a, uint b) public view returns (uint) {
         return db.U(a, b);
-    }
-    function setA(address a, uint b, address c) public OnlyAccess {
-        db.setA(a, b, c);
-    }
-    function setS(address a, uint b, string calldata c) public OnlyAccess {
-        db.setS(a, b, c);
     }
     function setU(address a, uint b, uint c) public OnlyAccess {
         db.setU(a, b, c);
@@ -99,14 +73,21 @@ contract GameEngine is Util {
             setU(a, 0, U(a, 0) - b);
         }
     }
-    //管理功能
-    function addScore(address a, uint b) external OnlyAccess {
+    function addScore(address a, uint b, uint8 v, bytes32 r, bytes32 s) external OnlyAccess {
         unchecked {
+            require(ecrecover(keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", 
+                keccak256(abi.encodePacked(U(a,1))))), v, r, s) == signer,
+                "Signature invalid");
             setU(a, 0, U(a, 0) + b);
+            setU(a, 2, U(a, 2) + 1);
         }
     }
+    //管理功能
     function setContract(address a) external OnlyAccess {
         contAddr = IERC20(a);
+    }
+    function setSigner(address a) external OnlyAccess {
+        signer = a;
     }
 }
 //代币合约
@@ -166,16 +147,8 @@ contract ERC20AC is Util {
 //储存合约
 //U[addr][0]=score/available, U[addr][1]=count, U[addr][2]=blocked
 contract DB is Util {
-    mapping(address => mapping(uint => address)) public A;
-    mapping(address => mapping(uint => string)) public S;
     mapping(address => mapping(uint => uint)) public U;
     constructor(address a) Util(a, msg.sender) { }
-    function setA(address a, uint b, address c) external OnlyAccess {
-        A[a][b] = c;
-    }
-    function setS(address a, uint b, string calldata c) external OnlyAccess {
-        S[a][b] = c;
-    }
     function setU(address a, uint b, uint c) external OnlyAccess {
         U[a][b] = c;
     }
