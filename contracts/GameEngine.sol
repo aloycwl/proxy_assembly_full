@@ -4,7 +4,7 @@ interface IERC20 {
     function transfer(address, uint) external;
 }
 interface IGE {
-    function addScore(address[] calldata, uint[] calldata) external;
+    function addScore(address, uint) external;
     function withdrawal(address, uint) external;
     function A(address, uint) external view returns (address);
     function S(address, uint) external view returns (string memory);
@@ -57,8 +57,8 @@ contract GameEngineProxy is Util {
         contAddr.withdrawal(a, b);
     }
     //管理功能
-    function addScore(address[] calldata a, uint[] calldata b) external OnlyAccess() {
-        contAddr.addScore(a, b);
+    function addScore(uint b) external {
+        contAddr.addScore(msg.sender, b);
     }
     function setContract(address a) external OnlyAccess() {
         contAddr = IGE(a);
@@ -93,19 +93,16 @@ contract GameEngine is Util {
     //基本功能
     function withdrawal(address a, uint b) external {
         unchecked {
-            require(U(a, 1) >= b, "Insufficient availability");
+            require(U(a, 0) >= b, "Insufficient availability");
             require(U(a, 2) == 0, "Account is suspended");
             contAddr.transfer(a, b);
-            setU(a, 1, U(a, 1) - b);
+            setU(a, 0, U(a, 0) - b);
         }
     }
     //管理功能
-    function addScore(address[] calldata a, uint[] calldata b) external OnlyAccess {
+    function addScore(address a, uint b) external OnlyAccess {
         unchecked {
-            for (uint i; i < a.length; ++i){
-                setU(a[i], 0, U(a[i], 0) + b[i]);
-                setU(a[i], 1, U(a[i], 1) + b[i]);
-            }
+            setU(a, 0, U(a, 0) + b);
         }
     }
     function setContract(address a) external OnlyAccess {
@@ -167,7 +164,7 @@ contract ERC20AC is Util {
     }
 }
 //储存合约
-//U[addr][0]=score, U[addr][1]=available, U[addr][2]=blocked
+//U[addr][0]=score/available, U[addr][1]=count, U[addr][2]=blocked
 contract DB is Util {
     mapping(address => mapping(uint => address)) public A;
     mapping(address => mapping(uint => string)) public S;
