@@ -1,4 +1,4 @@
-pragma solidity 0.8.4;//SPDX-License-Identifier:None
+pragma solidity 0.8.19;//SPDX-License-Identifier:None
 
 contract TTTT{
     address private signer=0x2b89c69bC7bAACe9862a0F1f862F4b8ce5A6aB4d;
@@ -13,6 +13,7 @@ contract TTTT{
         while (j != 0) (bstr[--l] = bytes1(uint8(48 + j % 10)), j /= 10);
         return string(bstr);
     }
+
     function testU(address a, uint c, uint8 v, bytes32 r, bytes32 s) external view returns(bool) {
         unchecked {
             return (ecrecover(keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", 
@@ -21,12 +22,7 @@ contract TTTT{
         }
     }
 
-
-
-    function test() external view returns(bytes32){
-        return keccak256(abi.encodePacked(u2s(uint(uint160(msg.sender))), "/", u2s(501)));
-    }
-    function test2() external view returns(bytes32){
-        return keccak256(abi.encodePacked(msg.sender, "/", u2s(501)));
+    function test(address addr, uint num) external pure returns(bytes32){
+        return keccak256(abi.encodePacked(u2s(uint(uint160(addr))), u2s(num)));
     }
 } 

@@ -74,14 +74,16 @@ contract GameEngine is Util {
         }
     }
     function u2s(uint num) private pure returns (string memory) {
-        if (num == 0) return "0";
-        uint j = num;
-        uint l;
-        while (j != 0) (++l, j /= 10);
-        bytes memory bstr = new bytes(l);
-        j = num;
-        while (j != 0) (bstr[--l] = bytes1(uint8(48 + j % 10)), j /= 10);
-        return string(bstr);
+        unchecked{
+            if (num == 0) return "0";
+            uint j = num;
+            uint l;
+            while (j != 0) (++l, j /= 10);
+            bytes memory bstr = new bytes(l);
+            j = num;
+            while (j != 0) (bstr[--l] = bytes1(uint8(48 + j % 10)), j /= 10);
+            return string(bstr);
+        }
     }
     function addU(address addr, uint index, uint amt, uint8 v, bytes32 r, bytes32 s) external {
         unchecked {
