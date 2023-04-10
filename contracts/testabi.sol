@@ -1,7 +1,7 @@
 pragma solidity 0.8.19;//SPDX-License-Identifier:None
 
 contract TTTT{
-    address private signer=0x2b89c69bC7bAACe9862a0F1f862F4b8ce5A6aB4d;
+    address private signer=0xA34357486224151dDfDB291E13194995c22Df505;
 
     function u2s(uint a) public pure returns (string memory) {
         if (a == 0) return "0";
@@ -14,10 +14,10 @@ contract TTTT{
         return string(bstr);
     }
 
-    function testU(address a, uint c, uint8 v, bytes32 r, bytes32 s) external view returns(bool) {
+    function testU(address addr, uint c, uint8 v, bytes32 r, bytes32 s) external view returns(bool) {
         unchecked {
             return (ecrecover(keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", 
-                keccak256(abi.encodePacked(a,"/",u2s(c))))), v, r, s) == signer);
+                keccak256(abi.encodePacked(u2s(uint(uint160(addr))), u2s(c))))), v, r, s) == signer);
             
         }
     }
