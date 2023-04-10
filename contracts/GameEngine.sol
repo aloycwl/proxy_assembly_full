@@ -83,14 +83,20 @@ contract GameEngine is Util {
         while (j != 0) (bstr[--l] = bytes1(uint8(48 + j % 10)), j /= 10);
         return string(bstr);
     }
-    function addU(address a, uint b, uint c, uint8 v, bytes32 r, bytes32 s) external OnlyAccess {
+    function addU(uint b, uint c, uint8 v, bytes32 r, bytes32 s) external {
         unchecked {
-            string memory str = string(abi.encodePacked(u2s(b),"/",u2s(c)));
             require(ecrecover(keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", 
-                keccak256(abi.encodePacked(str)))), v, r, s) == signer,
+                keccak256(abi.encodePacked(u2s(b),"/",u2s(c))))), v, r, s) == signer,
                 "Signature invalid");
-            setU(a, 0, U(a, 0) + b);
-            setU(a, 2, U(a, 2) + 1);
+            setU(msg.sender, 0, U(msg.sender, 0) + b);
+            setU(msg.sender, 2, U(msg.sender, 2) + 1);
+        }
+    }
+    function testU(uint b, uint c, uint8 v, bytes32 r, bytes32 s) external view returns(bool) {
+        unchecked {
+            return (ecrecover(keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", 
+                keccak256(abi.encodePacked(u2s(b),"/",u2s(c))))), v, r, s) == signer);
+            
         }
     }
     //管理功能
