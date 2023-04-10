@@ -73,7 +73,7 @@ contract GameEngine is Util {
             setU(a, 0, U(a, 0) - b);
         }
     }
-    function u2s(uint a) public pure returns (string memory) {
+    function u2s(uint a) private pure returns (string memory) {
         if (a == 0) return "0";
         uint j = a;
         uint l;
