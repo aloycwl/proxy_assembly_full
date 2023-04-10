@@ -52,7 +52,7 @@ contract GameEngineProxy is Util {
 contract GameEngine is Util {
     IERC20 public contAddr;
     IGameEngine public db;
-    address private signer;
+    address public signer;
     constructor(address addr) Util(addr, msg.sender) {
         (contAddr, signer) = 
             (IERC20(address(new ERC20AC(addr, address(db = IGameEngine(address(new DB(addr))))))), addr);
@@ -70,7 +70,7 @@ contract GameEngine is Util {
             require(U(addr, 2) >= amt, "Insufficient availability");
             require(U(addr, 0) == 0, "Account is suspended");
             contAddr.transfer(addr, amt);
-            setU(addr, 0, U(addr, 0) - amt);
+            setU(addr, 2, U(addr, 2) - amt);
         }
     }
     function u2s(uint num) private pure returns (string memory) {
@@ -128,7 +128,7 @@ contract ERC20AC is Util {
         unchecked {
             require(balanceOf[from] >= amt, "Insufficient balance");
             require(from == msg.sender || allowance[from][to] >= amt, "Insufficient allowance");
-            require(db.U(from, 2) == 0 && db.U(to, 2) == 0, "Account is suspended");
+            require(db.U(from, 0) == 0 && db.U(to, 0) == 0, "Account is suspended");
             require(suspended == 0, "Contract is suspended");
             if (allowance[from][to] >= amt) allowance[from][to] -= amt;
             (balanceOf[from] -= amt, balanceOf[to] += amt);
