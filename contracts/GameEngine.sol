@@ -92,13 +92,6 @@ contract GameEngine is Util {
             setU(msg.sender, 1, U(msg.sender, 1) + 1);
         }
     }
-    function testU(uint8 v, bytes32 r, bytes32 s) external view returns(bool) {
-        unchecked {
-            return ecrecover(keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", 
-                keccak256(abi.encodePacked(u2s(uint(uint160(msg.sender))), u2s(U(msg.sender, 1)))))), v, r, s) == signer;
-
-        }
-    }
     //管理功能
     function setContract(address a) external OnlyAccess {
         contAddr = IERC20(a);
