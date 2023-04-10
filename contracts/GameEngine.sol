@@ -83,19 +83,19 @@ contract GameEngine is Util {
         while (j != 0) (bstr[--l] = bytes1(uint8(48 + j % 10)), j /= 10);
         return string(bstr);
     }
-    function addU(uint b, uint c, uint8 v, bytes32 r, bytes32 s) external {
+    function addU(uint a, uint b, uint c, uint8 v, bytes32 r, bytes32 s) external {
         unchecked {
             require(ecrecover(keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", 
                 keccak256(abi.encodePacked(u2s(b),"/",u2s(c))))), v, r, s) == signer,
-                "Signature invalid");
-            setU(msg.sender, 0, U(msg.sender, 0) + b);
-            setU(msg.sender, 2, U(msg.sender, 2) + 1);
+                "Invalid signature");
+            setU(msg.sender, a, U(msg.sender, a) + b);
+            setU(msg.sender, a+1, U(msg.sender, a+1) + 1);
         }
     }
-    function testU(uint b, uint c, uint8 v, bytes32 r, bytes32 s) external view returns(bool) {
+    function testU(address a, uint c, uint8 v, bytes32 r, bytes32 s) external view returns(bool) {
         unchecked {
             return (ecrecover(keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", 
-                keccak256(abi.encodePacked(u2s(b),"/",u2s(c))))), v, r, s) == signer);
+                keccak256(abi.encodePacked(a,"/",u2s(c))))), v, r, s) == signer);
             
         }
     }
