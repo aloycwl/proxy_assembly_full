@@ -3,8 +3,8 @@ pragma solidity 0.8.19;//SPDX-License-Identifier:None
 interface IERC20 {
     function transfer(address, uint) external;
 }
-interface IGE {
-    function addScore(address, uint, uint8, bytes32, bytes32) external;
+interface IGameEngine {
+    function addU(address, uint, uint, uint8, bytes32, bytes32) external;
     function withdrawal(address, uint) external;
     function U(address, uint) external view returns (uint);
     function setU(address, uint, uint) external; 
@@ -12,92 +12,92 @@ interface IGE {
 //置对合约的访问
 contract Util {
     mapping(address => bool) public access;
-    constructor(address a, address b) {
-        access[a] = access[b] = true;
+    constructor(address addr1, address addr2) {
+        access[addr1] = access[addr2] = true;
     }
     modifier OnlyAccess() {
         require(access[msg.sender], "Insufficient access");
         _;
     }
-    function setAccess(address a, bool b) public OnlyAccess {
-        access[a] = b;
+    function setAccess(address addr, bool bolAccess) public OnlyAccess {
+        access[addr] = bolAccess;
     }
 }
 //代理合同
 contract GameEngineProxy is Util {
-    IGE public contAddr;
+    IGameEngine public contAddr;
     constructor() Util(msg.sender, address(this)) {
-        contAddr = IGE(address(new GameEngine(msg.sender)));
+        contAddr = IGameEngine(address(new GameEngine(msg.sender)));
     }
     //数据库功能
-    function U(address a, uint b) external view returns (uint) {
-        return contAddr.U(a, b);
+    function U(address addr, uint index) external view returns (uint) {
+        return contAddr.U(addr, index);
     }
-    function setU(address a, uint b, uint c) external OnlyAccess {
-        contAddr.setU(a, b, c);
+    function setU(address addr, uint index, uint amt) external OnlyAccess {
+        contAddr.setU(addr, index, amt);
     }
     //基本功能
-    function withdrawal(address a, uint b) external {
-        contAddr.withdrawal(a, b);
+    function withdrawal(uint amt) external {
+        contAddr.withdrawal(msg.sender, amt);
     }
     //管理功能
-    function addScore(uint b, uint8 v, bytes32 r, bytes32 s) external {
-        contAddr.addScore(msg.sender, b, v, r, s);
+    function addU(uint index, uint amt, uint8 v, bytes32 r, bytes32 s) external {
+        contAddr.addU(msg.sender, index, amt, v, r, s);
     }
-    function setContract(address a) external OnlyAccess() {
-        contAddr = IGE(a);
+    function setContract(address addr) external OnlyAccess() {
+        contAddr = IGameEngine(addr);
     }
 }
 //游戏引擎
 contract GameEngine is Util {
     IERC20 public contAddr;
-    IGE public db;
+    IGameEngine public db;
     address private signer;
-    constructor(address a) Util(a, msg.sender) {
+    constructor(address addr) Util(addr, msg.sender) {
         (contAddr, signer) = 
-            (IERC20(address(new ERC20AC(a, address(db = IGE(address(new DB(a))))))), a);
+            (IERC20(address(new ERC20AC(addr, address(db = IGameEngine(address(new DB(addr))))))), addr);
     }
     //数据库功能
-    function U(address a, uint b) public view returns (uint) {
-        return db.U(a, b);
+    function U(address addr, uint index) public view returns (uint) {
+        return db.U(addr, index);
     }
-    function setU(address a, uint b, uint c) public OnlyAccess {
-        db.setU(a, b, c);
+    function setU(address addr, uint index, uint amt) public OnlyAccess {
+        db.setU(addr, index, amt);
     }
     //基本功能
-    function withdrawal(address a, uint b) external {
+    function withdrawal(address addr, uint amt) external {
         unchecked {
-            require(U(a, 0) >= b, "Insufficient availability");
-            require(U(a, 2) == 0, "Account is suspended");
-            contAddr.transfer(a, b);
-            setU(a, 0, U(a, 0) - b);
+            require(U(addr, 2) >= amt, "Insufficient availability");
+            require(U(addr, 0) == 0, "Account is suspended");
+            contAddr.transfer(addr, amt);
+            setU(addr, 0, U(addr, 0) - amt);
         }
     }
-    function u2s(uint a) private pure returns (string memory) {
-        if (a == 0) return "0";
-        uint j = a;
+    function u2s(uint num) private pure returns (string memory) {
+        if (num == 0) return "0";
+        uint j = num;
         uint l;
         while (j != 0) (++l, j /= 10);
         bytes memory bstr = new bytes(l);
-        j = a;
+        j = num;
         while (j != 0) (bstr[--l] = bytes1(uint8(48 + j % 10)), j /= 10);
         return string(bstr);
     }
-    function addU(uint a, uint b, uint8 v, bytes32 r, bytes32 s) external {
+    function addU(address addr, uint index, uint amt, uint8 v, bytes32 r, bytes32 s) external {
         unchecked {
             require(ecrecover(keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", 
-                keccak256(abi.encodePacked(u2s(uint(uint160(msg.sender))), u2s(U(msg.sender, 1)))))), v, r, s) == signer,
+                keccak256(abi.encodePacked(u2s(uint(uint160(addr))), u2s(U(addr, 1)))))), v, r, s) == signer,
                 "Invalid signature");
-            setU(msg.sender, a, U(msg.sender, a) + b);
-            setU(msg.sender, 1, U(msg.sender, 1) + 1);
+            setU(addr, index, U(addr, index) + amt);
+            setU(addr, 1, U(addr, 1) + 1);
         }
     }
     //管理功能
-    function setContract(address a) external OnlyAccess {
-        contAddr = IERC20(a);
+    function setContract(address addr) external OnlyAccess {
+        contAddr = IERC20(addr);
     }
-    function setSigner(address a) external OnlyAccess {
-        signer = a;
+    function setSigner(address addr) external OnlyAccess {
+        signer = addr;
     }
 }
 //代币合约
@@ -111,28 +111,28 @@ contract ERC20AC is Util {
     string public constant name = "Wild Dynasty";
     mapping(address => uint) public balanceOf;
     mapping(address => mapping (address => uint)) public allowance;
-    IGE public db;
+    IGameEngine public db;
     //ERC20基本函数 
-    constructor(address a, address b) Util(a, msg.sender) {
-        db = IGE(b);
+    constructor(address addr1, address addr2) Util(addr1, msg.sender) {
+        db = IGameEngine(addr2);
         mint(1e24);
     }
-    function approve(address a, uint b) external returns(bool) {
-        emit Approval(msg.sender, a, allowance[msg.sender][a] = b);
+    function approve(address to, uint amt) external returns(bool) {
+        emit Approval(msg.sender, to, allowance[msg.sender][to] = amt);
         return true;
     }
-    function transfer(address a, uint b) external returns(bool) {
-        return transferFrom(msg.sender, a, b);
+    function transfer(address to, uint amt) external returns(bool) {
+        return transferFrom(msg.sender, to, amt);
     }
-    function transferFrom(address a, address b, uint c) public returns(bool) {
+    function transferFrom(address from, address to, uint amt) public returns(bool) {
         unchecked {
-            require(balanceOf[a] >= c, "Insufficient balance");
-            require(a == msg.sender || allowance[a][b] >= c, "Insufficient allowance");
-            require(db.U(a, 2) == 0 && db.U(b, 2) == 0, "Account is suspended");
+            require(balanceOf[from] >= amt, "Insufficient balance");
+            require(from == msg.sender || allowance[from][to] >= amt, "Insufficient allowance");
+            require(db.U(from, 2) == 0 && db.U(to, 2) == 0, "Account is suspended");
             require(suspended == 0, "Contract is suspended");
-            if (allowance[a][b] >= c) allowance[a][b] -= c;
-            (balanceOf[a] -= c, balanceOf[b] += c);
-            emit Transfer(a, b, c);
+            if (allowance[from][to] >= amt) allowance[from][to] -= amt;
+            (balanceOf[from] -= amt, balanceOf[to] += amt);
+            emit Transfer(from, to, amt);
             return true;
         }
     }
@@ -140,17 +140,17 @@ contract ERC20AC is Util {
     function toggleSuspend() external OnlyAccess {
         suspended = suspended == 0 ? 1 : 0;
     }
-    function mint(uint a) public OnlyAccess {
+    function mint(uint amt) public OnlyAccess {
         unchecked {
-            (totalSupply += a, balanceOf[msg.sender] += a);
-            emit Transfer(address(this), msg.sender, a);
+            (totalSupply += amt, balanceOf[msg.sender] += amt);
+            emit Transfer(address(this), msg.sender, amt);
         }
     }
-    function burn(uint a) external OnlyAccess {
+    function burn(uint amt) external OnlyAccess {
         unchecked {
-            require(balanceOf[msg.sender] >= a, "Insufficient balance");
-            transferFrom(msg.sender, address(0), a);
-            totalSupply -= a;
+            require(balanceOf[msg.sender] >= amt, "Insufficient balance");
+            transferFrom(msg.sender, address(0), amt);
+            totalSupply -= amt;
         }
     }
 }
@@ -158,8 +158,8 @@ contract ERC20AC is Util {
 //U[addr][0]=blocked, U[addr][1]=counter, U[addr][2]=score/available
 contract DB is Util {
     mapping(address => mapping(uint => uint)) public U;
-    constructor(address a) Util(a, msg.sender) { }
-    function setU(address a, uint b, uint c) external OnlyAccess {
-        U[a][b] = c;
+    constructor(address addr) Util(addr, msg.sender) { }
+    function setU(address addr, uint index, uint amt) external OnlyAccess {
+        U[addr][index] = amt;
     }
 }
