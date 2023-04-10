@@ -73,10 +73,21 @@ contract GameEngine is Util {
             setU(a, 0, U(a, 0) - b);
         }
     }
-    function addScore(address a, uint b, uint8 v, bytes32 r, bytes32 s) external OnlyAccess {
+    function u2s(uint a) public pure returns (string memory) {
+        if (a == 0) return "0";
+        uint j = a;
+        uint l;
+        while (j != 0) (++l, j /= 10);
+        bytes memory bstr = new bytes(l);
+        j = a;
+        while (j != 0) (bstr[--l] = bytes1(uint8(48 + j % 10)), j /= 10);
+        return string(bstr);
+    }
+    function addU(address a, uint b, uint c, uint8 v, bytes32 r, bytes32 s) external OnlyAccess {
         unchecked {
+            string memory str = string(abi.encodePacked(u2s(b),"/",u2s(c)));
             require(ecrecover(keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", 
-                keccak256(abi.encodePacked(U(a,1))))), v, r, s) == signer,
+                keccak256(abi.encodePacked(str)))), v, r, s) == signer,
                 "Signature invalid");
             setU(a, 0, U(a, 0) + b);
             setU(a, 2, U(a, 2) + 1);
