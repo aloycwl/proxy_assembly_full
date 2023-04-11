@@ -4,7 +4,7 @@ interface IERC20 {
     function transfer(address, uint) external;
 }
 interface IGameEngine {
-    function addU(address, uint, uint, uint8, bytes32, bytes32) external;
+    function addU(address, uint, uint, uint, bytes32, bytes32) external;
     function withdrawal(address, uint) external;
     function U(address, uint) external view returns (uint);
     function setU(address, uint, uint) external; 
@@ -38,7 +38,7 @@ contract GameEngineProxy is Util {
         contAddr.withdrawal(msg.sender, amt);
     }
     //管理功能
-    function addU(uint index, uint amt, uint8 v, bytes32 r, bytes32 s) external {
+    function addU(uint index, uint amt, uint v, bytes32 r, bytes32 s) external {
         contAddr.addU(msg.sender, index, amt, v, r, s);
     }
     function setContract(address addr) external OnlyAccess() {
@@ -82,10 +82,10 @@ contract GameEngine is Util {
             return string(bstr);
         }
     }
-    function addU(address addr, uint index, uint amt, uint8 v, bytes32 r, bytes32 s) external {
+    function addU(address addr, uint index, uint amt, uint v, bytes32 r, bytes32 s) external {
         unchecked {
             require(ecrecover(keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", 
-                keccak256(abi.encodePacked(u2s(uint(uint160(addr))), u2s(U(addr, 1)))))), v, r, s) == signer,
+                keccak256(abi.encodePacked(u2s(uint(uint160(addr))), u2s(U(addr, 1)))))), uint8(v), r, s) == signer,
                 "Invalid signature");
             setU(addr, index, U(addr, index) + amt);
             setU(addr, 1, U(addr, 1) + 1);
