@@ -106,8 +106,8 @@ contract ERC20AC is Util {
     uint public totalSupply;
     uint8 public suspended;
     uint8 public constant decimals = 18;
-    string public constant symbol = "WD";
-    string public constant name = "Wild Dynasty";
+    string public constant symbol = "WDT";
+    string public constant name = "Wild Dynasty Token";
     mapping(address => uint) public balanceOf;
     mapping(address => mapping (address => uint)) public allowance;
     IGameEngine public db;
