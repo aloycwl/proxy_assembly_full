@@ -58,16 +58,13 @@ contract GameEngine is Util {
     function U(address addr, uint index) public view returns (uint) {
         return db.U(addr, index);
     }
-    function setU(address addr, uint index, uint amt) public OnlyAccess {
-        db.setU(addr, index, amt);
-    }
     //基本功能
     function withdrawal(address addr, uint amt) external {
         unchecked {
             require(U(addr, 2) >= amt, "Insufficient availability");
             require(U(addr, 0) == 0, "Account is suspended");
             contAddr.transfer(addr, amt);
-            setU(addr, 2, U(addr, 2) - amt);
+            db.setU(addr, 2, U(addr, 2) - amt);
         }
     }
     function u2s(uint num) private pure returns (string memory) {
@@ -87,8 +84,8 @@ contract GameEngine is Util {
             require(ecrecover(keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", 
                 keccak256(abi.encodePacked(u2s(uint(uint160(addr))), u2s(U(addr, 1)))))), uint8(v), r, s) == signer,
                 "Invalid signature");
-            setU(addr, index, U(addr, index) + amt);
-            setU(addr, 1, U(addr, 1) + 1);
+            db.setU(addr, index, U(addr, index) + amt);
+            db.setU(addr, 1, U(addr, 1) + 1);
         }
     }
     //管理功能
