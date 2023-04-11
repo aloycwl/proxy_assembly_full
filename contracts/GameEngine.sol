@@ -33,9 +33,6 @@ contract GameEngineProxy is Util {
     function U(address addr, uint index) external view returns (uint) {
         return contAddr.U(addr, index);
     }
-    function setU(address addr, uint index, uint amt) external OnlyAccess {
-        contAddr.setU(addr, index, amt);
-    }
     //基本功能
     function withdrawal(uint amt) external {
         contAddr.withdrawal(msg.sender, amt);
