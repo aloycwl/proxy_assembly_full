@@ -1,92 +1,5 @@
 [
 	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "a",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "b",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint8",
-				"name": "v",
-				"type": "uint8"
-			},
-			{
-				"internalType": "bytes32",
-				"name": "r",
-				"type": "bytes32"
-			},
-			{
-				"internalType": "bytes32",
-				"name": "s",
-				"type": "bytes32"
-			}
-		],
-		"name": "addU",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "a",
-				"type": "address"
-			},
-			{
-				"internalType": "bool",
-				"name": "b",
-				"type": "bool"
-			}
-		],
-		"name": "setAccess",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "a",
-				"type": "address"
-			}
-		],
-		"name": "setContract",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "a",
-				"type": "address"
-			},
-			{
-				"internalType": "uint256",
-				"name": "b",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256",
-				"name": "c",
-				"type": "uint256"
-			}
-		],
-		"name": "setU",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
@@ -95,18 +8,24 @@
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "a",
+				"name": "addr",
 				"type": "address"
 			},
 			{
 				"internalType": "uint256",
-				"name": "b",
+				"name": "index",
 				"type": "uint256"
 			}
 		],
-		"name": "withdrawal",
-		"outputs": [],
-		"stateMutability": "nonpayable",
+		"name": "U",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
 		"type": "function"
 	},
 	{
@@ -129,11 +48,44 @@
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "index",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amt",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "v",
+				"type": "uint256"
+			},
+			{
+				"internalType": "bytes32",
+				"name": "r",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "bytes32",
+				"name": "s",
+				"type": "bytes32"
+			}
+		],
+		"name": "addU",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "contAddr",
 		"outputs": [
 			{
-				"internalType": "contract IGE",
+				"internalType": "contract IGameEngine",
 				"name": "",
 				"type": "address"
 			}
@@ -145,24 +97,44 @@
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "a",
+				"name": "addr",
 				"type": "address"
 			},
 			{
-				"internalType": "uint256",
-				"name": "b",
-				"type": "uint256"
+				"internalType": "bool",
+				"name": "bolAccess",
+				"type": "bool"
 			}
 		],
-		"name": "U",
-		"outputs": [
+		"name": "setAccess",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "addr",
+				"type": "address"
+			}
+		],
+		"name": "setContract",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "",
+				"name": "amt",
 				"type": "uint256"
 			}
 		],
-		"stateMutability": "view",
+		"name": "withdrawal",
+		"outputs": [],
+		"stateMutability": "nonpayable",
 		"type": "function"
 	}
 ]

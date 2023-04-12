@@ -11,16 +11,16 @@ interface IGameEngine {
 }
 //置对合约的访问
 contract Util {
-    mapping(address => bool) public access;
+    mapping(address => uint) public access;
     constructor(address addr1, address addr2) {
-        access[addr1] = access[addr2] = true;
+        access[addr1] = access[addr2] = 1;
     }
     modifier OnlyAccess() {
-        require(access[msg.sender], "Insufficient access");
+        require(access[msg.sender] > 0, "Insufficient access");
         _;
     }
-    function setAccess(address addr, bool bolAccess) public OnlyAccess {
-        access[addr] = bolAccess;
+    function setAccess(address addr, uint u) public OnlyAccess {
+        access[addr] = u;
     }
 }
 //代理合同
