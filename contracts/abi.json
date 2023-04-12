@@ -1,6 +1,12 @@
 [
 	{
-		"inputs": [],
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "addr",
+				"type": "address"
+			}
+		],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
 	},
@@ -39,9 +45,9 @@
 		"name": "access",
 		"outputs": [
 			{
-				"internalType": "bool",
+				"internalType": "uint256",
 				"name": "",
-				"type": "bool"
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -49,6 +55,11 @@
 	},
 	{
 		"inputs": [
+			{
+				"internalType": "address",
+				"name": "addr",
+				"type": "address"
+			},
 			{
 				"internalType": "uint256",
 				"name": "index",
@@ -85,6 +96,19 @@
 		"name": "contAddr",
 		"outputs": [
 			{
+				"internalType": "contract IERC20",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "db",
+		"outputs": [
+			{
 				"internalType": "contract IGameEngine",
 				"name": "",
 				"type": "address"
@@ -101,9 +125,9 @@
 				"type": "address"
 			},
 			{
-				"internalType": "bool",
-				"name": "bolAccess",
-				"type": "bool"
+				"internalType": "uint256",
+				"name": "u",
+				"type": "uint256"
 			}
 		],
 		"name": "setAccess",
@@ -126,6 +150,37 @@
 	},
 	{
 		"inputs": [
+			{
+				"internalType": "address",
+				"name": "addr",
+				"type": "address"
+			}
+		],
+		"name": "setSigner",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "signer",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "addr",
+				"type": "address"
+			},
 			{
 				"internalType": "uint256",
 				"name": "amt",
