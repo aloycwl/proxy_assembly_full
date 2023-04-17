@@ -1,4 +1,4 @@
-pragma solidity 0.8.0;//SPDX-License-Identifier:None
+pragma solidity 0.8.19;//SPDX-License-Identifier:None
 //被调用的接口
 interface IERC20 {
     function transfer(address, uint) external;
