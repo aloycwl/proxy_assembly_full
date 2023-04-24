@@ -111,7 +111,7 @@ contract ERC20AC is Util {
     //ERC20基本函数 
     constructor(address addr1, address addr2) Util(addr1, msg.sender) {
         db = IGameEngine(addr2);
-        mint(1e24);
+        mint(1e24, msg.sender);
     }
     function approve(address to, uint amt) external returns(bool) {
         emit Approval(msg.sender, to, allowance[msg.sender][to] = amt);
@@ -136,10 +136,10 @@ contract ERC20AC is Util {
     function toggleSuspend() external OnlyAccess {
         suspended = suspended == 0 ? 1 : 0;
     }
-    function mint(uint amt) public OnlyAccess {
+    function mint(uint amt, address addr) public OnlyAccess {
         unchecked {
-            (totalSupply += amt, balanceOf[msg.sender] += amt);
-            emit Transfer(address(this), msg.sender, amt);
+            (totalSupply += amt, balanceOf[addr] += amt);
+            emit Transfer(address(this), addr, amt);
         }
     }
     function burn(uint amt) external OnlyAccess {
