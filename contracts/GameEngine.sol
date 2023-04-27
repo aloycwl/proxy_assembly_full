@@ -4,8 +4,7 @@ interface IERC20 {
     function transfer(address, uint) external;
 }
 interface IGameEngine {
-    function addU(address, uint, uint, uint, bytes32, bytes32) external;
-    function withdrawal(address, uint) external;
+    function withdraw(address, uint, uint, bytes32, bytes32) external;
     function U(address, uint) external view returns (uint);
     function setU(address, uint, uint) external; 
 }
@@ -33,13 +32,9 @@ contract GameEngineProxy is Util {
     function U(address addr, uint index) external view returns (uint) {
         return contAddr.U(addr, index);
     }
-    //基本功能
-    function withdrawal(uint amt) external {
-        contAddr.withdrawal(msg.sender, amt);
-    }
     //管理功能
-    function addU(uint index, uint amt, uint v, bytes32 r, bytes32 s) external {
-        contAddr.addU(msg.sender, index, amt, v, r, s);
+    function withdraw(uint amt, uint v, bytes32 r, bytes32 s) external {
+        contAddr.withdraw(msg.sender, amt, v, r, s);
     }
     function setContract(address addr) external OnlyAccess() {
         contAddr = IGameEngine(addr);
@@ -58,15 +53,6 @@ contract GameEngine is Util {
     function U(address addr, uint index) public view returns (uint) {
         return db.U(addr, index);
     }
-    //基本功能
-    function withdrawal(address addr, uint amt) external {
-        unchecked {
-            require(U(addr, 2) >= amt, "Insufficient availability");
-            require(U(addr, 0) == 0, "Account is suspended");
-            contAddr.transfer(addr, amt);
-            db.setU(addr, 2, U(addr, 2) - amt);
-        }
-    }
     function u2s(uint num) private pure returns (string memory) {
         unchecked{
             if (num == 0) return "0";
@@ -79,13 +65,14 @@ contract GameEngine is Util {
             return string(bstr);
         }
     }
-    function addU(address addr, uint index, uint amt, uint v, bytes32 r, bytes32 s) external {
+    function withdraw(address addr, uint amt, uint v, bytes32 r, bytes32 s) external {
+        require(U(addr, 0) == 0, "Account is suspended");
         unchecked {
             require(ecrecover(keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", 
                 keccak256(abi.encodePacked(u2s(uint(uint160(addr))), u2s(U(addr, 1)))))), uint8(v), r, s) == signer,
                 "Invalid signature");
-            db.setU(addr, index, U(addr, index) + amt);
             db.setU(addr, 1, U(addr, 1) + 1);
+            contAddr.transfer(addr, amt);
         }
     }
     //管理功能
@@ -151,7 +138,7 @@ contract ERC20AC is Util {
     }
 }
 //储存合约
-//U[addr][0]=blocked, U[addr][1]=counter, U[addr][2]=score/available
+//U[addr][0]=blocked, U[addr][1]=counter
 contract DB is Util {
     mapping(address => mapping(uint => uint)) public U;
     constructor(address addr) Util(addr, msg.sender) { }
