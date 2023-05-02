@@ -4,7 +4,7 @@ interface IERC20 {
     function transfer(address, uint) external;
 }
 interface IGameEngine {
-    function withdraw(address, uint, uint, bytes32, bytes32) external;
+    function withdraw(address, uint, uint8, bytes32, bytes32) external;
     function U(address, uint) external view returns (uint);
     function setU(address, uint, uint) external; 
 }
@@ -33,7 +33,7 @@ contract GameEngineProxy is Util {
         return contAddr.U(addr, index);
     }
     //管理功能
-    function withdraw(uint amt, uint v, bytes32 r, bytes32 s) external {
+    function withdraw(uint amt, uint8 v, bytes32 r, bytes32 s) external {
         contAddr.withdraw(msg.sender, amt, v, r, s);
     }
     function setContract(address addr) external OnlyAccess() {
