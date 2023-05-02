@@ -47,7 +47,7 @@ contract GameEngine is Util {
     address public signer;
     constructor(address addr) Util(addr, msg.sender) {
         (contAddr, signer) = 
-            (IERC20(address(new ERC20AC(addr, address(db = IGameEngine(address(new DB(addr))))))), addr);
+            (IERC20(address(new ERC20(addr, address(db = IGameEngine(address(new DB(addr))))))), addr);
     }
     //数据库功能
     function U(address addr, uint index) public view returns (uint) {
@@ -85,7 +85,7 @@ contract GameEngine is Util {
     }
 }
 //代币合约
-contract ERC20AC is Util {
+contract ERC20 is Util {
     event Transfer(address indexed from, address indexed to, uint value);
     event Approval(address indexed owner, address indexed spender, uint value);
     uint public totalSupply;
