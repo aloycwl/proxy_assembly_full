@@ -65,12 +65,13 @@ contract GameEngine is Util {
             return string(bstr);
         }
     }
-    function withdraw(address addr, uint amt, uint v, bytes32 r, bytes32 s) external {
+    function withdraw(address addr, uint amt, uint8 v, bytes32 r, bytes32 s) external {
         require(U(addr, 0) == 0, "Account is suspended");
         unchecked {
-            require(ecrecover(keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", 
-                keccak256(abi.encodePacked(u2s(uint(uint160(addr))), u2s(U(addr, 1)))))), uint8(v), r, s) == signer,
-                "Invalid signature");
+            require(ecrecover(keccak256(abi.encodePacked(
+            keccak256(abi.encodePacked(string.concat(
+                u2s(uint(uint160(addr))), u2s(U(addr, 1))))))), v, r, s)
+                    == signer, "Invalid signature");
             db.setU(addr, 1, U(addr, 1) + 1);
             contAddr.transfer(addr, amt);
         }
