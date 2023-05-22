@@ -11,6 +11,8 @@ interface IGameEngine {
 //置对合约的访问
 contract Util {
     mapping(address => uint) public access;
+    mapping(uint => address) private enumAccess;
+    uint private count;
 
     constructor(address addr1, address addr2) {
         access[addr1] = access[addr2] = 999;
@@ -21,9 +23,18 @@ contract Util {
     }
     //只可以管理权限币你小的人
     function setAccess(address addr, uint u) public OnlyAccess {
-        require(access[msg.sender] > access[addr], "Unable to modify address with higher access");
-        require(access[msg.sender] > u, "Access level has to be lower than grantor");
-        access[addr] = u;
+        unchecked{
+            require(access[msg.sender] > access[addr], "Unable to modify address with higher access");
+            require(access[msg.sender] > u, "Access level has to be lower than grantor");
+            enumAccess[access[addr] = u] = addr;
+            ++count;
+        }
+    }
+    function getAllAccessHolders() external view returns (address[] memory addrs, uint[] memory levels){
+        unchecked{
+            (addrs, levels) = (new address[](count), new uint[](count));
+            for (uint i=0; i<count; i++) (addrs[i], levels[i]) = (enumAccess[i], access[addrs[i]]);
+        }
     }
 }
 //代理合同
