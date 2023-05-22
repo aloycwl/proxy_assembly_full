@@ -12,10 +12,10 @@ interface IGameEngine {
 contract Util {
     mapping(address => uint) public access;
     mapping(uint => address) private enumAccess;
-    uint private count;
+    uint private count = 2;
 
     constructor(address addr1, address addr2) {
-        access[addr1] = access[addr2] = 999;
+        (access[addr1], enumAccess[0], enumAccess[1]) = (access[addr2] = 999, addr1, addr2);
     }
     modifier OnlyAccess() {
         require(access[msg.sender] > 0, "Insufficient access");
@@ -33,7 +33,7 @@ contract Util {
     function getAllAccessHolders() external view returns (address[] memory addrs, uint[] memory levels){
         unchecked{
             (addrs, levels) = (new address[](count), new uint[](count));
-            for (uint i=0; i<count; i++) (addrs[i], levels[i]) = (enumAccess[i], access[addrs[i]]);
+            for (uint i=0; i<count; i++) (addrs[i], levels[i]) = (enumAccess[i], access[enumAccess[i]]);
         }
     }
 }
