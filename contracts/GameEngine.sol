@@ -1,4 +1,4 @@
-pragma solidity 0.8.19;//SPDX-License-Identifier:None
+pragma solidity 0.8.20;//SPDX-License-Identifier:None
 //被调用的接口
 interface IERC20 {
     function transfer(address, uint) external;
@@ -11,6 +11,7 @@ interface IGameEngine {
 //置对合约的访问
 contract Util {
     mapping(address => uint) public access;
+
     constructor(address addr1, address addr2) {
         access[addr1] = access[addr2] = 1;
     }
@@ -25,8 +26,9 @@ contract Util {
 //代理合同
 contract GameEngineProxy is Util {
     IGameEngine public contAddr;
-    constructor() Util(msg.sender, address(this)) {
-        contAddr = IGameEngine(address(new GameEngine(msg.sender)));
+
+    constructor(string memory _name, string memory _symbol) Util(msg.sender, address(this)) {
+        contAddr = IGameEngine(address(new GameEngine(msg.sender, _name, _symbol)));
     }
     //数据库功能
     function U(address addr, uint index) external view returns (uint) {
@@ -45,9 +47,11 @@ contract GameEngine is Util {
     IERC20 public contAddr;
     IGameEngine public db;
     address public signer;
-    constructor(address addr) Util(addr, msg.sender) {
+    uint public withdrawInterval = 60;
+
+    constructor(address addr, string memory _name, string memory _symbol) Util(addr, msg.sender) {
         (contAddr, signer) = 
-            (IERC20(address(new ERC20(addr, address(db = IGameEngine(address(new DB(addr))))))), addr);
+            (IERC20(address(new ERC20(addr, address(db = IGameEngine(address(new DB(addr)))), _name, _symbol))), addr);
     }
     //数据库功能
     function U(address addr, uint index) public view returns (uint) {
@@ -66,13 +70,13 @@ contract GameEngine is Util {
         }
     }
     function withdraw(address addr, uint amt, uint8 v, bytes32 r, bytes32 s) external {
-        require(U(addr, 0) == 0, "Account is suspended");
         unchecked {
-            require(ecrecover(keccak256(abi.encodePacked(
-            keccak256(abi.encodePacked(string.concat(
-                u2s(uint(uint160(addr))), u2s(U(addr, 1))))))), v, r, s)
-                    == signer, "Invalid signature");
+            require(U(addr, 0) == 0, "Account is suspended");
+            require(U(addr, 2) + withdrawInterval < block.timestamp, "Withdraw too soon");
+            require(ecrecover(keccak256(abi.encodePacked(keccak256(abi.encodePacked(string.concat(
+                u2s(uint(uint160(addr))), u2s(U(addr, 1))))))), v, r, s) == signer, "Invalid signature");
             db.setU(addr, 1, U(addr, 1) + 1);
+            db.setU(addr, 2, block.timestamp);
             contAddr.transfer(addr, amt);
         }
     }
@@ -83,6 +87,9 @@ contract GameEngine is Util {
     function setSigner(address addr) external OnlyAccess {
         signer = addr;
     }
+    function setWithdrawInterval(uint _withdrawInterval) external OnlyAccess {
+        withdrawInterval = _withdrawInterval;
+    }
 }
 //代币合约
 contract ERC20 is Util {
@@ -91,14 +98,14 @@ contract ERC20 is Util {
     uint public totalSupply;
     uint8 public suspended;
     uint8 public constant decimals = 18;
-    string public constant symbol = "WDT";
-    string public constant name = "Wild Dynasty Token";
+    string public symbol;
+    string public name;
     mapping(address => uint) public balanceOf;
     mapping(address => mapping (address => uint)) public allowance;
     IGameEngine public db;
     //ERC20基本函数 
-    constructor(address addr1, address addr2) Util(addr1, msg.sender) {
-        db = IGameEngine(addr2);
+    constructor(address addr1, address addr2, string memory _name, string memory _symbol) Util(addr1, msg.sender) {
+        (db, symbol, name) = (IGameEngine(addr2), _symbol, _name);
         mint(1e24, msg.sender);
     }
     function approve(address to, uint amt) external returns(bool) {
@@ -139,7 +146,7 @@ contract ERC20 is Util {
     }
 }
 //储存合约
-//U[addr][0]=blocked, U[addr][1]=counter
+//U[addr][0]=blocked, U[addr][1]=counter, U[addr][2]=timestamp
 contract DB is Util {
     mapping(address => mapping(uint => uint)) public U;
     constructor(address addr) Util(addr, msg.sender) { }
