@@ -13,13 +13,15 @@ contract Util {
     mapping(address => uint) public access;
 
     constructor(address addr1, address addr2) {
-        access[addr1] = access[addr2] = 1;
+        access[addr1] = access[addr2] = 999;
     }
     modifier OnlyAccess() {
         require(access[msg.sender] > 0, "Insufficient access");
         _;
     }
     function setAccess(address addr, uint u) public OnlyAccess {
+        require(access[msg.sender] > access[addr], "Unable to modify address with higher access");
+        require(access[msg.sender] > u, "Access level has to be lower than grantor");
         access[addr] = u;
     }
 }
