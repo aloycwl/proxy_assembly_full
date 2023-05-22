@@ -1,15 +1,16 @@
-pragma solidity 0.8.20;//SPDX-License-Identifier:None
+//SPDX-License-Identifier:None
+pragma solidity 0.8.20;
 //被调用的接口
 interface IERC20 {
-    function transfer(address, uint) external;
-    function mint(uint, address) external;
+    function transfer(address, uint) external returns (bool);
 }
 interface IDID {
     function uintData(address, uint) external view returns (uint);
     function updateUint(address, uint, uint) external; 
 }
 interface IProxy {
-    function setContract(address, uint) external;
+    function addrs(uint) external view returns (address);
+    function setAddr(address, uint) external;
 }
 //置对合约的访问
 contract Util {
@@ -42,24 +43,22 @@ contract Util {
     }
 }
 //代理合同
-contract Proxy is Util {
-    mapping (uint => address) public contracts;
+contract Proxy is Util, IProxy {
+    mapping (uint => address) public addrs;
 
     constructor(address owner) Util(owner, msg.sender) { }
 
-    function setContract(address addr, uint index) external OnlyAccess() {
-        contracts[index] = addr;
+    function setAddr(address addr, uint index) external OnlyAccess() {
+        addrs[index] = addr;
     }
 }
 //游戏引擎
 contract GameEngine is Util {
-    IERC20 public erc20;
-    IDID public did;
-    address public signer;
+    IProxy private iProxy;
     uint public withdrawInterval = 60;
 
-    constructor(address _did, address owner) Util(owner, msg.sender) {
-        (signer, did) = (owner, IDID(_did));
+    constructor(address owner, address proxy) Util(owner, address(0)) {
+        iProxy = IProxy(proxy);
     }
     //整数转移字符
     function u2s(uint num) private pure returns (string memory) {
@@ -77,25 +76,25 @@ contract GameEngine is Util {
     //利用签名人来哈希信息
     function withdraw(address addr, uint amt, uint8 v, bytes32 r, bytes32 s) external {
         unchecked {
-            require(did.uintData(addr, 0) == 0, "Account is suspended");
-            require(did.uintData(addr, 2) + withdrawInterval < block.timestamp, "Withdraw too soon");
+            require(IDID(iProxy.addrs(2)).uintData(addr, 0) == 0, "Account is suspended");
+            require(IDID(iProxy.addrs(2)).uintData(addr, 2) + withdrawInterval < block.timestamp, "Withdraw too soon");
             require(ecrecover(keccak256(abi.encodePacked(keccak256(abi.encodePacked(string.concat(
-                u2s(uint(uint160(addr))), u2s(did.uintData(addr, 1))))))), v, r, s) == signer, "Invalid signature");
-            did.updateUint(addr, 1, did.uintData(addr, 1) + 1);
-            did.updateUint(addr, 2, block.timestamp);
-            erc20.transfer(addr, amt);
+                u2s(uint(uint160(addr))), u2s(IDID(iProxy.addrs(2)).uintData(addr, 1))))))), v, r, s) 
+                == iProxy.addrs(3), "Invalid signature");
+
+            IDID(iProxy.addrs(2)).updateUint(addr, 1, IDID(iProxy.addrs(2)).uintData(addr, 1) + 1);
+            IDID(iProxy.addrs(2)).updateUint(addr, 2, block.timestamp);
+
+            IERC20(iProxy.addrs(1)).transfer(addr, amt);
         }
     }
     //管理功能
-    function setSigner(address addr) external OnlyAccess {
-        signer = addr;
-    }
     function setWithdrawInterval(uint _withdrawInterval) external OnlyAccess {
         withdrawInterval = _withdrawInterval;
     }
 }
 //代币合约
-contract ERC20 is Util {
+contract ERC20 is Util, IERC20 {
     event Transfer(address indexed from, address indexed to, uint value);
     event Approval(address indexed owner, address indexed spender, uint value);
     uint public totalSupply;
@@ -105,24 +104,28 @@ contract ERC20 is Util {
     string public name;
     mapping(address => uint) public balanceOf;
     mapping(address => mapping (address => uint)) public allowance;
-    IDID public did;
+    IProxy public iProxy;
     //ERC20基本函数 
-    constructor(address _did, address owner, string memory _name, string memory _symbol) Util(owner, msg.sender) {
-        (did, symbol, name) = (IDID(_did), _symbol, _name);
+    constructor(address owner, address proxy, address receiver, uint amt, 
+        string memory _name, string memory _symbol) Util(owner, msg.sender) {
+        (iProxy, symbol, name) = (IProxy(proxy), _symbol, _name);
+        mint(amt, receiver);
     }
-    function approve(address to, uint amt) external returns(bool) {
+    function approve(address to, uint amt) external returns (bool) {
         emit Approval(msg.sender, to, allowance[msg.sender][to] = amt);
         return true;
     }
-    function transfer(address to, uint amt) external returns(bool) {
+    function transfer(address to, uint amt) external returns (bool) {
         return transferFrom(msg.sender, to, amt);
     }
-    function transferFrom(address from, address to, uint amt) public returns(bool) {
+    function transferFrom(address from, address to, uint amt) public returns (bool) {
         unchecked {
             require(balanceOf[from] >= amt, "Insufficient balance");
             require(from == msg.sender || allowance[from][to] >= amt, "Insufficient allowance");
-            require(did.uintData(from, 0) == 0 && did.uintData(to, 0) == 0, "Account is suspended");
+            require(IDID(iProxy.addrs(2)).uintData(from, 0) == 0 && 
+                IDID(iProxy.addrs(2)).uintData(to, 0) == 0, "Account is suspended");
             require(suspended == 0, "Contract is suspended");
+            
             if (allowance[from][to] >= amt) allowance[from][to] -= amt;
             (balanceOf[from] -= amt, balanceOf[to] += amt);
             emit Transfer(from, to, amt);
@@ -133,7 +136,7 @@ contract ERC20 is Util {
     function toggleSuspend() external OnlyAccess {
         suspended = suspended == 0 ? 1 : 0;
     }
-    function mint(uint amt, address addr) external OnlyAccess {
+    function mint(uint amt, address addr) public OnlyAccess {
         unchecked {
             (totalSupply += amt, balanceOf[addr] += amt);
             emit Transfer(address(this), addr, amt);
@@ -148,7 +151,7 @@ contract ERC20 is Util {
     }
 }
 //储存和去中心化身份合约
-contract DID is Util{
+contract DID is Util, IDID {
     mapping (string => address) did;
     mapping (address => mapping (uint => string)) public stringData;
     mapping (address => mapping (uint => address)) public addressData;
@@ -158,56 +161,29 @@ contract DID is Util{
         require(did[userName] == address(0), "Username existed");
         _;
     }
-    constructor(address owner) Util(address(this), owner) { }
+    constructor(address owner) Util(owner, address(this)) { }
     //谁都可以创造新用户
     function createUser(address addr, string calldata userName, string calldata name, string calldata bio) 
         external OnlyUnique(userName) {
-        unchecked{
-            did[userName] = addr;
-            updateString(addr, 0, userName);
-            updateString(addr, 1, name);
-            updateString(addr, 2, bio);
-            updateAddress(addr, 0, addr);
-        }
+            (did[userName], stringData[addr][0]) = (addr, userName);
+            stringData[addr][1] = name;
+            stringData[addr][2] = bio;
     }
     //改用户名，删除旧名来省燃料
     function changeUsername(string calldata strBefore, string calldata strAfter) external OnlyUnique(strAfter) {
-        address id = did[strBefore];
-        require(msg.sender == addressData[id][0], "Only owner can change user name");
+        address addr = did[strBefore];
+        require(msg.sender == addr, "Only owner can change user name");
         delete did[strBefore];
-        did[strAfter] = id;
-        updateString(id, 0, strAfter);
+        updateString(did[strAfter] = addr, 0, strAfter);
     }
     //持有权限者才能更新数据
-    function updateString(address id, uint index, string calldata str) public OnlyAccess {
-        stringData[id][index] = str;
+    function updateString(address addr, uint index, string calldata val) public OnlyAccess {
+        stringData[addr][index] = val;
     }
-    function updateAddress(address id, uint index, address addr) public OnlyAccess {
-        addressData[id][index] = addr;
+    function updateAddress(address addr, uint index, address val) public OnlyAccess {
+        addressData[addr][index] = val;
     }
-    function updateUint(address id, uint index, uint _uint) public OnlyAccess {
-        uintData[id][index] = _uint;
-    }
-}
-//专注部署合约
-contract Deployer {
-    address public proxy;
-
-    constructor(string memory name, string memory symbol) {
-        
-        address did = address(new DID(msg.sender));
-
-        address gameEngine = address(new GameEngine(did, msg.sender));
-
-        address erc20 = address(new ERC20(did, msg.sender, name, symbol));
-        IERC20 iErc20 = IERC20(erc20);
-        iErc20.mint(1e24, gameEngine);
-        
-        proxy = address(new Proxy(msg.sender));
-        IProxy iProxy = IProxy(proxy);
-        iProxy.setContract(gameEngine, 0);
-        iProxy.setContract(address(erc20), 1);
-        iProxy.setContract(did, 2);
-        
+    function updateUint(address addr, uint index, uint val) public OnlyAccess {
+        uintData[addr][index] = val;
     }
 }
