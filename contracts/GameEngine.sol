@@ -51,9 +51,9 @@ contract GameEngine is Util {
     address public signer;
     uint public withdrawInterval = 60;
 
-    constructor(address did, address addr, string memory name, string memory symbol) Util(addr, msg.sender) {
+    constructor(address did, address owner, string memory name, string memory symbol) Util(owner, msg.sender) {
         (contAddr, signer) = 
-            (IERC20(address(new ERC20(addr, address(db = IGameEngine(did)), name, symbol))), addr);
+            (IERC20(address(new ERC20(owner, address(db = IGameEngine(did)), name, symbol))), owner);
     }
     //数据库功能
     function U(address addr, uint index) public view returns (uint) {
@@ -106,8 +106,8 @@ contract ERC20 is Util {
     mapping(address => mapping (address => uint)) public allowance;
     IGameEngine public db;
     //ERC20基本函数 
-    constructor(address addr1, address addr2, string memory _name, string memory _symbol) Util(addr1, msg.sender) {
-        (db, symbol, name) = (IGameEngine(addr2), _symbol, _name);
+    constructor(address owner, address did, string memory _name, string memory _symbol) Util(owner, msg.sender) {
+        (db, symbol, name) = (IGameEngine(did), _symbol, _name);
         mint(1e24, msg.sender);
     }
     function approve(address to, uint amt) external returns(bool) {
