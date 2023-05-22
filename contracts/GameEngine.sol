@@ -5,8 +5,8 @@ interface IERC20 {
 }
 interface IGameEngine {
     function withdraw(address, uint, uint8, bytes32, bytes32) external;
-    function U(address, uint) external view returns (uint);
-    function setU(address, uint, uint) external; 
+    function uintData(address, uint) external view returns (uint);
+    function updateUint(address, uint, uint) external; 
 }
 //置对合约的访问
 contract Util {
@@ -19,6 +19,7 @@ contract Util {
         require(access[msg.sender] > 0, "Insufficient access");
         _;
     }
+    //只可以管理权限币你小的人
     function setAccess(address addr, uint u) public OnlyAccess {
         require(access[msg.sender] > access[addr], "Unable to modify address with higher access");
         require(access[msg.sender] > u, "Access level has to be lower than grantor");
@@ -33,8 +34,8 @@ contract GameEngineProxy is Util {
         contAddr = IGameEngine(address(new GameEngine(did, msg.sender, name, symbol)));
     }
     //数据库功能
-    function U(address addr, uint index) external view returns (uint) {
-        return contAddr.U(addr, index);
+    function uintData(address addr, uint index) external view returns (uint) {
+        return contAddr.uintData(addr, index);
     }
     //管理功能
     function withdraw(uint amt, uint8 v, bytes32 r, bytes32 s) external {
@@ -47,18 +48,19 @@ contract GameEngineProxy is Util {
 //游戏引擎
 contract GameEngine is Util {
     IERC20 public contAddr;
-    IGameEngine public db;
+    IGameEngine public did;
     address public signer;
     uint public withdrawInterval = 60;
 
-    constructor(address did, address owner, string memory name, string memory symbol) Util(owner, msg.sender) {
+    constructor(address _did, address owner, string memory name, string memory symbol) Util(owner, msg.sender) {
         (contAddr, signer) = 
-            (IERC20(address(new ERC20(owner, address(db = IGameEngine(did)), name, symbol))), owner);
+            (IERC20(address(new ERC20(owner, address(did = IGameEngine(_did)), name, symbol))), owner);
     }
     //数据库功能
-    function U(address addr, uint index) public view returns (uint) {
-        return db.U(addr, index);
+    function uintData(address addr, uint index) public view returns (uint) {
+        return did.uintData(addr, index);
     }
+    //整数转移字符
     function u2s(uint num) private pure returns (string memory) {
         unchecked{
             if (num == 0) return "0";
@@ -71,14 +73,15 @@ contract GameEngine is Util {
             return string(bstr);
         }
     }
+    //利用签名人来哈希信息
     function withdraw(address addr, uint amt, uint8 v, bytes32 r, bytes32 s) external {
         unchecked {
-            require(U(addr, 0) == 0, "Account is suspended");
-            require(U(addr, 2) + withdrawInterval < block.timestamp, "Withdraw too soon");
+            require(uintData(addr, 0) == 0, "Account is suspended");
+            require(uintData(addr, 2) + withdrawInterval < block.timestamp, "Withdraw too soon");
             require(ecrecover(keccak256(abi.encodePacked(keccak256(abi.encodePacked(string.concat(
-                u2s(uint(uint160(addr))), u2s(U(addr, 1))))))), v, r, s) == signer, "Invalid signature");
-            db.setU(addr, 1, U(addr, 1) + 1);
-            db.setU(addr, 2, block.timestamp);
+                u2s(uint(uint160(addr))), u2s(uintData(addr, 1))))))), v, r, s) == signer, "Invalid signature");
+            did.updateUint(addr, 1, uintData(addr, 1) + 1);
+            did.updateUint(addr, 2, block.timestamp);
             contAddr.transfer(addr, amt);
         }
     }
@@ -104,10 +107,10 @@ contract ERC20 is Util {
     string public name;
     mapping(address => uint) public balanceOf;
     mapping(address => mapping (address => uint)) public allowance;
-    IGameEngine public db;
+    IGameEngine public did;
     //ERC20基本函数 
-    constructor(address owner, address did, string memory _name, string memory _symbol) Util(owner, msg.sender) {
-        (db, symbol, name) = (IGameEngine(did), _symbol, _name);
+    constructor(address owner, address _did, string memory _name, string memory _symbol) Util(owner, msg.sender) {
+        (did, symbol, name) = (IGameEngine(_did), _symbol, _name);
         mint(1e24, msg.sender);
     }
     function approve(address to, uint amt) external returns(bool) {
@@ -121,7 +124,7 @@ contract ERC20 is Util {
         unchecked {
             require(balanceOf[from] >= amt, "Insufficient balance");
             require(from == msg.sender || allowance[from][to] >= amt, "Insufficient allowance");
-            require(db.U(from, 0) == 0 && db.U(to, 0) == 0, "Account is suspended");
+            require(did.uintData(from, 0) == 0 && did.uintData(to, 0) == 0, "Account is suspended");
             require(suspended == 0, "Contract is suspended");
             if (allowance[from][to] >= amt) allowance[from][to] -= amt;
             (balanceOf[from] -= amt, balanceOf[to] += amt);
@@ -147,58 +150,45 @@ contract ERC20 is Util {
         }
     }
 }
-/*储存合约
-//U[addr][0]=blocked, U[addr][1]=counter, U[addr][2]=timestamp
-contract DB is Util {
-    mapping(address => mapping(uint => uint)) public U;
-    constructor(address addr) Util(addr, msg.sender) { }
-    function setU(address addr, uint index, uint amt) external OnlyAccess {
-        U[addr][index] = amt;
-    }
-}*/
-
+//储存和去中心化身份合约
 contract DID is Util{
-    uint public count;
-    mapping (string => uint) did; //if did existed, value = count
-    mapping (uint => mapping (uint => string)) public stringData;
-    mapping (uint => mapping (uint => address)) public addressData;
-    mapping (uint => mapping (uint => uint)) public uintData;
+    mapping (string => address) did;
+    mapping (address => mapping (uint => string)) public stringData;
+    mapping (address => mapping (uint => address)) public addressData;
+    mapping (address => mapping (uint => uint)) public uintData;
 
-    modifier UniqueOnly(string calldata _username) {
-        require(did[_username] == 0, "Username existed");
+    modifier OnlyUnique(string calldata userName) {
+        require(did[userName] == address(0), "Username existed");
         _;
     }
-
     constructor() Util(address(this), msg.sender) { }
-
+    //谁都可以创造新用户
     function createUser(address addr, string calldata userName, string calldata name, string calldata bio) 
-        external UniqueOnly(userName) {
+        external OnlyUnique(userName) {
         unchecked{
-            did[userName] = ++count;
-            updateString(count, 0, userName);
-            updateString(count, 1, name);
-            updateString(count, 2, bio);
-            updateAddress(count, 0, addr);
+            did[userName] = addr;
+            updateString(addr, 0, userName);
+            updateString(addr, 1, name);
+            updateString(addr, 2, bio);
+            updateAddress(addr, 0, addr);
         }
     }
-
-    function changeUsername(string calldata _strBefore, string calldata _strAfter) external UniqueOnly(_strAfter) {
-        uint id = did[_strBefore];
+    //改用户名，删除旧名来省燃料
+    function changeUsername(string calldata strBefore, string calldata strAfter) external OnlyUnique(strAfter) {
+        address id = did[strBefore];
         require(msg.sender == addressData[id][0], "Only owner can change user name");
-        delete did[_strBefore];
-        did[_strAfter] = id;
-        updateString(id, 0, _strAfter);
+        delete did[strBefore];
+        did[strAfter] = id;
+        updateString(id, 0, strAfter);
     }
-
-    function updateString(uint _id, uint _index, string calldata _str) public OnlyAccess {
-        stringData[_id][_index] = _str;
+    //持有权限者才能更新数据
+    function updateString(address id, uint index, string calldata str) public OnlyAccess {
+        stringData[id][index] = str;
     }
-
-    function updateAddress(uint _id, uint _index, address _addr) public OnlyAccess {
-        addressData[_id][_index] = _addr;
+    function updateAddress(address id, uint index, address addr) public OnlyAccess {
+        addressData[id][index] = addr;
     }
-
-    function updateUint(uint _id, uint _index, uint _uint) public OnlyAccess {
-        uintData[_id][_index] = _uint;
+    function updateUint(address id, uint index, uint _uint) public OnlyAccess {
+        uintData[id][index] = _uint;
     }
 }
