@@ -29,8 +29,8 @@ contract Util {
 contract GameEngineProxy is Util {
     IGameEngine public contAddr;
 
-    constructor(string memory _name, string memory _symbol) Util(msg.sender, address(this)) {
-        contAddr = IGameEngine(address(new GameEngine(msg.sender, _name, _symbol)));
+    constructor(address did, string memory name, string memory symbol) Util(msg.sender, address(this)) {
+        contAddr = IGameEngine(address(new GameEngine(did, msg.sender, name, symbol)));
     }
     //数据库功能
     function U(address addr, uint index) external view returns (uint) {
@@ -51,9 +51,9 @@ contract GameEngine is Util {
     address public signer;
     uint public withdrawInterval = 60;
 
-    constructor(address addr, string memory _name, string memory _symbol) Util(addr, msg.sender) {
+    constructor(address did, address addr, string memory name, string memory symbol) Util(addr, msg.sender) {
         (contAddr, signer) = 
-            (IERC20(address(new ERC20(addr, address(db = IGameEngine(address(new DB(addr)))), _name, _symbol))), addr);
+            (IERC20(address(new ERC20(addr, address(db = IGameEngine(did)), name, symbol))), addr);
     }
     //数据库功能
     function U(address addr, uint index) public view returns (uint) {
@@ -147,7 +147,7 @@ contract ERC20 is Util {
         }
     }
 }
-//储存合约
+/*储存合约
 //U[addr][0]=blocked, U[addr][1]=counter, U[addr][2]=timestamp
 contract DB is Util {
     mapping(address => mapping(uint => uint)) public U;
@@ -155,6 +155,50 @@ contract DB is Util {
     function setU(address addr, uint index, uint amt) external OnlyAccess {
         U[addr][index] = amt;
     }
-}
+}*/
 
-//migrate this out...
+contract DID is Util{
+    uint public count;
+    mapping (string => uint) did; //if did existed, value = count
+    mapping (uint => mapping (uint => string)) public stringData;
+    mapping (uint => mapping (uint => address)) public addressData;
+    mapping (uint => mapping (uint => uint)) public uintData;
+
+    modifier UniqueOnly(string calldata _username) {
+        require(did[_username] == 0, "Username existed");
+        _;
+    }
+
+    constructor() Util(address(this), msg.sender) { }
+
+    function createUser(address addr, string calldata userName, string calldata name, string calldata bio) 
+        external UniqueOnly(userName) {
+        unchecked{
+            did[userName] = ++count;
+            updateString(count, 0, userName);
+            updateString(count, 1, name);
+            updateString(count, 2, bio);
+            updateAddress(count, 0, addr);
+        }
+    }
+
+    function changeUsername(string calldata _strBefore, string calldata _strAfter) external UniqueOnly(_strAfter) {
+        uint id = did[_strBefore];
+        require(msg.sender == addressData[id][0], "Only owner can change user name");
+        delete did[_strBefore];
+        did[_strAfter] = id;
+        updateString(id, 0, _strAfter);
+    }
+
+    function updateString(uint _id, uint _index, string calldata _str) public OnlyAccess {
+        stringData[_id][_index] = _str;
+    }
+
+    function updateAddress(uint _id, uint _index, address _addr) public OnlyAccess {
+        addressData[_id][_index] = _addr;
+    }
+
+    function updateUint(uint _id, uint _index, uint _uint) public OnlyAccess {
+        uintData[_id][_index] = _uint;
+    }
+}
