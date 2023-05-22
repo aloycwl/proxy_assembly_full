@@ -2,10 +2,14 @@ pragma solidity 0.8.20;//SPDX-License-Identifier:None
 //被调用的接口
 interface IERC20 {
     function transfer(address, uint) external;
+    function mint(uint, address) external;
 }
-interface IGameEngine {
+interface IDID {
     function uintData(address, uint) external view returns (uint);
     function updateUint(address, uint, uint) external; 
+}
+interface IProxy {
+    function setContract(address, uint) external;
 }
 //置对合约的访问
 contract Util {
@@ -38,32 +42,24 @@ contract Util {
     }
 }
 //代理合同
-contract GameEngineProxy is Util {
-    IGameEngine public contAddr;
+contract Proxy is Util {
     mapping (uint => address) public contracts;
 
-    constructor(address did, string memory name, string memory symbol) Util(msg.sender, address(this)) {
-        contAddr = IGameEngine(address(new GameEngine(did, msg.sender, name, symbol)));
-        contracts[0] = address(new GameEngine(did, msg.sender));
-        contracts[1] = address(new ERC20(did, msg.sender, name, symbol));
-    }
-    function setContract(address addr) external OnlyAccess() {
-        contAddr = IGameEngine(addr);
+    constructor(address owner) Util(owner, msg.sender) { }
+
+    function setContract(address addr, uint index) external OnlyAccess() {
+        contracts[index] = addr;
     }
 }
 //游戏引擎
 contract GameEngine is Util {
-    IERC20 public contAddr;
-    IGameEngine public did;
+    IERC20 public erc20;
+    IDID public did;
     address public signer;
     uint public withdrawInterval = 60;
 
     constructor(address _did, address owner) Util(owner, msg.sender) {
-        signer = owner;
-    }
-    //数据库功能
-    function uintData(address addr, uint index) public view returns (uint) {
-        return did.uintData(addr, index);
+        (signer, did) = (owner, IDID(_did));
     }
     //整数转移字符
     function u2s(uint num) private pure returns (string memory) {
@@ -81,19 +77,16 @@ contract GameEngine is Util {
     //利用签名人来哈希信息
     function withdraw(address addr, uint amt, uint8 v, bytes32 r, bytes32 s) external {
         unchecked {
-            require(uintData(addr, 0) == 0, "Account is suspended");
-            require(uintData(addr, 2) + withdrawInterval < block.timestamp, "Withdraw too soon");
+            require(did.uintData(addr, 0) == 0, "Account is suspended");
+            require(did.uintData(addr, 2) + withdrawInterval < block.timestamp, "Withdraw too soon");
             require(ecrecover(keccak256(abi.encodePacked(keccak256(abi.encodePacked(string.concat(
-                u2s(uint(uint160(addr))), u2s(uintData(addr, 1))))))), v, r, s) == signer, "Invalid signature");
-            did.updateUint(addr, 1, uintData(addr, 1) + 1);
+                u2s(uint(uint160(addr))), u2s(did.uintData(addr, 1))))))), v, r, s) == signer, "Invalid signature");
+            did.updateUint(addr, 1, did.uintData(addr, 1) + 1);
             did.updateUint(addr, 2, block.timestamp);
-            contAddr.transfer(addr, amt);
+            erc20.transfer(addr, amt);
         }
     }
     //管理功能
-    function setContract(address addr) external OnlyAccess {
-        contAddr = IERC20(addr);
-    }
     function setSigner(address addr) external OnlyAccess {
         signer = addr;
     }
@@ -112,11 +105,10 @@ contract ERC20 is Util {
     string public name;
     mapping(address => uint) public balanceOf;
     mapping(address => mapping (address => uint)) public allowance;
-    IGameEngine public did;
+    IDID public did;
     //ERC20基本函数 
     constructor(address _did, address owner, string memory _name, string memory _symbol) Util(owner, msg.sender) {
-        (did, symbol, name) = (IGameEngine(_did), _symbol, _name);
-        mint(1e24, msg.sender);
+        (did, symbol, name) = (IDID(_did), _symbol, _name);
     }
     function approve(address to, uint amt) external returns(bool) {
         emit Approval(msg.sender, to, allowance[msg.sender][to] = amt);
@@ -141,7 +133,7 @@ contract ERC20 is Util {
     function toggleSuspend() external OnlyAccess {
         suspended = suspended == 0 ? 1 : 0;
     }
-    function mint(uint amt, address addr) public OnlyAccess {
+    function mint(uint amt, address addr) external OnlyAccess {
         unchecked {
             (totalSupply += amt, balanceOf[addr] += amt);
             emit Transfer(address(this), addr, amt);
@@ -166,7 +158,7 @@ contract DID is Util{
         require(did[userName] == address(0), "Username existed");
         _;
     }
-    constructor() Util(address(this), msg.sender) { }
+    constructor(address owner) Util(address(this), owner) { }
     //谁都可以创造新用户
     function createUser(address addr, string calldata userName, string calldata name, string calldata bio) 
         external OnlyUnique(userName) {
@@ -195,5 +187,27 @@ contract DID is Util{
     }
     function updateUint(address id, uint index, uint _uint) public OnlyAccess {
         uintData[id][index] = _uint;
+    }
+}
+//专注部署合约
+contract Deployer {
+    address public proxy;
+
+    constructor(string memory name, string memory symbol) {
+        
+        address did = address(new DID(msg.sender));
+
+        address gameEngine = address(new GameEngine(did, msg.sender));
+
+        address erc20 = address(new ERC20(did, msg.sender, name, symbol));
+        IERC20 iErc20 = IERC20(erc20);
+        iErc20.mint(1e24, gameEngine);
+        
+        proxy = address(new Proxy(msg.sender));
+        IProxy iProxy = IProxy(proxy);
+        iProxy.setContract(gameEngine, 0);
+        iProxy.setContract(address(erc20), 1);
+        iProxy.setContract(did, 2);
+        
     }
 }
