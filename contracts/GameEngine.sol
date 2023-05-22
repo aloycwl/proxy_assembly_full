@@ -4,7 +4,6 @@ interface IERC20 {
     function transfer(address, uint) external;
 }
 interface IGameEngine {
-    function withdraw(address, uint, uint8, bytes32, bytes32) external;
     function uintData(address, uint) external view returns (uint);
     function updateUint(address, uint, uint) external; 
 }
@@ -30,6 +29,7 @@ contract Util {
             ++count;
         }
     }
+    //获取全部受权者及他们的等级
     function getAllAccessHolders() external view returns (address[] memory addrs, uint[] memory levels){
         unchecked{
             (addrs, levels) = (new address[](count), new uint[](count));
@@ -40,17 +40,12 @@ contract Util {
 //代理合同
 contract GameEngineProxy is Util {
     IGameEngine public contAddr;
+    mapping (uint => address) public contracts;
 
     constructor(address did, string memory name, string memory symbol) Util(msg.sender, address(this)) {
         contAddr = IGameEngine(address(new GameEngine(did, msg.sender, name, symbol)));
-    }
-    //数据库功能
-    function uintData(address addr, uint index) external view returns (uint) {
-        return contAddr.uintData(addr, index);
-    }
-    //管理功能
-    function withdraw(uint amt, uint8 v, bytes32 r, bytes32 s) external {
-        contAddr.withdraw(msg.sender, amt, v, r, s);
+        contracts[0] = address(new GameEngine(did, msg.sender));
+        contracts[1] = address(new ERC20(did, msg.sender, name, symbol));
     }
     function setContract(address addr) external OnlyAccess() {
         contAddr = IGameEngine(addr);
@@ -63,9 +58,8 @@ contract GameEngine is Util {
     address public signer;
     uint public withdrawInterval = 60;
 
-    constructor(address _did, address owner, string memory name, string memory symbol) Util(owner, msg.sender) {
-        (contAddr, signer) = 
-            (IERC20(address(new ERC20(owner, address(did = IGameEngine(_did)), name, symbol))), owner);
+    constructor(address _did, address owner) Util(owner, msg.sender) {
+        signer = owner;
     }
     //数据库功能
     function uintData(address addr, uint index) public view returns (uint) {
@@ -120,7 +114,7 @@ contract ERC20 is Util {
     mapping(address => mapping (address => uint)) public allowance;
     IGameEngine public did;
     //ERC20基本函数 
-    constructor(address owner, address _did, string memory _name, string memory _symbol) Util(owner, msg.sender) {
+    constructor(address _did, address owner, string memory _name, string memory _symbol) Util(owner, msg.sender) {
         (did, symbol, name) = (IGameEngine(_did), _symbol, _name);
         mint(1e24, msg.sender);
     }
