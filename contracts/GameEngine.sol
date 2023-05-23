@@ -8,7 +8,7 @@ import "./Interfaces.sol";
 //游戏引擎
 contract GameEngine is Util {
     IProxy private iProxy;
-    uint public withdrawInterval = 60;
+    uint public withdrawInterval = 60;  //以秒为单位的默认设置
 
     constructor(address proxy) {
         //调用交叉合约函数
