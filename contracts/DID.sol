@@ -16,12 +16,15 @@ contract DID is Util {
     function updateDid(string calldata str, address addr) external OnlyAccess {
         did[str] = addr;
     }
+
     function updateString(address addr, uint index, string calldata val) external OnlyAccess {
         stringData[addr][index] = val;
     }
+
     function updateAddress(address addr, uint index, address val) external OnlyAccess {
         addressData[addr][index] = val;
     }
+    
     function updateUint(address addr, uint index, uint val) external OnlyAccess {
         uintData[addr][index] = val;
     }
