@@ -5,173 +5,126 @@ import "./Lib.sol";
 import "./Util.sol";
 import "./Interfaces.sol";
 
-struct User{
-    uint bal;
-    mapping(uint  =>  uint) nfts;
-    mapping(address  =>  bool) opApp;
-    bool blocked;
-}
-
-contract ERC721 is IERC721, IERC721Metadata, Util {
-    address private _owner;
-    mapping (uint  =>  address) private _owners;
-    mapping (uint  =>  address) private _tokenApprovals;
-    uint public Count;
-    bool public Suspended;
-    string public constant symbol = "WDNFT";
-    string public constant name = "Wild Dynasty NFT";
-    mapping (address  =>  User) public u;
-
-    //ERC721基本函数 
-    function supportsInterface(bytes4 itf)external pure returns(bool){
-        return itf == type(IERC721).interfaceId || itf == type(IERC721Metadata).interfaceId;
-    }
-    function balanceOf(address addr)external view returns(uint){
-        require(!u[addr].blocked,"Suspended");
-        return u[addr].bal;
-    }
-    function ownerOf(uint id)external view returns(address){
-        require(!u[_owners[id]].blocked,"Suspended");
-        return _owners[id]; 
-    }
-    function owner()external view returns(address){
-        return _owner;
-    }
-    function tokenURI(uint _i)external view returns(string memory){
-        unchecked{
-            assert(_i<Count);
-            bytes memory bstr;
-            if(_i == 0)bstr="0";
-            else{
-                uint j=_i;
-                uint k;
-                while(j>0)(k++,j/=10);
-                (bstr,j)=(new bytes(k),k-1);
-                while(_i>0)(bstr[j--]=bytes1(uint8(48+_i%10)),_i/=10);
-            }
-            return string(abi.encodePacked("http://someipfs.com/",bstr));
-        }
-    }
-    function approve (address to, uint id) public {
-        require(msg.sender == _owners[id]  ||  isApprovedForAll(_owners[id], msg.sender), "Invalid ownership");
-        _tokenApprovals[id] = to;
-        emit Approval(_owners[id], to, id);
-    }
-    function getApproved(uint id)public view returns(address){
-        return _tokenApprovals[id];
-    }
-    function setApprovalForAll(address to, bool status) external {
-        u[msg.sender].opApp[to] = status;
-        emit ApprovalForAll(msg.sender, to, status);
-    }
-    function isApprovedForAll(address from, address to) public view returns (bool) {
-        return u[from].opApp[to];
-    }
-    function transferFrom(address from,address to,uint id) public {
-        unchecked {
-            require(msg.sender == _owners[id]  ||  
-                getApproved(id) == from  || 
-                isApprovedForAll(_owners[id],from)  ||  
-                msg.sender == _owner ,"Invalid ownership");
-            require(!Suspended&&!u[from].blocked, "Suspended");
-
-            (_tokenApprovals[id] = address(0), --u[from].bal, ++u[to].bal, _owners[id] = to);
-            emit Approval(_owners[id], to, id);
-            emit Transfer(from, to, id);
-        }
-    }
-    function safeTransferFrom(address from, address to, uint id) external {
-        transferFrom(from, to, id);
-    }
-    function safeTransferFrom(address from, address to, uint id, bytes memory) external {
-        transferFrom(from, to, id);
-    }
-
-    /*
-    Custom functions
-    自定函数
-    */
-    function getTokensOwned(address addr)external view returns(uint[]memory _ids){
-        require(!u[addr].blocked,"Suspended");
-        _ids = new uint[](u[addr].bal);
-        for(uint i; i<u[addr].bal; ++i) _ids[i] = u[addr].nfts[i];
-    }
-    function Burn(uint id) external {
-        unchecked{
-            address addr = _owners[id];
-            for(uint i = 0; i < u[addr].bal; ++i)
-                if(u[addr].nfts[i]  ==  id) {
-                    u[addr].nfts[i] = u[addr].nfts[u[_owners[id]].bal - 1];
-                    delete u[addr].nfts[u[_owners[id]].bal - 1];
-                    break;
-                }
-            transferFrom(addr,address(0), id);
-            delete _owners[id];
-        }
-    }
-    function Mint() external {
-        unchecked {
-            require(!u[msg.sender].blocked, "Suspended");
-            (_owners[Count], u[msg.sender].nfts[u[msg.sender].bal]) = (msg.sender, Count);
-            ++u[msg.sender].bal;
-            emit Transfer(address(this), msg.sender, Count++);
-        }
-    }
-    function ToggleBlock(address addr) external OnlyAccess {
-        u[addr].blocked=!u[addr].blocked;
-    }
-    function ToggleSuspend() external OnlyAccess {
-        Suspended = Suspended ? false : true;
-    }
-}
-
 contract ERC721AC is IERC721, IERC721Metadata, Util{
     
-    //ERC20标准变量 
+    //ERC721标准变量 
     address public owner;
     mapping(uint => address) public ownerOf;
     mapping(uint => address) public getApproved;
     mapping(address => uint) public balanceOf;
+    mapping(address => uint[]) private enumBalance;
     mapping(address => mapping(address => bool)) public isApprovedForAll;
-    string public constant symbol = "WDNFT";
-    string public constant name = "Wild Dynasty NFT";
+    string public name = "Wild Dynasty NFT";
+    string public symbol = "WDNFT";
+
+    //ERC721自定变量
+    uint public suspended;
+    uint public count;
+    mapping(uint => string) public uri;
+    IProxy public iProxy;
 
     //ERC20标准函数 
-    constructor(){
-        owner = msg.sender;
+    constructor(address proxy, string memory _name, string memory _sym){
+        //调用交叉合约函数
+        (iProxy, name, symbol, owner) = (IProxy(proxy), _name, _sym, msg.sender);
+        enumBalance[address(this)].push(1);
+        
     }
 
+    //测试它是否符合 721 标准
     function supportsInterface(bytes4 a) external pure returns (bool) {
         return a == type(IERC721).interfaceId || a == type(IERC721Metadata).interfaceId;
     }
 
-    function tokenURI(uint) external pure returns (string memory) {
-        return "";
+    //返回将整数转换为字符串的某个通用资源标识符
+    function tokenURI(uint id) external view returns (string memory) {
+        if (bytes(uri[id]).length > 0){
+            return uri[id];
+        }
+        return string(abi.encodePacked("ipfs://someurl/", Lib.uintToString(id)));
     }
 
+    //批准他人交易
     function approve(address to, uint id) external {
-        assert(msg.sender == ownerOf[id] || isApprovedForAll[ownerOf[id]][msg.sender]);
+        assert(msg.sender == ownerOf[id] ||                 //是不可替代令牌的所有者
+            isApprovedForAll[ownerOf[id]][msg.sender]);     //所有不可替代的代币都将出售
         emit Approval(ownerOf[id], getApproved[id] = to, id);
     }
 
+    //所有不可替代的代币都将出售
     function setApprovalForAll(address from, bool to) external {
         emit ApprovalForAll(msg.sender, from, isApprovedForAll[msg.sender][from] = to);
     }
 
+    //省略，因为它具有相同的功能
     function safeTransferFrom(address from, address to, uint id)external{
-        transferFrom(from, to, id);
+        transferFrom(from, to, id); 
     }
 
+    //省略，因为它具有相同的功能
     function safeTransferFrom(address from, address to, uint id, bytes memory)external{
-        transferFrom(from, to, id);
+        transferFrom(from, to, id); 
     }
 
+    //实际传递函数
     function transferFrom(address from, address to, uint id) public{
         unchecked{
-            assert(ownerOf[id] == from || getApproved[id] == to || isApprovedForAll[ownerOf[id]][from]);
-            (getApproved[id] = address(0), --balanceOf[from], ++balanceOf[to]);
+            assert(ownerOf[id] == from ||                               //必须是所有者或
+                getApproved[id] == to ||                                //已被授权
+                isApprovedForAll[ownerOf[id]][from]);                   //待全部出售
+            
+           
+            uint bal = balanceOf[from];                                 //从所有者数组中删除
+            uint[] storage enumBal = enumBalance[from];
+            for (uint i; i < bal; ++i)
+                if (enumBal[i] == id) {
+                    enumBal[i] = enumBal[bal - 1];
+                    enumBal.pop();
+                }
+            getApproved[id] = address(0);                               //重置授权
+            --balanceOf[from];                                          //减少前任所有者的余额
+            
+            transfer(from, to, id);                                     //开始转移
+        }
+    }
+
+    //自定义函数
+
+    //切换暂停
+    function toggleSuspend() external OnlyAccess {
+        suspended = suspended == 0 ? 1 : 0;
+    }
+
+    //获取地址拥有的所有代币的数组
+    function tokensOwned(address addr)external view returns(uint[]memory){
+        return enumBalance[addr];
+    }
+
+    //通过将令牌转移到0x地址来销毁代币
+    function burn(uint id) external {
+        transferFrom(ownerOf[id], address(0), id);
+    }
+
+    //the is token creation function 可用于转移和铸币
+    function transfer(address from, address to, uint id) private {
+        unchecked {
+            assert(suspended == 0);                                     //合约未被暂停
+            assert(IDID(iProxy.addrs(3)).uintData(from, 0) == 0 &&      //发件人不能被列入黑名单
+                IDID(iProxy.addrs(3)).uintData(to, 0) == 0);            //接收者也不能被列入黑名单
+
+            if (to != address(0)) {
+                enumBalance[address(this)].push(id);                    //添加到新的所有者数组
+                ++balanceOf[to];                                        //添加当前所有者的余额
+            }
+
             emit Approval(ownerOf[id], ownerOf[id] = to, id);
             emit Transfer(from, to, id);
         }
+    }
+
+    //铸造功能，需要先决条件
+    function mint() external {
+        //some prerequisites
+        transfer(address(this), msg.sender, count++);
     }
 }

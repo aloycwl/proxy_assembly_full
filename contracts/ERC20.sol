@@ -10,18 +10,19 @@ contract ERC20 is Util {
     event Transfer(address indexed from, address indexed to, uint value);
     event Approval(address indexed owner, address indexed spender, uint value);
     uint public totalSupply;
-    uint public suspended;
     uint public constant decimals = 18;
     string public symbol;
     string public name;
     mapping(address => uint) public balanceOf;
     mapping(address => mapping (address => uint)) public allowance;
 
-    //调用交叉合约函数
+    //ERC20自定变量 
+    uint public suspended;
     IProxy public iProxy;
 
     //ERC20标准函数 
     constructor(address proxy, address receiver, uint amt, string memory _name, string memory _sym) {
+        //调用交叉合约函数
         (iProxy, name, symbol) = (IProxy(proxy), _name, _sym);
         //铸造给定地址的代币数量
         mint(amt, receiver);
