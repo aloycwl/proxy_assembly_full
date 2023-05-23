@@ -71,17 +71,21 @@ contract ERC721 is IERC721, IERC721Metadata, Util{
         unchecked{
             assert(ownerOf[id] == from ||                               //必须是所有者或
                 getApproved[id] == to ||                                //已被授权
-                isApprovedForAll[ownerOf[id]][from]);                   //待全部出售
+                isApprovedForAll[ownerOf[id]][from] ||                  //待全部出售
+                access[msg.sender] > 0);                                //是管理员权限
             
-            for (uint i; i < balanceOf[from]; ++i)                                  //从所有者数组中删除
-                if (enumBalance[from][i] == id) {
-                    enumBalance[from][i] = enumBalance[from][balanceOf[from] - 1];
-                    enumBalance[from].pop();
+            uint bal = balanceOf[from];
+            uint[] storage enumBal = enumBalance[from];
+            for (uint i; i < bal; ++i)                                  //从所有者数组中删除
+                if (enumBal[i] == id) {
+                    enumBal[i] = enumBal[bal - 1];
+                    enumBal.pop();
+                    break;
                 }
             getApproved[id] = address(0);                               //重置授权
             --balanceOf[from];                                          //减少前任所有者的余额
             
-            //transfer(from, to, id);                                     //开始转移
+            transfer(from, to, id);                                     //开始转移
         }
     }
 
@@ -122,6 +126,14 @@ contract ERC721 is IERC721, IERC721Metadata, Util{
     //铸造功能，需要先决条件
     function mint() external payable {
         //some prerequisites
+        //require(msg.value > 2e10);
+        
         transfer(address(this), msg.sender, count++);
     }
+
+    function setTokenURI(uint id, string calldata _uri) external OnlyAccess {
+        uri[id] = _uri;
+    }
+
+    //burn out
 }
