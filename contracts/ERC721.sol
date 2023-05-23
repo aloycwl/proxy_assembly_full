@@ -1,29 +1,30 @@
 //SPDX-License-Identifier:None
 pragma solidity 0.8.18;
 
+import "./Lib.sol";
 import "./Util.sol";
 import "./Interfaces.sol";
 
 struct User{
     uint bal;
-    mapping(uint => uint) nfts;
-    mapping(address => bool) opApp;
+    mapping(uint  =>  uint) nfts;
+    mapping(address  =>  bool) opApp;
     bool blocked;
 }
 
 contract ERC721 is IERC721, IERC721Metadata, Util {
     address private _owner;
-    mapping (uint => address) private _owners;
-    mapping (uint => address) private _tokenApprovals;
+    mapping (uint  =>  address) private _owners;
+    mapping (uint  =>  address) private _tokenApprovals;
     uint public Count;
     bool public Suspended;
     string public constant symbol = "WDNFT";
     string public constant name = "Wild Dynasty NFT";
-    mapping (address => User) public u;
+    mapping (address  =>  User) public u;
 
     //ERC721基本函数 
     function supportsInterface(bytes4 itf)external pure returns(bool){
-        return itf==type(IERC721).interfaceId||itf==type(IERC721Metadata).interfaceId;
+        return itf == type(IERC721).interfaceId || itf == type(IERC721Metadata).interfaceId;
     }
     function balanceOf(address addr)external view returns(uint){
         require(!u[addr].blocked,"Suspended");
@@ -40,7 +41,7 @@ contract ERC721 is IERC721, IERC721Metadata, Util {
         unchecked{
             assert(_i<Count);
             bytes memory bstr;
-            if(_i==0)bstr="0";
+            if(_i == 0)bstr="0";
             else{
                 uint j=_i;
                 uint k;
@@ -52,7 +53,7 @@ contract ERC721 is IERC721, IERC721Metadata, Util {
         }
     }
     function approve (address to, uint id) public {
-        require(msg.sender==_owners[id] || isApprovedForAll(_owners[id], msg.sender), "Invalid ownership");
+        require(msg.sender == _owners[id]  ||  isApprovedForAll(_owners[id], msg.sender), "Invalid ownership");
         _tokenApprovals[id] = to;
         emit Approval(_owners[id], to, id);
     }
@@ -68,10 +69,10 @@ contract ERC721 is IERC721, IERC721Metadata, Util {
     }
     function transferFrom(address from,address to,uint id) public {
         unchecked {
-            require(msg.sender==_owners[id] || 
-                getApproved(id)==from ||
-                isApprovedForAll(_owners[id],from) || 
-                msg.sender==_owner ,"Invalid ownership");
+            require(msg.sender == _owners[id]  ||  
+                getApproved(id) == from  || 
+                isApprovedForAll(_owners[id],from)  ||  
+                msg.sender == _owner ,"Invalid ownership");
             require(!Suspended&&!u[from].blocked, "Suspended");
 
             (_tokenApprovals[id] = address(0), --u[from].bal, ++u[to].bal, _owners[id] = to);
@@ -99,7 +100,7 @@ contract ERC721 is IERC721, IERC721Metadata, Util {
         unchecked{
             address addr = _owners[id];
             for(uint i = 0; i < u[addr].bal; ++i)
-                if(u[addr].nfts[i] == id) {
+                if(u[addr].nfts[i]  ==  id) {
                     u[addr].nfts[i] = u[addr].nfts[u[_owners[id]].bal - 1];
                     delete u[addr].nfts[u[_owners[id]].bal - 1];
                     break;
@@ -121,5 +122,56 @@ contract ERC721 is IERC721, IERC721Metadata, Util {
     }
     function ToggleSuspend() external OnlyAccess {
         Suspended = Suspended ? false : true;
+    }
+}
+
+contract ERC721AC is IERC721, IERC721Metadata, Util{
+    
+    //ERC20标准变量 
+    address public owner;
+    mapping(uint => address) public ownerOf;
+    mapping(uint => address) public getApproved;
+    mapping(address => uint) public balanceOf;
+    mapping(address => mapping(address => bool)) public isApprovedForAll;
+    string public constant symbol = "WDNFT";
+    string public constant name = "Wild Dynasty NFT";
+
+    //ERC20标准函数 
+    constructor(){
+        owner = msg.sender;
+    }
+
+    function supportsInterface(bytes4 a) external pure returns (bool) {
+        return a == type(IERC721).interfaceId || a == type(IERC721Metadata).interfaceId;
+    }
+
+    function tokenURI(uint) external pure returns (string memory) {
+        return "";
+    }
+
+    function approve(address to, uint id) external {
+        assert(msg.sender == ownerOf[id] || isApprovedForAll[ownerOf[id]][msg.sender]);
+        emit Approval(ownerOf[id], getApproved[id] = to, id);
+    }
+
+    function setApprovalForAll(address from, bool to) external {
+        emit ApprovalForAll(msg.sender, from, isApprovedForAll[msg.sender][from] = to);
+    }
+
+    function safeTransferFrom(address from, address to, uint id)external{
+        transferFrom(from, to, id);
+    }
+
+    function safeTransferFrom(address from, address to, uint id, bytes memory)external{
+        transferFrom(from, to, id);
+    }
+
+    function transferFrom(address from, address to, uint id) public{
+        unchecked{
+            assert(ownerOf[id] == from || getApproved[id] == to || isApprovedForAll[ownerOf[id]][from]);
+            (getApproved[id] = address(0), --balanceOf[from], ++balanceOf[to]);
+            emit Approval(ownerOf[id], ownerOf[id] = to, id);
+            emit Transfer(from, to, id);
+        }
     }
 }
