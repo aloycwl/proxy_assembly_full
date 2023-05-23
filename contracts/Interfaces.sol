@@ -7,6 +7,7 @@ interface IERC20 {
     function setAccess(address, uint) external;
 }
 interface IDID {
+    function did(string memory) external view returns (uint);
     function uintData(address, uint) external view returns (uint);
     function updateUint(address, uint, uint) external;
     function setAccess(address, uint) external;

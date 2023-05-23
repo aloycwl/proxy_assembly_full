@@ -5,39 +5,24 @@ import "./Util.sol";
 
 //储存和去中心化身份合约
 contract DID is Util {
-    mapping (string => address) did;
+    mapping (string => address) public did;
     mapping (address => mapping (uint => string)) public stringData;
     mapping (address => mapping (uint => address)) public addressData;
     mapping (address => mapping (uint => uint)) public uintData;
 
-    modifier OnlyUnique(string calldata userName) {
-        require(did[userName] == address(0), "Username existed");
-        _;
-    }
-    
     constructor() Util() { }
-    //谁都可以创造新用户
-    function createUser(address addr, string calldata userName, string calldata name, string calldata bio) 
-        external OnlyUnique(userName) {
-            (did[userName], stringData[addr][0]) = (addr, userName);
-            stringData[addr][1] = name;
-            stringData[addr][2] = bio;
-    }
-    //改用户名，删除旧名来省燃料
-    function changeUsername(string calldata strBefore, string calldata strAfter) external OnlyUnique(strAfter) {
-        address addr = did[strBefore];
-        require(msg.sender == addr, "Invalid owner");
-        delete did[strBefore];
-        updateString(did[strAfter] = addr, 0, strAfter);
+    
+    function deleteUsername(string calldata userName) external OnlyAccess {
+        delete did[userName];
     }
     //持有权限者才能更新数据
-    function updateString(address addr, uint index, string calldata val) public OnlyAccess {
+    function updateString(address addr, uint index, string calldata val) external OnlyAccess {
         stringData[addr][index] = val;
     }
-    function updateAddress(address addr, uint index, address val) public OnlyAccess {
+    function updateAddress(address addr, uint index, address val) external OnlyAccess {
         addressData[addr][index] = val;
     }
-    function updateUint(address addr, uint index, uint val) public OnlyAccess {
+    function updateUint(address addr, uint index, uint val) external OnlyAccess {
         uintData[addr][index] = val;
     }
 }
