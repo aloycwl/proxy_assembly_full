@@ -73,17 +73,15 @@ contract ERC721 is IERC721, IERC721Metadata, Util{
                 getApproved[id] == to ||                                //已被授权
                 isApprovedForAll[ownerOf[id]][from]);                   //待全部出售
             
-            uint bal = balanceOf[from];                                 //从所有者数组中删除
-            uint[] storage enumBal = enumBalance[from];
-            for (uint i; i < bal; ++i)
-                if (enumBal[i] == id) {
-                    enumBal[i] = enumBal[bal - 1];
-                    enumBal.pop();
+            for (uint i; i < balanceOf[from]; ++i)                                  //从所有者数组中删除
+                if (enumBalance[from][i] == id) {
+                    enumBalance[from][i] = enumBalance[from][balanceOf[from] - 1];
+                    enumBalance[from].pop();
                 }
             getApproved[id] = address(0);                               //重置授权
             --balanceOf[from];                                          //减少前任所有者的余额
             
-            transfer(from, to, id);                                     //开始转移
+            //transfer(from, to, id);                                     //开始转移
         }
     }
 
@@ -101,7 +99,7 @@ contract ERC721 is IERC721, IERC721Metadata, Util{
 
     //通过将令牌转移到0x地址来销毁代币
     function burn(uint id) external {
-        transferFrom(ownerOf[id], address(0), id);
+        transferFrom(msg.sender, address(0), id);
     }
 
     //the is token creation function 可用于转移和铸币
