@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 library Lib {
     //整数转移字符
-    function u2s(uint num) internal pure returns (string memory) {
+    function uintToString(uint num) internal pure returns (string memory) {
         unchecked{
             if (num == 0) return "0";
             uint j = num;

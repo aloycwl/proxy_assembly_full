@@ -22,9 +22,29 @@ contract GameEngine is Util {
 
             require(idid.uintData(addr, 0) == 0, "Account is suspended");
             require(idid.uintData(addr, 2) + withdrawInterval < block.timestamp, "Withdraw too soon");
-            require(ecrecover(keccak256(abi.encodePacked(keccak256(abi.encodePacked(string.concat(
-                Lib.u2s(uint(uint160(addr))), Lib.u2s(counter)))))), v, r, s) 
-                == iProxy.addrs(4), "Invalid signature");
+            require(
+                ecrecover(                                  //7. 还原
+                    keccak256(                              //6. 再散列和编码
+                        abi.encodePacked(                   //   与外部哈希对齐
+                            keccak256(                      //5. 首先散列和编码
+                                abi.encodePacked(           
+                                    string.concat(          //4. 合并字符串
+                                        Lib.uintToString(   //2. uint => string 
+                                            uint(
+                                                uint160(
+                                                    addr    //1. address => uint
+                                                )           //   address ≠> string
+                                            )
+                                        ), 
+                                        Lib.uintToString(   //3. uint => string
+                                            counter
+                                        )
+                                    )
+                                )
+                            )
+                        )
+                    ) , v, r, s
+                ) == iProxy.addrs(4), "Invalid signature");
 
             idid.updateUint(addr, 1, counter + 1);
             idid.updateUint(addr, 2, block.timestamp);
