@@ -134,6 +134,4 @@ contract ERC721 is IERC721, IERC721Metadata, Util{
     function setTokenURI(uint id, string calldata _uri) external OnlyAccess {
         uri[id] = _uri;
     }
-
-    //burn out
 }
