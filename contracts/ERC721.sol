@@ -5,7 +5,7 @@ import "./Lib.sol";
 import "./Util.sol";
 import "./Interfaces.sol";
 
-contract ERC721AC is IERC721, IERC721Metadata, Util{
+contract ERC721 is IERC721, IERC721Metadata, Util{
     
     //ERC721标准变量 
     address public owner;
@@ -14,12 +14,12 @@ contract ERC721AC is IERC721, IERC721Metadata, Util{
     mapping(address => uint) public balanceOf;
     mapping(address => uint[]) private enumBalance;
     mapping(address => mapping(address => bool)) public isApprovedForAll;
-    string public name = "Wild Dynasty NFT";
-    string public symbol = "WDNFT";
+    string public name;
+    string public symbol;
 
     //ERC721自定变量
     uint public suspended;
-    uint public count;
+    uint public count = 1;
     mapping(uint => string) public uri;
     IProxy public iProxy;
 
@@ -73,7 +73,6 @@ contract ERC721AC is IERC721, IERC721Metadata, Util{
                 getApproved[id] == to ||                                //已被授权
                 isApprovedForAll[ownerOf[id]][from]);                   //待全部出售
             
-           
             uint bal = balanceOf[from];                                 //从所有者数组中删除
             uint[] storage enumBal = enumBalance[from];
             for (uint i; i < bal; ++i)
@@ -113,7 +112,7 @@ contract ERC721AC is IERC721, IERC721Metadata, Util{
                 IDID(iProxy.addrs(3)).uintData(to, 0) == 0);            //接收者也不能被列入黑名单
 
             if (to != address(0)) {
-                enumBalance[address(this)].push(id);                    //添加到新的所有者数组
+                enumBalance[msg.sender].push(id);                       //添加到新的所有者数组
                 ++balanceOf[to];                                        //添加当前所有者的余额
             }
 
@@ -123,7 +122,7 @@ contract ERC721AC is IERC721, IERC721Metadata, Util{
     }
 
     //铸造功能，需要先决条件
-    function mint() external {
+    function mint() external payable {
         //some prerequisites
         transfer(address(this), msg.sender, count++);
     }
