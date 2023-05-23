@@ -24,15 +24,17 @@ contract DIDFunctions is Util {
     //谁都可以创造新用户
     function createUser(address addr, string calldata userName, string calldata name, string calldata bio) 
         external OnlyUnique(userName) {
-            (did[userName], stringData[addr][0]) = (addr, userName);
-            stringData[addr][1] = name;
-            stringData[addr][2] = bio;
+            idid.updateDid(userName, addr);
+            idid.updateString(addr, 0, userName);
+            idid.updateString(addr, 1, name);
+            idid.updateString(addr, 2, bio);
     }
     //改用户名，删除旧名来省燃料
     function changeUsername(string calldata strBefore, string calldata strAfter) external OnlyUnique(strAfter) {
-        address addr = did[strBefore];
+        address addr = idid.did(strBefore);
         require(msg.sender == addr, "Invalid owner");
-        delete did[strBefore];
-        updateString(did[strAfter] = addr, 0, strAfter);
+        idid.deleteUsername(strBefore);
+        idid.updateDid(strAfter, addr);
+        idid.updateString(addr, 0, strAfter);
     }
 }

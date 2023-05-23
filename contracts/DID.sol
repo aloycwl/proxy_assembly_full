@@ -16,6 +16,9 @@ contract DID is Util {
         delete did[userName];
     }
     //持有权限者才能更新数据
+    function updateDid(string calldata str, address addr) external OnlyAccess {
+        did[str] = addr;
+    }
     function updateString(address addr, uint index, string calldata val) external OnlyAccess {
         stringData[addr][index] = val;
     }

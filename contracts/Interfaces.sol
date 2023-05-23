@@ -7,9 +7,12 @@ interface IERC20 {
     function setAccess(address, uint) external;
 }
 interface IDID {
-    function did(string memory) external view returns (uint);
+    function did(string calldata) external view returns (address);
     function uintData(address, uint) external view returns (uint);
+    function updateDid(string calldata, address) external;
     function updateUint(address, uint, uint) external;
+    function updateString(address, uint, string calldata) external;
+    function deleteUsername(string calldata) external;
     function setAccess(address, uint) external;
 }
 interface IProxy {
