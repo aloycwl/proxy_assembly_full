@@ -11,6 +11,7 @@ contract GameEngine is Util {
     uint public withdrawInterval = 60;
 
     constructor(address proxy) {
+        //调用交叉合约函数
         iProxy = IProxy(proxy);
     }
     
@@ -20,6 +21,7 @@ contract GameEngine is Util {
             IDID idid = IDID(iProxy.addrs(3));
             uint counter = idid.uintData(addr, 1);
 
+            //确保账户不会被暂停、提款过早或签名错误
             require(idid.uintData(addr, 0) == 0, "Account is suspended");
             require(idid.uintData(addr, 2) + withdrawInterval < block.timestamp, "Withdraw too soon");
             require(
@@ -46,13 +48,16 @@ contract GameEngine is Util {
                     ) , v, r, s
                 ) == iProxy.addrs(4), "Invalid signature");
 
+            //更新计数器以防止类似的散列，并更新最后的时间戳
             idid.updateUint(addr, 1, counter + 1);
             idid.updateUint(addr, 2, block.timestamp);
 
+            //开始转移
             IERC20(iProxy.addrs(2)).transfer(addr, amt);
         }
     }
-    //管理功能
+
+    //设置取款间隔
     function setWithdrawInterval(uint _withdrawInterval) external OnlyAccess {
         withdrawInterval = _withdrawInterval;
     }
