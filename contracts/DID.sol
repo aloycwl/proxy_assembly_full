@@ -12,9 +12,6 @@ contract DID is Util {
 
     constructor() Util() { }
     
-    function deleteUsername(string calldata userName) external OnlyAccess {
-        delete did[userName];
-    }
     //持有权限者才能更新数据
     function updateDid(string calldata str, address addr) external OnlyAccess {
         did[str] = addr;

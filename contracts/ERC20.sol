@@ -9,17 +9,16 @@ contract ERC20 is Util {
     event Transfer(address indexed from, address indexed to, uint value);
     event Approval(address indexed owner, address indexed spender, uint value);
     uint public totalSupply;
-    uint8 public suspended;
-    uint8 public constant decimals = 18;
+    uint public suspended;
+    uint public constant decimals = 18;
     string public symbol;
     string public name;
     mapping(address => uint) public balanceOf;
     mapping(address => mapping (address => uint)) public allowance;
     IProxy public iProxy;
     //ERC20基本函数 
-    constructor(address proxy, address receiver, uint amt, 
-        string memory _name, string memory _symbol) Util() {
-        (iProxy, symbol, name) = (IProxy(proxy), _symbol, _name);
+    constructor(address proxy, address receiver, uint amt, string memory _name, string memory _sym) {
+        (iProxy, name, symbol) = (IProxy(proxy), _name, _sym);
         mint(amt, receiver);
     }
     function approve(address to, uint amt) external returns (bool) {
@@ -31,11 +30,11 @@ contract ERC20 is Util {
     }
     function transferFrom(address from, address to, uint amt) public returns (bool) {
         unchecked {
-            require(balanceOf[from] >= amt, "Insufficient balance");
-            require(from == msg.sender || allowance[from][to] >= amt, "Insufficient allowance");
-            require(IDID(iProxy.addrs(3)).uintData(from, 0) == 0 && 
-                IDID(iProxy.addrs(3)).uintData(to, 0) == 0, "Account suspended");
-            require(suspended == 0, "Contract suspended");
+            assert(balanceOf[from] >= amt);
+            assert(from == msg.sender || allowance[from][to] >= amt);
+            assert(IDID(iProxy.addrs(3)).uintData(from, 0) == 0 && 
+                IDID(iProxy.addrs(3)).uintData(to, 0) == 0);
+            assert(suspended == 0);
             
             if (allowance[from][to] >= amt) allowance[from][to] -= amt;
             (balanceOf[from] -= amt, balanceOf[to] += amt);
@@ -53,9 +52,9 @@ contract ERC20 is Util {
             emit Transfer(address(this), addr, amt);
         }
     }
-    function burn(uint amt) external OnlyAccess {
+    function burn(uint amt) external {
         unchecked {
-            require(balanceOf[msg.sender] >= amt, "Insufficient balance");
+            assert(balanceOf[msg.sender] >= amt);
             transferFrom(msg.sender, address(0), amt);
             totalSupply -= amt;
         }

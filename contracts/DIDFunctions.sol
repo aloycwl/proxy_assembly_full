@@ -32,8 +32,8 @@ contract DIDFunctions is Util {
     //改用户名，删除旧名来省燃料
     function changeUsername(string calldata strBefore, string calldata strAfter) external OnlyUnique(strAfter) {
         address addr = idid.did(strBefore);
-        require(msg.sender == addr, "Invalid owner");
-        idid.deleteUsername(strBefore);
+        assert(msg.sender == addr);
+        idid.updateDid(strBefore, address(0));
         idid.updateDid(strAfter, addr);
         idid.updateString(addr, 0, strAfter);
     }

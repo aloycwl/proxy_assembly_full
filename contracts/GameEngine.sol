@@ -10,7 +10,7 @@ contract GameEngine is Util {
     IProxy private iProxy;
     uint public withdrawInterval = 60;
 
-    constructor(address proxy) Util() {
+    constructor(address proxy) {
         iProxy = IProxy(proxy);
     }
     

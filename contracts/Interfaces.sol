@@ -12,7 +12,6 @@ interface IDID {
     function updateDid(string calldata, address) external;
     function updateUint(address, uint, uint) external;
     function updateString(address, uint, string calldata) external;
-    function deleteUsername(string calldata) external;
     function setAccess(address, uint) external;
 }
 interface IProxy {
