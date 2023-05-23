@@ -1,5 +1,5 @@
 //SPDX-License-Identifier:None
-pragma solidity ^0.8.20;
+pragma solidity 0.8.18;
 
 import "./Util.sol";
 
@@ -24,7 +24,7 @@ contract DID is Util {
     function updateAddress(address addr, uint index, address val) external OnlyAccess {
         addressData[addr][index] = val;
     }
-    
+
     function updateUint(address addr, uint index, uint val) external OnlyAccess {
         uintData[addr][index] = val;
     }

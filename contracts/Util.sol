@@ -1,9 +1,9 @@
 //SPDX-License-Identifier:None
-pragma solidity ^0.8.20;
+pragma solidity 0.8.18;
 
 //置对合约的访问
 contract Util {
-    
+
     mapping(address => uint) public access;
 
     //立即授予创建者访问权限
