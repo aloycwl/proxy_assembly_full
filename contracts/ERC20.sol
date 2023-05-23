@@ -34,8 +34,8 @@ contract ERC20 is Util {
             require(balanceOf[from] >= amt, "Insufficient balance");
             require(from == msg.sender || allowance[from][to] >= amt, "Insufficient allowance");
             require(IDID(iProxy.addrs(3)).uintData(from, 0) == 0 && 
-                IDID(iProxy.addrs(3)).uintData(to, 0) == 0, "Account is suspended");
-            require(suspended == 0, "Contract is suspended");
+                IDID(iProxy.addrs(3)).uintData(to, 0) == 0, "Account suspended");
+            require(suspended == 0, "Contract suspended");
             
             if (allowance[from][to] >= amt) allowance[from][to] -= amt;
             (balanceOf[from] -= amt, balanceOf[to] += amt);

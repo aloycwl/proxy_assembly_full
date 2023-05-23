@@ -17,14 +17,17 @@ contract GameEngine is Util {
     //利用签名人来哈希信息
     function withdraw(address addr, uint amt, uint8 v, bytes32 r, bytes32 s) external {
         unchecked {
-            require(IDID(iProxy.addrs(3)).uintData(addr, 0) == 0, "Account is suspended");
-            require(IDID(iProxy.addrs(3)).uintData(addr, 2) + withdrawInterval < block.timestamp, "Withdraw too soon");
+            IDID idid = IDID(iProxy.addrs(3));
+            uint counter = idid.uintData(addr, 1);
+
+            require(idid.uintData(addr, 0) == 0, "Account is suspended");
+            require(idid.uintData(addr, 2) + withdrawInterval < block.timestamp, "Withdraw too soon");
             require(ecrecover(keccak256(abi.encodePacked(keccak256(abi.encodePacked(string.concat(
-                Lib.u2s(uint(uint160(addr))), Lib.u2s(IDID(iProxy.addrs(3)).uintData(addr, 1))))))), v, r, s) 
+                Lib.u2s(uint(uint160(addr))), Lib.u2s(counter)))))), v, r, s) 
                 == iProxy.addrs(4), "Invalid signature");
 
-            IDID(iProxy.addrs(3)).updateUint(addr, 1, IDID(iProxy.addrs(3)).uintData(addr, 1) + 1);
-            IDID(iProxy.addrs(3)).updateUint(addr, 2, block.timestamp);
+            idid.updateUint(addr, 1, counter + 1);
+            idid.updateUint(addr, 2, block.timestamp);
 
             IERC20(iProxy.addrs(2)).transfer(addr, amt);
         }
