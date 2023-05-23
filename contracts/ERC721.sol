@@ -103,7 +103,7 @@ contract ERC721 is IERC721, IERC721Metadata, Util{
 
     //通过将令牌转移到0x地址来销毁代币
     function burn(uint id) external {
-        transferFrom(msg.sender, address(0), id);
+        transferFrom(ownerOf[id], address(0), id);
     }
 
     //the is token creation function 可用于转移和铸币
