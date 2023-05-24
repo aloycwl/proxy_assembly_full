@@ -70,9 +70,9 @@ contract ERC721 is IERC721, IERC721Metadata, Util{
     function transferFrom(address from, address to, uint id) public{
         unchecked{
             assert(ownerOf[id] == from ||                               //必须是所有者或
-                getApproved[id] == to ||                                //已被授权
-                isApprovedForAll[ownerOf[id]][from] ||                  //待全部出售
-                access[msg.sender] > 0);                                //是管理员权限
+                getApproved[id] == to ||                                //已被授权或
+                isApprovedForAll[ownerOf[id]][from] ||                  //待全部出售或
+                access[msg.sender] > 0);                                //有管理员权限
             
             uint bal = balanceOf[from];
             uint[] storage enumBal = enumBalance[from];
