@@ -57,12 +57,12 @@ contract ERC721 is IERC721, IERC721Metadata, Util{
     }
 
     //省略，因为它具有相同的功能
-    function safeTransferFrom(address from, address to, uint id)external{
+    function safeTransferFrom(address from, address to, uint id) external {
         transferFrom(from, to, id); 
     }
 
     //省略，因为它具有相同的功能
-    function safeTransferFrom(address from, address to, uint id, bytes memory)external{
+    function safeTransferFrom(address from, address to, uint id, bytes memory) external {
         transferFrom(from, to, id); 
     }
 
@@ -131,6 +131,7 @@ contract ERC721 is IERC721, IERC721Metadata, Util{
         transfer(address(this), msg.sender, count++);
     }
 
+    //设置升级或合并的新链接
     function setTokenURI(uint id, string calldata _uri) external OnlyAccess {
         uri[id] = _uri;
     }
