@@ -26,7 +26,7 @@ interface IGameEngine {
     function setAccess(address, uint) external;
 }
 
-interface IERC721{
+interface IERC721 {
     event Transfer(address indexed from, address indexed to, uint indexed tokenId);
     event Approval(address indexed owner, address indexed approved, uint indexed tokenId);
     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
@@ -41,7 +41,7 @@ interface IERC721{
     function safeTransferFrom(address, address, uint, bytes calldata) external;
 }
 
-interface IERC721Metadata{
+interface IERC721Metadata {
     function name() external view returns (string memory);
     function symbol() external view returns (string memory);
     function tokenURI(uint) external view returns (string memory);
