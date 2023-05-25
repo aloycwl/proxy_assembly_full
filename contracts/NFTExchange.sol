@@ -70,15 +70,11 @@ contract agora is Util {
         unchecked{
             (tokenUri, price, listId) = (new string[](batch), new uint[](batch), new uint[](batch));
             uint b;
-            uint len = arrList.length;
-            uint i = len > offset ? len - offset : offset;
+            uint i = arrList.length - offset;
             while(b < batch && i > 0) {
                 List storage l = list[--i];
-                if(IERC721(l.contractAddr).getApproved(l.tokenId) == address(this)) {
-                    ++b;
-                    (tokenUri[b], price[b], listId[b]) = (IERC721Metadata(l.contractAddr).tokenURI(l.tokenId), l.price, i);
-                }
-                --i;
+                ++b;
+                (tokenUri[b], price[b], listId[b]) = (IERC721Metadata(l.contractAddr).tokenURI(l.tokenId), l.price, i);
             }
         }
     }
