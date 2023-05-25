@@ -51,8 +51,7 @@ contract agora is Util {
     function buy(uint id) external payable {
         unchecked {
             List storage l = list[id];
-            uint tokenId = l.tokenId;
-            uint price = l.price;
+            (uint tokenId, uint price) = (l.tokenId, l.price);
             assert(msg.value >= price);
 
             address seller = IERC721(l.contractAddr).ownerOf(tokenId);
@@ -65,17 +64,19 @@ contract agora is Util {
         }
     }
 
+    //分页显示
     function display(uint batch,  uint offset) external view returns
-        (string[]memory tu, uint[]memory price, uint[]memory listId) {
+        (uint[]memory listId, uint[]memory price, string[]memory tokenUri) {
         unchecked{
-            (tu, price, listId) = (new string[](batch), new uint[](batch), new uint[](batch));
+            (tokenUri, price, listId) = (new string[](batch), new uint[](batch), new uint[](batch));
             uint b;
-            uint i = arrList.length - offset;
+            uint len = arrList.length;
+            uint i = len > offset ? len - offset : offset;
             while(b < batch && i > 0) {
                 List storage l = list[--i];
                 if(IERC721(l.contractAddr).getApproved(l.tokenId) == address(this)) {
                     ++b;
-                    (tu[b], price[b], listId[b]) = (IERC721Metadata(l.contractAddr).tokenURI(l.tokenId), l.price, i);
+                    (tokenUri[b], price[b], listId[b]) = (IERC721Metadata(l.contractAddr).tokenURI(l.tokenId), l.price, i);
                 }
                 --i;
             }
