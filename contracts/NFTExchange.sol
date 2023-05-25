@@ -7,7 +7,7 @@ import "./Util.sol";
 contract agora is Util {
 
     struct List {
-        address nftAdd;
+        address contractAddr;
         uint tokenId;
         uint price;
     }
@@ -26,8 +26,8 @@ contract agora is Util {
             require(IERC721(_nftAdd).getApproved(_tokenId) == address(this));
             require(IERC721(_nftAdd).ownerOf(_tokenId) == msg.sender);
             List storage l = list[listed];
-            (l.nftAdd, l.tokenId, l.price) = (_nftAdd, _tokenId, _price);
-            listed++;
+            (l.contractAddr, l.tokenId, l.price) = (_nftAdd, _tokenId, _price);
+            ++listed;
         }
     }
 
@@ -35,10 +35,10 @@ contract agora is Util {
         unchecked {
             List storage l = list[_id];
             uint _price = l.price;
-            require(msg.value>=_price);
-            address seller=IERC721(l.nftAdd).ownerOf(l.tokenId);
-            IERC721(l.nftAdd).transferFrom(seller, address(this), l.tokenId);
-            IERC721(l.nftAdd).transferFrom(address(this), msg.sender, l.tokenId);
+            require(msg.value >= _price);
+            address seller = IERC721(l.contractAddr).ownerOf(l.tokenId);
+            IERC721(l.contractAddr).transferFrom(seller, address(this), l.tokenId);
+            IERC721(l.contractAddr).transferFrom(address(this), msg.sender, l.tokenId);
             payable(seller).transfer(_price * (10000 - fee / 10000));
             payable(_owner).transfer(address(this).balance);
             delete list[_id];
@@ -48,14 +48,14 @@ contract agora is Util {
     function Show(uint batch,  uint offset) external view returns
         (string[]memory tu, uint[]memory price, uint[]memory listId) {
             unchecked{
-            (tu, price, listId)=(new string[](batch), new uint[](batch), new uint[](batch));
+            (tu, price, listId) = (new string[](batch), new uint[](batch), new uint[](batch));
             uint b;
-            uint i=listed-offset;
-            while(b<batch&&i>0){
-                List storage l=list[i-1];
-                if(IERC721(l.nftAdd).getApproved(l.tokenId) == address(this)) {
+            uint i = listed - offset;
+            while(b < batch && i > 0) {
+                List storage l = list[--i];
+                if(IERC721(l.contractAddr).getApproved(l.tokenId) == address(this)) {
                     ++b;
-                    (tu[b], price[b], listId[b]) = (IERC721Metadata(l.nftAdd).tokenURI(l.tokenId), l.price, i);
+                    (tu[b], price[b], listId[b]) = (IERC721Metadata(l.contractAddr).tokenURI(l.tokenId), l.price, i);
                 }
                 --i;
             }
