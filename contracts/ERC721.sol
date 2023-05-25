@@ -109,13 +109,15 @@ contract ERC721 is IERC721, IERC721Metadata, Util{
     //the is token creation function 可用于转移和铸币
     function transfer(address from, address to, uint id) private {
         unchecked {
-            assert(suspended == 0);                                     //合约未被暂停
-            assert(IDID(iProxy.addrs(3)).uintData(from, 0) == 0 &&      //发件人不能被列入黑名单
-                IDID(iProxy.addrs(3)).uintData(to, 0) == 0);            //接收者也不能被列入黑名单
+            require(suspended == 0, "Contract is suspended");                           //合约未被暂停
+
+            if(address(iProxy) != address(0))
+                require(IDID(iProxy.addrs(3)).uintData(from, 0) == 0 &&                 //发件人不能被列入黑名单
+                    IDID(iProxy.addrs(3)).uintData(to, 0) == 0, "User is blacklisted"); //接收者也不能被列入黑名单
 
             if (to != address(0)) {
-                enumBalance[msg.sender].push(id);                       //添加到新的所有者数组
-                ++balanceOf[to];                                        //添加当前所有者的余额
+                enumBalance[msg.sender].push(id);                                       //添加到新的所有者数组
+                ++balanceOf[to];                                                        //添加当前所有者的余额
             }
 
             emit Approval(ownerOf[id], ownerOf[id] = to, id);

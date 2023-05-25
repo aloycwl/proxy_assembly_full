@@ -4,7 +4,7 @@ pragma solidity 0.8.18;
 import "./Interfaces.sol";
 import "./Util.sol";
 
-contract agora is Util {
+contract NFTMarket is Util {
 
     struct List {
         address contractAddr;
@@ -25,7 +25,7 @@ contract agora is Util {
     //卖功能，需要先设置NFT合约的认可
     function sell(address contractAddr, uint tokenId, uint price) external {
         unchecked {
-            assert(IERC721(contractAddr).getApproved(tokenId) == address(this));
+            require(IERC721(contractAddr).getApproved(tokenId) == address(this), "No approval");
             
             List storage l = list[counter];
             (l.contractAddr, l.tokenId, l.price) = (contractAddr, tokenId, price);
@@ -52,7 +52,7 @@ contract agora is Util {
         unchecked {
             List storage l = list[id];
             (uint tokenId, uint price) = (l.tokenId, l.price);
-            assert(msg.value >= price);
+            require(msg.value >= price, "Insufficient price");
 
             address seller = IERC721(l.contractAddr).ownerOf(tokenId);
             IERC721(l.contractAddr).transferFrom(seller, address(this), tokenId);
@@ -64,7 +64,7 @@ contract agora is Util {
         }
     }
 
-    //分页显示
+    //分页显示 - Not yet working...
     function display(uint batch,  uint offset) external view returns
         (uint[]memory listId, uint[]memory price, string[]memory tokenUri) {
         unchecked{
@@ -72,9 +72,9 @@ contract agora is Util {
             uint b;
             uint i = arrList.length - offset;
             while(b < batch && i > 0) {
-                List storage l = list[--i];
+                List storage l = list[arrList[--i]];
                 ++b;
-                (tokenUri[b], price[b], listId[b]) = (IERC721Metadata(l.contractAddr).tokenURI(l.tokenId), l.price, i);
+                (tokenUri[b], price[b], listId[b]) = (IERC721Metadata(l.contractAddr).tokenURI(l.tokenId), l.price, arrList[i]);
             }
         }
     }
