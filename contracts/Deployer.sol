@@ -12,6 +12,7 @@ contract Deployer {
     function deployAll(string memory name, string memory symbol) external returns (address proxy) {
         address did = deployDID();
         proxy = deployProxyPlus(did, name, symbol);
+        IProxy(did).setAccess()
     }
     function deployProxyPlus(address did, string memory name, string memory symbol) public returns (address proxy) {
         proxy = deployProxy();
