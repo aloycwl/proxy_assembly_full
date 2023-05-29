@@ -12,7 +12,6 @@ contract Deployer {
     function deployAll(string memory name, string memory symbol) external returns (address proxy) {
         address did = deployDID();
         proxy = deployProxyPlus(did, name, symbol);
-        IProxy(did).setAccess()
     }
     function deployProxyPlus(address did, string memory name, string memory symbol) public returns (address proxy) {
         proxy = deployProxy();
@@ -24,6 +23,7 @@ contract Deployer {
         iProxy.setAddr(address(erc20), 2);
         iProxy.setAddr(did, 3);
         iProxy.setAddr(msg.sender, 4); //signer
+        DID(did).setAccess(gameEngine, 900); //for withdrawal access
     }
     function deployProxy() public returns (address proxy) {
         proxy = address(new Proxy());
