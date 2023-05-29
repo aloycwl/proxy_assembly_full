@@ -64,30 +64,7 @@ contract NFTMarket is Util {
         }
     }
 
-    /************************************************
-    *************************************************
-    *************************************************
-    TODO
-    *************************************************
-    *************************************************
-    ************************************************/
-    //分页显示 - Not yet working...
-    function display(uint batch,  uint offset) external view returns
-        (uint[]memory listId, uint[]memory price, string[]memory tokenUri) {
-        unchecked{
-            (tokenUri, price, listId) = (new string[](batch), new uint[](batch), new uint[](batch));
-            uint b;
-            uint i = arrList.length - offset;
-            while(b < batch && i > 0) {
-                List storage l = list[arrList[--i]];
-                ++b;
-                (tokenUri[b], price[b], listId[b]) = (IERC721Metadata(l.contractAddr).tokenURI(l.tokenId), l.price, arrList[i]);
-            }
-        }
-    }
-
-    //行政功能
-
+    //设置费用
     function setFee(uint amt) external OnlyAccess {
         fee = amt;
     }
