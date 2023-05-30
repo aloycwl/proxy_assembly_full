@@ -12,13 +12,13 @@ contract NFTMarket is Util {
         uint price;
     }
 
-    address private owner;
+    address private wallet;
     uint private counter;
     uint public fee = 0; //小数点后两位的百分比，xxx.xx
     mapping(uint => List) public list;
 
     constructor() {
-        owner = msg.sender;
+        wallet = msg.sender;
     }
 
     //卖功能，需要先设置NFT合约的认可
@@ -50,7 +50,7 @@ contract NFTMarket is Util {
             IERC721(l.contractAddr).transferFrom(address(this), msg.sender, tokenId);
 
             payable(seller).transfer(price * (10000 - fee / 10000));
-            payable(owner).transfer(address(this).balance);
+            payable(wallet).transfer(address(this).balance);
             remove(id);
         }
     }
