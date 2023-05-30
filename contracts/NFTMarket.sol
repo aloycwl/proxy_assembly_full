@@ -14,8 +14,7 @@ contract NFTMarket is Util {
 
     address private owner;
     uint private counter;
-    uint public fee = 0; //小数点后两位的百分比，xxx.xx 
-    uint[] public arrList;
+    uint public fee = 0; //小数点后两位的百分比，xxx.xx
     mapping(uint => List) public list;
 
     constructor() {
@@ -29,22 +28,14 @@ contract NFTMarket is Util {
             
             List storage l = list[counter];
             (l.contractAddr, l.tokenId, l.price) = (contractAddr, tokenId, price);
-            arrList.push(++counter);
         }
     }
 
     //取消列表功能，也将在成功购买时调用
     function remove(uint id) public {
-        unchecked{
-            uint count = arrList.length;
-            for (uint i; i < count; ++i)
-                if (arrList[i] == id) {
-                    arrList[i] = arrList[count - 1];
-                    arrList.pop();
-                    break;
-                }
-            delete list[id];
-        }
+        List storage _list = list[id];
+        require(IERC721(_list.contractAddr).ownerOf(_list.tokenId) == msg.sender, "Not owner");
+        delete list[id];
     }
 
     //用户必须发送大于或等于所列价格的以太币
