@@ -52,8 +52,8 @@ contract ERC721 is IERC721, IERC721Metadata, Util{
     }
 
     //所有不可替代的代币都将出售
-    function setApprovalForAll(address from, bool to) external {
-        emit ApprovalForAll(msg.sender, from, isApprovedForAll[msg.sender][from] = to);
+    function setApprovalForAll(address to, bool bol) external {
+        emit ApprovalForAll(msg.sender, to, isApprovedForAll[msg.sender][to] = bol);
     }
 
     //省略，因为它具有相同的功能

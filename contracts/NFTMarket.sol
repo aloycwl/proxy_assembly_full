@@ -34,8 +34,8 @@ contract NFTMarket is Util {
             require(msg.value >= price, "Insufficient price");
 
             address seller = IERC721(contractAddr).ownerOf(tokenId);
-            IERC721(contractAddr).transferFrom(seller, address(this), tokenId);
-            IERC721(contractAddr).transferFrom(address(this), msg.sender, tokenId);
+            //需要 ApproveForAll
+            IERC721(contractAddr).transferFrom(seller, msg.sender, tokenId);
 
             payable(seller).transfer(price * (10000 - fee / 10000));
             payable(wallet).transfer(address(this).balance);
