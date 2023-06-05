@@ -123,21 +123,19 @@ contract ERC721 is IERC721, IERC721Metadata, Util{
         }
     }
 
-    //铸造功能，需要先决条件
-    function mint(address addr) external payable {
+    //铸造功能，需要先决条件，也用来升级或合并
+    function assetify(address addr, uint id, string calldata uri) external payable {
         //some prerequisites
         //require(msg.value > 2e10);
         
-        transfer(address(this), msg.sender, count++);
+        tokenURI[id > 0 ? id : count] = uri;
+        transfer(address(this), addr, count++);
     }
 
-    //设置升级或合并的新链接
-    function setTokenURI(uint id, string calldata _uri) external OnlyAccess {
-        tokenURI[id] = _uri;
+    //根据合约类型和级别设置定价
+    function setLevel(uint _level, address contAddr, uint price) external OnlyAccess {
+        Level storage lv = level[_level];
+        lv.contAddr = contAddr;
+        lv.price = price;
     }
-
-    
-
-    //set amount
-    //get erc20 contract from proxy
 }
