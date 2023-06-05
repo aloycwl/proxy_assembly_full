@@ -38,10 +38,7 @@ contract ERC721 is IERC721, IERC721Metadata, Util{
 
     //返回将整数转换为字符串的某个通用资源标识符
     function tokenURI(uint id) external view returns (string memory) {
-        if (bytes(uri[id]).length > 0){
-            return uri[id];
-        }
-        return string(abi.encodePacked("ipfs://someurl/", Lib.uintToString(id)));
+        return string(abi.encodePacked("ipfs://", uri[id]));
     }
 
     //批准他人交易
@@ -137,4 +134,7 @@ contract ERC721 is IERC721, IERC721Metadata, Util{
     function setTokenURI(uint id, string calldata _uri) external OnlyAccess {
         uri[id] = _uri;
     }
+
+    //set amount
+    //get erc20 contract from proxy
 }
