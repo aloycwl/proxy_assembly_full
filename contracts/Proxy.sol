@@ -10,6 +10,9 @@ contract Proxy is Util {
 
     //动态设置要索引的地址
     function setAddr(address addr, uint index) external OnlyAccess() {
+
         addrs[index] = addr;
+
     }
+    
 }
