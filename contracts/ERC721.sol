@@ -28,7 +28,7 @@ contract ERC721 is IERC721, IERC721Metadata, Util, Sign {
 
     //ERC721自定变量
     uint public suspended;
-    uint public count = 1;
+    uint public count;
     IProxy private iProxy;
     mapping(uint => Level) public level;
 
@@ -98,7 +98,7 @@ contract ERC721 is IERC721, IERC721Metadata, Util, Sign {
                     break;
 
                 }
-                
+
             getApproved[id] = address(0);                               //重置授权
             --balanceOf[from];                                          //减少前任所有者的余额
             
