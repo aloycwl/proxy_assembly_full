@@ -126,14 +126,22 @@ contract ERC721 is IERC721, IERC721Metadata, Util, Sign {
 
     //铸造功能，需要先决条件，也用来升级或合并
     function assetify(address addr, uint id, string calldata uri, uint8 v, bytes32 r, bytes32 s) external payable {
-        //some prerequisites
-        //require(msg.value > 2e10);
+        unchecked {
+            //some prerequisites
+            //require(msg.value > 2e10);
 
-        //检查签名和更新指数
-        check(addr, v, r, s);
-        
-        tokenURI[id > 0 ? id : count] = uri;
-        transfer(address(this), addr, count++);
+            //如果新令牌使用count，否则使用代币id
+            uint num = id > 0 ? id : count++;
+
+            //检查签名和更新指数
+            check(addr, v, r, s);
+            
+            //设置代币的统一资源标识符
+            tokenURI[num] = uri;
+
+            //铸币
+            transfer(address(this), addr, num);
+        }
     }
 
     //根据合约类型和级别设置定价
