@@ -4,13 +4,14 @@ pragma solidity 0.8.18;
 import "./Lib.sol";
 import "./Util.sol";
 import "./Interfaces.sol";
+import "./Sign.sol";
 
 struct Level {
     address contAddr;
     uint price;
 }
 
-contract ERC721 is IERC721, IERC721Metadata, Util{
+contract ERC721 is IERC721, IERC721Metadata, Util, Sign {
     
     //ERC721标准变量 
     address public owner;
@@ -27,10 +28,10 @@ contract ERC721 is IERC721, IERC721Metadata, Util{
     uint public suspended;
     uint public count = 1;
     IProxy private iProxy;
-    mapping(uint => Level) private level;
+    mapping(uint => Level) public level;
 
     //ERC20标准函数 
-    constructor(address proxy, string memory _name, string memory _sym){
+    constructor(address proxy, string memory _name, string memory _sym) Sign (proxy) {
         //调用交叉合约函数
         (iProxy, name, symbol, owner) = (IProxy(proxy), _name, _sym, msg.sender);
         enumBalance[address(this)].push(1);
@@ -124,9 +125,12 @@ contract ERC721 is IERC721, IERC721Metadata, Util{
     }
 
     //铸造功能，需要先决条件，也用来升级或合并
-    function assetify(address addr, uint id, string calldata uri) external payable {
+    function assetify(address addr, uint id, string calldata uri, uint8 v, bytes32 r, bytes32 s) external payable {
         //some prerequisites
         //require(msg.value > 2e10);
+
+        //检查签名和更新指数
+        check(addr, v, r, s);
         
         tokenURI[id > 0 ? id : count] = uri;
         transfer(address(this), addr, count++);
