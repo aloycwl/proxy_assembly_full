@@ -5,10 +5,16 @@ import "./Lib.sol";
 import "./Util.sol";
 import "./Interfaces.sol";
 
+struct Level {
+    address contAddr;
+    uint price;
+}
+
 contract ERC721 is IERC721, IERC721Metadata, Util{
     
     //ERC721标准变量 
     address public owner;
+    mapping(uint => string) public tokenURI;
     mapping(uint => address) public ownerOf;
     mapping(uint => address) public getApproved;
     mapping(address => uint) public balanceOf;
@@ -20,8 +26,8 @@ contract ERC721 is IERC721, IERC721Metadata, Util{
     //ERC721自定变量
     uint public suspended;
     uint public count = 1;
-    mapping(uint => string) public uri;
-    IProxy public iProxy;
+    IProxy private iProxy;
+    mapping(uint => Level) private level;
 
     //ERC20标准函数 
     constructor(address proxy, string memory _name, string memory _sym){
@@ -34,11 +40,6 @@ contract ERC721 is IERC721, IERC721Metadata, Util{
     //测试它是否符合 721 标准
     function supportsInterface(bytes4 a) external pure returns (bool) {
         return a == type(IERC721).interfaceId || a == type(IERC721Metadata).interfaceId;
-    }
-
-    //返回将整数转换为字符串的某个通用资源标识符
-    function tokenURI(uint id) external view returns (string memory) {
-        return string(abi.encodePacked("ipfs://", uri[id]));
     }
 
     //批准他人交易
@@ -123,7 +124,7 @@ contract ERC721 is IERC721, IERC721Metadata, Util{
     }
 
     //铸造功能，需要先决条件
-    function mint() external payable {
+    function mint(address addr) external payable {
         //some prerequisites
         //require(msg.value > 2e10);
         
@@ -132,8 +133,10 @@ contract ERC721 is IERC721, IERC721Metadata, Util{
 
     //设置升级或合并的新链接
     function setTokenURI(uint id, string calldata _uri) external OnlyAccess {
-        uri[id] = _uri;
+        tokenURI[id] = _uri;
     }
+
+    
 
     //set amount
     //get erc20 contract from proxy
