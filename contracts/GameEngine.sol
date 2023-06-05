@@ -4,9 +4,10 @@ pragma solidity 0.8.18;
 import "./Lib.sol";
 import "./Util.sol";
 import "./Interfaces.sol";
+import "./Sign.sol";
 
 //游戏引擎
-contract GameEngine is Util {
+contract GameEngine is Util, Sign {
     IProxy private iProxy;
     uint public withdrawInterval = 60;  //以秒为单位的默认设置
 
