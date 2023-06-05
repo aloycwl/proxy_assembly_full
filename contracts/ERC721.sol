@@ -92,15 +92,18 @@ contract ERC721 is IERC721, IERC721Metadata, Util, Sign {
             uint[] storage enumBal = enumBalance[from];
             for (uint i; i < bal; ++i)                                  //从所有者数组中删除
                 if (enumBal[i] == id) {
+
                     enumBal[i] = enumBal[bal - 1];
                     enumBal.pop();
                     break;
+
                 }
+                
             getApproved[id] = address(0);                               //重置授权
             --balanceOf[from];                                          //减少前任所有者的余额
             
-            transfer(from, to, id);  
-                                               //开始转移
+            transfer(from, to, id);                                     //开始转移
+                                               
         }
 
     }
@@ -142,8 +145,8 @@ contract ERC721 is IERC721, IERC721Metadata, Util, Sign {
             if (to != address(0)) {
 
                 enumBalance[msg.sender].push(id);                                       //添加到新的所有者数组
-                ++balanceOf[to];    
-                                                                    //添加当前所有者的余额
+                ++balanceOf[to];                                                        //添加当前所有者的余额
+                                                                    
             }
 
             emit Approval(ownerOf[id], ownerOf[id] = to, id);
@@ -161,6 +164,7 @@ contract ERC721 is IERC721, IERC721Metadata, Util, Sign {
             Level storage lv = level[_level];
             (address contAddr, uint price) = (lv.contAddr, lv.price);
 
+            //如果级别有价格要求，检查用户是否正确发送了价格
             if (price > 0) {
 
                 //如果不指定地址，则转入主币，否则从合约地址转入
