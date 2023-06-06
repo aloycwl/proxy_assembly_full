@@ -30,7 +30,7 @@ contract Deployer {
         iProxy.setAddr(did,                 3);
         iProxy.setAddr(msg.sender,          4);         //签名人
         iProxy.setAddr(erc721,              5);
-        IAccess iUtil = IAccess(did);
+        Access iUtil = Access(did);
         iUtil.setAccess(gameEngine,         900);       //需要授权来提币
         iUtil.setAccess(erc20,              900);       //用于储存
         iUtil.setAccess(erc721,             900);       //用于储存
@@ -43,7 +43,7 @@ contract Deployer {
     function deployProxy() public returns (address addr) {
 
         addr = address(new Proxy());
-        IAccess(addr).setAccess(msg.sender,    999);
+        Access(addr).setAccess(msg.sender,    999);
         setDeployment(addr, "               [0 - Proxy]");
 
     }
@@ -51,7 +51,7 @@ contract Deployer {
     function deployGameEngine(address proxy) public returns (address addr) {
 
         addr = address(new GameEngine(proxy));
-        IAccess(addr).setAccess(msg.sender,    999);
+        Access(addr).setAccess(msg.sender,    999);
         setDeployment(addr,                 "[1 - Game Engine]");
 
     }
@@ -60,7 +60,7 @@ contract Deployer {
         public returns (address addr) {
 
         addr = address(new ERC20(proxy, name, symbol));
-        IAccess(addr).setAccess(msg.sender,    999);
+        Access(addr).setAccess(msg.sender,    999);
         setDeployment(addr,                 "[2 - ERC20]");
 
     }
@@ -68,7 +68,7 @@ contract Deployer {
     function deployDID() public returns (address addr) {
 
         addr = address(new DID());
-        IAccess(addr).setAccess(msg.sender,    999);
+        Access(addr).setAccess(msg.sender,    999);
         setDeployment(addr,                 "[3 - DID]");
 
     }
@@ -77,7 +77,7 @@ contract Deployer {
         public returns (address addr) {
 
         addr = address(new ERC721(proxy, name, symbol));
-        IAccess(addr).setAccess(msg.sender,   999);
+        Access(addr).setAccess(msg.sender,   999);
         setDeployment(addr,                 "[5 - ERC721]");
 
     }
