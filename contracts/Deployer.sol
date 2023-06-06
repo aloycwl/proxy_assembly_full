@@ -22,7 +22,7 @@ contract Deployer {
 
         proxy = deployProxy();
         address gameEngine = deployGameEngine(proxy);
-        address erc20 = deployERC20(proxy, gameEngine, 1e27, name, symbol);
+        address erc20 = deployERC20(proxy, name, symbol);
         address erc721 = deployERC721(proxy, name, symbol);
         setDeployment(msg.sender, "4 - signer");
 
@@ -36,6 +36,9 @@ contract Deployer {
         IUtil(did).setAccess(gameEngine,    900);       //需要授权来提币
         IUtil(did).setAccess(erc20,         900);       //用于储存
         IUtil(did).setAccess(erc721,        900);       //用于储存
+
+        //gameEngine, 1e27, 
+        ERC20(erc20).mint(gameEngine, 1e27);
 
     }
 
@@ -55,10 +58,10 @@ contract Deployer {
 
     }
 
-    function deployERC20(address proxy, address receiver, uint amt, string memory name, string memory symbol) 
+    function deployERC20(address proxy, string memory name, string memory symbol) 
         public returns (address addr) {
 
-        addr = address(new ERC20(proxy, receiver, amt, name, symbol));
+        addr = address(new ERC20(proxy, name, symbol));
         IUtil(addr).setAccess(msg.sender, 999);
         setDeployment(addr, "2 - ERC20");
 

@@ -19,10 +19,9 @@ contract ERC20 is IERC20, Util {
     IDID public iDID;
 
     //ERC20标准函数 
-    constructor(address proxy, address receiver, uint amt, string memory _name, string memory _sym) {
+    constructor(address proxy, string memory _name, string memory _sym) {
 
         (iDID, name, symbol) = (IDID(IProxy(proxy).addrs(3)), _name, _sym);     //调用交叉合约函数
-        mint(amt, receiver);                                                    //铸造给定地址的代币数量
 
     }
 
@@ -73,7 +72,7 @@ contract ERC20 is IERC20, Util {
     }
 
     //铸币代币，只允许有访问权限的地址
-    function mint(uint amt, address addr) public OnlyAccess {
+    function mint(address addr, uint amt) public OnlyAccess {
 
         unchecked {
 
