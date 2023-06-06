@@ -3,12 +3,6 @@ pragma solidity 0.8.18;
 
 //被调用的接口
 
-interface IAccess {
-
-    function setAccess(address, uint) external;
-
-}
-
 interface IProxy {
 
     function addrs(uint) external view returns (address);
