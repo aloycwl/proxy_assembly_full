@@ -6,11 +6,15 @@ import "./Util.sol";
 //储存和去中心化身份合约
 contract DID is Access {
 
+    //DID需要变量
     mapping(string => address)                                      public did;
     mapping(address => mapping(uint => string))                     public stringData;
     mapping(address => mapping(uint => address))                    public addressData;
     mapping(address => mapping(uint => uint))                       public uintData;
     mapping(address => mapping(address => mapping(uint => uint)))   public uintAddressData;
+
+    //其它储存变量
+    
     
     //持有权限者才能更新数据
     function updateDid(string calldata str, address val)                            external OnlyAccess {
