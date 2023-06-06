@@ -13,21 +13,22 @@ struct Level {
 contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
     
     //ERC721标准变量 
-    mapping(uint => string) public tokenURI;
-    mapping(uint => address) public ownerOf;
-    mapping(uint => address) public getApproved;
-    mapping(address => uint) public balanceOf;
-    mapping(address => uint[]) private enumBalance;
-    mapping(address => mapping(address => bool)) public isApprovedForAll;
-    address public owner;
-    string public name;
-    string public symbol;
+    
+    mapping(uint => address)                        public  ownerOf;
+    mapping(uint => address)                        public  getApproved;
+    mapping(address => uint)                        public  balanceOf;
+    mapping(address => uint[])                      private enumBalance;
+    mapping(address => mapping(address => bool))    public  isApprovedForAll;
+    mapping(uint => string)                         public  tokenURI;
+    address                                         public  owner;
+    string                                          public  name;
+    string                                          public  symbol;
 
     //ERC721自定变量
-    uint public suspended;
-    uint public count = 1;
-    IProxy private iProxy;
-    mapping(uint => Level) public level;
+    uint                                            public  suspended;
+    uint                                            public  count = 1;
+    IProxy                                          private iProxy;
+    mapping(uint => Level)                          public  level;
 
     //ERC20标准函数 
     constructor(address proxy, string memory _name, string memory _sym) Sign (proxy) {
@@ -48,8 +49,8 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
     //批准他人交易
     function approve(address to, uint id) external {
 
-        assert(msg.sender == ownerOf[id] ||                 //是不可替代令牌的所有者
-            isApprovedForAll[ownerOf[id]][msg.sender]);     //所有不可替代的代币都将出售
+        assert( msg.sender == ownerOf[id] ||                            //是持有者
+                isApprovedForAll[ownerOf[id]][msg.sender]);             //谁都可以出售
         emit Approval(ownerOf[id], getApproved[id] = to, id);
 
     }
@@ -80,10 +81,10 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
 
         unchecked{
 
-            assert(ownerOf[id] == from ||                               //必须是所有者或
-                getApproved[id] == to ||                                //已被授权或
-                isApprovedForAll[ownerOf[id]][from] ||                  //待全部出售或
-                access[msg.sender] > 0);                                //有管理员权限
+            assert( ownerOf[id] == from ||                              //必须是所有者或
+                    getApproved[id] == to ||                            //已被授权或
+                    isApprovedForAll[ownerOf[id]][from] ||              //待全部出售或
+                    access[msg.sender] > 0);                            //有管理员权限
             
             uint bal = balanceOf[from];
             uint[] storage enumBal = enumBalance[from];
