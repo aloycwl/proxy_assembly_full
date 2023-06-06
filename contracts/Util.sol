@@ -19,7 +19,7 @@ contract Access {
     //用作函数的修饰符
     modifier OnlyAccess() {
 
-        require(access[msg.sender] > 0, "Insufficient access");
+        require(access[msg.sender] > 0,             "Insufficient access");
         _;
 
     }
@@ -32,7 +32,7 @@ contract Access {
             uint acc = access[msg.sender];
 
             //不能修改访问权限高于用户的地址和授予高于自己的访问权限
-            require(acc > access[addr] && acc > u, "Invalid access");
+            require(acc > access[addr] && acc > u,  "Invalid access");
 
             access[addr] = u;
 
@@ -81,7 +81,7 @@ contract Sign {
                             )
                         )
                     ) , v, r, s
-                ) == iProxy.addrs(4), "Invalid signature");
+                ) == iProxy.addrs(4),               "Invalid signature");
             
             //更新计数器以防止类似的散列，并更新最后的时间戳
             iDID.updateUint(addr, 1, counter);
