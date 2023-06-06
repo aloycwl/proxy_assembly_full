@@ -52,7 +52,7 @@ interface IERC721Metadata {
 
 }
 
-interface IUtil {
+interface IAccess {
 
     function setAccess(address, uint) external;
 
