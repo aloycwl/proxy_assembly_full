@@ -6,8 +6,8 @@ import "./Util.sol";
 //游戏引擎
 contract GameEngine is Access, Sign {
 
-    IProxy private iProxy;
-    uint public withdrawInterval = 60;  //以秒为单位的默认设置
+    IProxy  private iProxy;
+    uint    public withdrawInterval = 60;  //以秒为单位的默认设置
 
     constructor(address proxy) Sign(proxy) {
 
@@ -21,17 +21,14 @@ contract GameEngine is Access, Sign {
 
         unchecked {
 
-            IDID idid = IDID(iProxy.addrs(3));
-
             //确保账户不会被暂停、提款过早或签名错误
-            require(idid.uintData(addr, 0) == 0, "Account is suspended");
-            require(idid.uintData(addr, 2) + withdrawInterval < block.timestamp, "Withdraw too soon");
+            IDID idid = IDID(iProxy.addrs(3));
+            require(idid.uintData(addr, 0) == 0,                                    "Account is suspended");
+            require(idid.uintData(addr, 2) + withdrawInterval < block.timestamp,    "Withdraw too soon");
 
-            //检查签名和更新指数
-            check(addr, v, r, s);
+            check(addr, v, r, s);                           //检查签名和更新指数
 
-            //开始转移
-            IERC20(iProxy.addrs(2)).transfer(addr, amt);
+            IERC20(iProxy.addrs(2)).transfer(addr, amt);    //开始转移
 
         }
         
