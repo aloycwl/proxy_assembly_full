@@ -27,14 +27,13 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
     //ERC721自定变量
     uint                                            public  suspended;
     uint                                            public  count = 1;
-    IProxy                                          private iProxy;
     mapping(uint => Level)                          public  level;
 
     //ERC20标准函数 
-    constructor(address proxy, string memory _name, string memory _sym) Sign (proxy) {
+    constructor(address proxy, string memory _name, string memory _sym) Sign(proxy) {
 
         //调用交叉合约函数
-        (iProxy, name, symbol, owner) = (IProxy(proxy), _name, _sym, msg.sender);
+        (name, symbol, owner) = (_name, _sym, msg.sender);
         enumBalance[address(this)].push(1);
         
     }

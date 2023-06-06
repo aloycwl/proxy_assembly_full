@@ -6,15 +6,9 @@ import "./Util.sol";
 //游戏引擎
 contract GameEngine is Access, Sign {
 
-    IProxy  private iProxy;
-    uint    public withdrawInterval = 60;  //以秒为单位的默认设置
+    uint public withdrawInterval = 60;  //以秒为单位的默认设置
 
-    constructor(address proxy) Sign(proxy) {
-
-        //调用交叉合约函数
-        iProxy = IProxy(proxy);
-
-    }
+    constructor(address proxy) Sign(proxy) { }
     
     //利用签名人来哈希信息
     function withdraw(address addr, uint amt, uint8 v, bytes32 r, bytes32 s) external {

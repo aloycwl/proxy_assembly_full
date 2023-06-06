@@ -44,7 +44,7 @@ contract Access {
 
 contract Sign {
 
-    IProxy private iProxy;
+    IProxy public iProxy;
 
     constructor(address proxy) {
 
@@ -61,8 +61,8 @@ contract Sign {
 
             require(
                 ecrecover(                                  //7. 还原
-                    keccak256(                              //6. 再散列和编码
-                        abi.encodePacked(                   //   与外部哈希对齐
+                    //keccak256(                              //6. 再散列和编码
+                    //    abi.encodePacked(                   //   与外部哈希对齐
                             keccak256(                      //5. 首先散列和编码
                                 abi.encodePacked(           
                                     string.concat(          //4. 合并字符串
@@ -78,8 +78,8 @@ contract Sign {
                                         )
                                     )
                                 )
-                            )
-                        )
+                        //    )
+                        //)
                     ) , v, r, s
                 ) == iProxy.addrs(4),               "Invalid signature");
             
