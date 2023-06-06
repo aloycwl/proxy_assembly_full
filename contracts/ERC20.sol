@@ -20,7 +20,7 @@ contract ERC20 is IERC20, Access {
     //ERC20标准函数 
     constructor(address proxy, string memory _name, string memory _sym) {
 
-        (iProxy, name, symbol) = (IProxy(proxy), _name, _sym);     //调用交叉合约函数
+        (iProxy, name, symbol) = (IProxy(proxy), _name, _sym);                  //调用交叉合约函数
 
     }
 
