@@ -5,7 +5,6 @@ pragma solidity 0.8.18;
 interface IERC20 {
 
     function transfer(address, uint) external returns (bool);
-    function setAccess(address, uint) external;
 
 }
 
@@ -16,7 +15,6 @@ interface IDID {
     function updateDid(string calldata, address) external;
     function updateUint(address, uint, uint) external;
     function updateString(address, uint, string calldata) external;
-    function setAccess(address, uint) external;
 
 }
 
@@ -24,13 +22,6 @@ interface IProxy {
 
     function addrs(uint) external view returns (address);
     function setAddr(address, uint) external;
-    function setAccess(address, uint) external;
-
-}
-
-interface IGameEngine {
-
-    function setAccess(address, uint) external;
 
 }
 

@@ -30,16 +30,16 @@ contract Deployer {
         iProxy.setAddr(address(erc20), 2);
         iProxy.setAddr(did, 3);
         iProxy.setAddr(msg.sender, 4); //signer
-        DID(did).setAccess(gameEngine, 900); //for withdrawal access
-        DID(did).setAccess(erc20, 900); //for storage
-        DID(did).setAccess(erc721, 900); //for storage
+        IUtil(did).setAccess(gameEngine, 900); //for withdrawal access
+        IUtil(did).setAccess(erc20, 900); //for storage
+        IUtil(did).setAccess(erc721, 900); //for storage
 
     }
 
     function deployProxy() public returns (address proxy) {
 
         proxy = address(new Proxy());
-        IProxy(proxy).setAccess(msg.sender, 999);
+        IUtil(proxy).setAccess(msg.sender, 999);
         setDeployment(proxy, 0);
 
     }
@@ -47,7 +47,7 @@ contract Deployer {
     function deployGameEngine(address proxy) public returns (address gameEngine) {
 
         gameEngine = address(new GameEngine(proxy));
-        GameEngine(gameEngine).setAccess(msg.sender, 999);
+        IUtil(gameEngine).setAccess(msg.sender, 999);
         setDeployment(gameEngine, 1);
 
     }
@@ -56,7 +56,7 @@ contract Deployer {
         public returns (address erc20) {
 
         erc20 = address(new ERC20(proxy, receiver, amt, name, symbol));
-        ERC20(erc20).setAccess(msg.sender, 999);
+        IUtil(erc20).setAccess(msg.sender, 999);
         setDeployment(erc20, 2);
 
     }
@@ -64,7 +64,7 @@ contract Deployer {
     function deployDID() public returns (address did) {
 
         did = address(new DID());
-        DID(did).setAccess(msg.sender, 999);
+        IUtil(did).setAccess(msg.sender, 999);
         setDeployment(did, 3);
 
     }
@@ -73,7 +73,7 @@ contract Deployer {
         public returns (address erc721) {
 
         erc721 = address(new ERC721(proxy, name, symbol));
-        ERC721(erc721).setAccess(msg.sender, 999);
+        IUtil(erc721).setAccess(msg.sender, 999);
         setDeployment(erc721, 2);
 
     }
