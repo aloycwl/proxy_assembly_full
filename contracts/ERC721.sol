@@ -4,7 +4,6 @@ pragma solidity 0.8.18;
 import "./Lib.sol";
 import "./Util.sol";
 import "./Interfaces.sol";
-import "./Sign.sol";
 
 struct Level {
 
@@ -13,7 +12,7 @@ struct Level {
 
 }
 
-contract ERC721 is IERC721, IERC721Metadata, Util, Sign {
+contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
     
     //ERC721标准变量 
     mapping(uint => string) public tokenURI;
