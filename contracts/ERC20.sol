@@ -28,7 +28,7 @@ contract ERC20 is IERC20, Util {
 
     }
 
-    function balanceOf (address addr) public view returns (uint) {
+    function balanceOf(address addr) public view returns (uint) {
 
         return iDID.uintData(addr, 3);
 
