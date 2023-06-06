@@ -14,10 +14,12 @@ interface IDID {
     function did(string calldata)                                       external view returns (address);
     function uintData(address, uint)                                    external view returns (uint);
     function uintAddressData(address, address, uint)                    external view returns (uint);
+    function uint2Data(uint, uint)                                      external view returns (address);
     function updateDid(string calldata, address)                        external;
     function updateUint(address, uint, uint)                            external;
     function updateString(address, uint, string calldata)               external;
     function updateUintAddress(address, address, uint, uint)            external;
+    function updateUint2(uint, uint, address)                           external;
 
 }
 

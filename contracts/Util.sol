@@ -44,7 +44,7 @@ contract Access {
 
 contract Sign {
 
-    IProxy public iProxy;
+    IProxy internal iProxy;
 
     constructor(address proxy) {
 

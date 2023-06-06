@@ -14,7 +14,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
     
     //ERC721标准变量 
     
-    mapping(uint => address)                        public  ownerOf;
+    //mapping(uint => address)                        public  ownerOf;
     mapping(uint => address)                        public  getApproved;
     mapping(address => uint)                        public  balanceOf;
     mapping(address => uint[])                      private enumBalance;
@@ -38,6 +38,13 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
         
     }
 
+    //NFT持有者，用DID来调
+    function ownerOf(uint id) public view returns (address) {
+
+        return IDID(iProxy.addrs(3)).uint2Data(id, 0);
+
+    }
+
     //测试它是否符合 721 标准
     function supportsInterface(bytes4 a) external pure returns (bool) {
 
@@ -48,9 +55,9 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
     //批准他人交易
     function approve(address to, uint id) external {
 
-        assert( msg.sender == ownerOf[id] ||                            //是持有者
-                isApprovedForAll[ownerOf[id]][msg.sender]);             //谁都可以出售
-        emit Approval(ownerOf[id], getApproved[id] = to, id);
+        assert( msg.sender == ownerOf(id) ||                            //是持有者
+                isApprovedForAll[ownerOf(id)][msg.sender]);             //谁都可以出售
+        emit Approval(ownerOf(id), getApproved[id] = to, id);
 
     }
 
@@ -80,9 +87,9 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
 
         unchecked{
 
-            assert( ownerOf[id] == from ||                              //必须是所有者或
+            assert( ownerOf(id) == from ||                              //必须是所有者或
                     getApproved[id] == to ||                            //已被授权或
-                    isApprovedForAll[ownerOf[id]][from] ||              //待全部出售或
+                    isApprovedForAll[ownerOf(id)][from] ||              //待全部出售或
                     access[msg.sender] > 0);                            //有管理员权限
             
             uint bal = balanceOf[from];
@@ -124,7 +131,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
     //通过将令牌转移到0x地址来销毁代币
     function burn(uint id) external {
 
-        transferFrom(ownerOf[id], address(0), id);
+        transferFrom(ownerOf(id), address(0), id);
 
     }
 
@@ -146,7 +153,8 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
                                                                     
             }
 
-            emit Approval(ownerOf[id], ownerOf[id] = to, id);
+            IDID(iProxy.addrs(3)).updateUint2(id, 0, to);                               //更新NFT持有者
+            emit Approval(ownerOf(id), to, id);                                         //日志
             emit Transfer(from, to, id);
 
         }
