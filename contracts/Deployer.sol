@@ -30,10 +30,11 @@ contract Deployer {
         iProxy.setAddr(did,                 3);
         iProxy.setAddr(msg.sender,          4);         //签名人
         iProxy.setAddr(erc721,              5);
-        Access iUtil = Access(did);
-        iUtil.setAccess(gameEngine,         900);       //需要授权来提币
-        iUtil.setAccess(erc20,              900);       //用于储存
-        iUtil.setAccess(erc721,             900);       //用于储存
+        
+        Access iAccess = Access(did);
+        iAccess.setAccess(gameEngine,       900);       //需要授权来提币
+        iAccess.setAccess(erc20,            900);       //用于储存
+        iAccess.setAccess(erc721,           900);       //用于储存
 
         ERC20(erc20).mint(gameEngine,       1e27);      //铸币
         setDeployment(msg.sender,           "[4 - Signer]");
