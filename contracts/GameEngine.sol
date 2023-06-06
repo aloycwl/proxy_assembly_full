@@ -1,9 +1,7 @@
 //SPDX-License-Identifier:None
 pragma solidity 0.8.18;
 
-import "./Lib.sol";
 import "./Util.sol";
-import "./Interfaces.sol";
 
 //游戏引擎
 contract GameEngine is Access, Sign {
