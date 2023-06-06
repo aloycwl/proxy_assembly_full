@@ -4,9 +4,9 @@ pragma solidity 0.8.18;
 import "./Proxy.sol";
 import "./GameEngine.sol";
 import "./ERC20.sol";
+import "./ERC721.sol";
 import "./DID.sol";
 import "./Interfaces.sol";
-import "./ERC721.sol";
 
 //专注部署合约
 contract Deployer {
@@ -24,77 +24,80 @@ contract Deployer {
         address gameEngine = deployGameEngine(proxy);
         address erc20 = deployERC20(proxy, gameEngine, 1e27, name, symbol);
         address erc721 = deployERC721(proxy, name, symbol);
+        setDeployment(msg.sender, "4 - signer");
 
         IProxy iProxy = IProxy(proxy);
-        iProxy.setAddr(gameEngine, 1);
-        iProxy.setAddr(address(erc20), 2);
-        iProxy.setAddr(did, 3);
-        iProxy.setAddr(msg.sender, 4); //signer
-        IUtil(did).setAccess(gameEngine, 900); //for withdrawal access
-        IUtil(did).setAccess(erc20, 900); //for storage
-        IUtil(did).setAccess(erc721, 900); //for storage
+        iProxy.setAddr(proxy,               0);
+        iProxy.setAddr(gameEngine,          1);
+        iProxy.setAddr(erc20,               2);
+        iProxy.setAddr(did,                 3);
+        iProxy.setAddr(msg.sender,          4);         //签名人
+        iProxy.setAddr(erc721,              5);
+        IUtil(did).setAccess(gameEngine,    900);       //需要授权来提币
+        IUtil(did).setAccess(erc20,         900);       //用于储存
+        IUtil(did).setAccess(erc721,        900);       //用于储存
 
     }
 
-    function deployProxy() public returns (address proxy) {
+    function deployProxy() public returns (address addr) {
 
-        proxy = address(new Proxy());
-        IUtil(proxy).setAccess(msg.sender, 999);
-        setDeployment(proxy, 0);
+        addr = address(new Proxy());
+        IUtil(addr).setAccess(msg.sender, 999);
+        setDeployment(addr, "0 - Proxy");
 
     }
 
-    function deployGameEngine(address proxy) public returns (address gameEngine) {
+    function deployGameEngine(address proxy) public returns (address addr) {
 
-        gameEngine = address(new GameEngine(proxy));
-        IUtil(gameEngine).setAccess(msg.sender, 999);
-        setDeployment(gameEngine, 1);
+        addr = address(new GameEngine(proxy));
+        IUtil(addr).setAccess(msg.sender, 999);
+        setDeployment(addr, "1 - Game Engine");
 
     }
 
     function deployERC20(address proxy, address receiver, uint amt, string memory name, string memory symbol) 
-        public returns (address erc20) {
+        public returns (address addr) {
 
-        erc20 = address(new ERC20(proxy, receiver, amt, name, symbol));
-        IUtil(erc20).setAccess(msg.sender, 999);
-        setDeployment(erc20, 2);
+        addr = address(new ERC20(proxy, receiver, amt, name, symbol));
+        IUtil(addr).setAccess(msg.sender, 999);
+        setDeployment(addr, "2 - ERC20");
 
     }
 
-    function deployDID() public returns (address did) {
+    function deployDID() public returns (address addr) {
 
-        did = address(new DID());
-        IUtil(did).setAccess(msg.sender, 999);
-        setDeployment(did, 3);
+        addr = address(new DID());
+        IUtil(addr).setAccess(msg.sender, 999);
+        setDeployment(addr, "3 - DID");
 
     }
 
     function deployERC721(address proxy, string memory name, string memory symbol) 
-        public returns (address erc721) {
+        public returns (address addr) {
 
-        erc721 = address(new ERC721(proxy, name, symbol));
-        IUtil(erc721).setAccess(msg.sender, 999);
-        setDeployment(erc721, 2);
+        addr = address(new ERC721(proxy, name, symbol));
+        IUtil(addr).setAccess(msg.sender, 999);
+        setDeployment(addr, "5 - ERC721");
 
     }
 
     //设置和索取部署资料
     address[] private enumAddresses;
-    uint[] private enumFunctions;
+    string[] private enumFunctions;
 
-    function setDeployment(address addr, uint func) private {
+    function setDeployment(address addr, string memory func) private {
 
         enumAddresses.push(addr);
         enumFunctions.push(func);
 
     }
 
-    function getAllDeployments() external view returns (address[] memory addresses, uint[] memory functions) {
+    function getAllDeployments() external view returns (address[] memory addresses, string[] memory functions) {
 
         unchecked{
 
             uint count = enumAddresses.length;
-            (addresses, functions) = (new address[](count), new uint[](count));
+            (addresses, functions) = (new address[](count), new string[](count));
             for (uint i=0; i<count; i++) (addresses[i], functions[i]) = (enumAddresses[i], enumFunctions[i]);
 
         }
