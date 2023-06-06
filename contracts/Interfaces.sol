@@ -59,3 +59,9 @@ interface IERC721Metadata {
     function tokenURI(uint) external view returns (string memory);
 
 }
+
+interface IUtil {
+
+    function setAccess(address, uint) external;
+
+}
