@@ -12,18 +12,17 @@ contract ERC20 is IERC20, Util {
     uint public constant decimals = 18;
     string public symbol;
     string public name;
-    //mapping(address => uint) public balanceOf;
     mapping(address => mapping (address => uint)) public allowance;
 
     //ERC20自定变量 
     uint public suspended;
-    IProxy public iProxy;
+    IDID public iDID;
 
     //ERC20标准函数 
     constructor(address proxy, address receiver, uint amt, string memory _name, string memory _sym) {
 
         //调用交叉合约函数
-        (iProxy, name, symbol) = (IProxy(proxy), _name, _sym);
+        (iDID, name, symbol) = (IDID(IProxy(proxy).addrs(3)), _name, _sym);
         //铸造给定地址的代币数量
         mint(amt, receiver);
 
@@ -31,7 +30,7 @@ contract ERC20 is IERC20, Util {
 
     function balanceOf (address addr) public view returns (uint) {
 
-        //
+        return iDID.uintData(addr, 3);
 
     }
 
@@ -54,14 +53,13 @@ contract ERC20 is IERC20, Util {
 
             assert(balanceOf(from) >= amt);                                     //地址必须有足够的代币才能转账
             assert(from == msg.sender || allowance[from][to] >= amt);           //必须是地址所有者或接收者已获得授权
-            IDID iDID = IDID(iProxy.addrs(3));
             assert(iDID.uintData(from, 0) == 0 && iDID.uintData(to, 0) == 0);   //发件和接收者不能被列入黑名单
             assert(suspended == 0);                                             //合约未被暂停
             
             if(allowance[from][to] >= amt) allowance[from][to] -= amt;          //如果有授权，相应地去除
 
-            iDID.updateToken(from, 3, balanceOf(from) - amt);                    //
-            (balanceOf(from) -= amt, balanceOf(to) += amt);                     //开始转移
+            iDID.updateUint(from, 3, balanceOf(from) - amt);                    //3号是ERC20代币1的合约
+            iDID.updateUint(from, 3, balanceOf(to) + amt);            
             emit Transfer(from, to, amt);                                       //发出日志
             return true;
 
@@ -83,8 +81,9 @@ contract ERC20 is IERC20, Util {
 
         unchecked {
 
-            (totalSupply += amt, balanceOf[addr] += amt);   //将数量添加到用户和总供应量
-            emit Transfer(address(this), addr, amt);        //发出日志
+            totalSupply += amt;                                 //将数量添加到用户和总供应量
+            iDID.updateUint(addr, 3, balanceOf(addr) + amt);    //3号是ERC20代币1的合约
+            emit Transfer(address(this), addr, amt);            //发出日志
 
         }
 
@@ -95,9 +94,9 @@ contract ERC20 is IERC20, Util {
 
         unchecked {
 
-            assert(balanceOf[msg.sender] >= amt);           //燃烧者必须有足够的代币
-            transferFrom(msg.sender, address(0), amt);      //调用标准函数
-            totalSupply -= amt;                             //减少总供应
+            assert(balanceOf(msg.sender) >= amt);               //燃烧者必须有足够的代币
+            transferFrom(msg.sender, address(0), amt);          //调用标准函数
+            totalSupply -= amt;                                 //减少总供应
 
         }
 
