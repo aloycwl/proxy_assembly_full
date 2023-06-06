@@ -80,6 +80,7 @@ contract Deployer {
         addr = address(new ERC721(proxy, name, symbol));
         Access(addr).setAccess(msg.sender,   999);
         setDeployment(addr,                 "[5 - ERC721]");
+        return addr;
 
     }
 
