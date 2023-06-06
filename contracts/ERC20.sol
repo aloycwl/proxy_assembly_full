@@ -53,17 +53,18 @@ contract ERC20 is IERC20, Access {
 
         unchecked {
 
-            (IDID iDID, uint approveAmt) = (IDID(iProxy.addrs(3)), allowance(from, to));
+            (IDID iDID, uint approveAmt, uint balanceFrom) = 
+                (IDID(iProxy.addrs(3)), allowance(from, to), balanceOf(from));
 
-            require(balanceOf(from) >= amt,                                     "Insufficient amount");
+            require(balanceFrom >= amt,                                         "Insufficient amount");
             require(from == msg.sender || approveAmt >= amt,                    "Unauthorised user");
             require(iDID.uintData(from, 0) == 0 && iDID.uintData(to, 0) == 0,   "User suspended");
             require(suspended == 0,                                             "Contract suspeded");
             
-            if(approveAmt >= amt) approve(to, approveAmt - amt);                //如果有授权，相应地去除
+            if(amt <= approveAmt) approve(to, approveAmt - amt);                //如果有授权，相应地去除
 
-            iDID.updateUint(from, 3, balanceOf(from) - amt);                    //3号是ERC20代币1的合约
-            iDID.updateUint(from, 3, balanceOf(to) + amt);            
+            iDID.updateUint(from, 3, balanceFrom - amt);                    //3号是ERC20代币1的合约
+            iDID.updateUint(to, 3, balanceOf(to) + amt);            
             emit Transfer(from, to, amt);                                       //发出日志
             return true;
 
