@@ -129,7 +129,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
 
     }
 
-    //the is token creation function 可用于转移和铸币
+    //用于转移和铸币
     function transfer(address from, address to, uint id) private {
 
         unchecked {
