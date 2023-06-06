@@ -9,7 +9,7 @@ pragma solidity 0.8.18;
 import "./Util.sol";
 import "./Interfaces.sol";
 
-contract DIDFunctions is Util {
+contract DIDFunctions is Access {
 
     IDID iDID;
 

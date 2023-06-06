@@ -4,7 +4,7 @@ pragma solidity 0.8.18;
 import "./Interfaces.sol";
 import "./Util.sol";
 
-contract NFTMarket is Util {
+contract NFTMarket is Access {
 
     address private wallet;
     uint private counter;
