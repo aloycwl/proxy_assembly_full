@@ -28,7 +28,7 @@ contract ERC721 is IERC721, IERC721Metadata, Util, Sign {
 
     //ERC721自定变量
     uint public suspended;
-    uint public count;
+    uint public count = 1;
     IProxy private iProxy;
     mapping(uint => Level) public level;
 
@@ -182,17 +182,16 @@ contract ERC721 is IERC721, IERC721Metadata, Util, Sign {
 
             }
 
-            //如果新令牌使用count，否则使用代币id
-            uint num = id > 0 ? id : count++;
-
             //检查签名和更新指数
             check(addr, v, r, s);
-            
-            //设置代币的统一资源标识符
-            tokenURI[num] = uri;
+
+            //如果新令牌使用count，否则使用代币id
+            tokenURI[id > 0 ? id : count] = uri;
 
             //铸币
-            transfer(address(this), addr, num);
+            if (id == 0) transfer(address(this), addr, ++count);
+            //更新元数据详细信息
+            else emit MetadataUpdate(id);
 
         }
 
