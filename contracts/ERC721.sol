@@ -13,7 +13,7 @@ struct Level {
 contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
     
     //ERC721标准变量    
-    mapping(address => uint[])                      private enumBalance;
+    //mapping(address => uint[])                      private enumBalance;
     mapping(address => mapping(address => bool))    public  isApprovedForAll;
     mapping(uint => string)                         public  tokenURI;
     address                                         public  owner;
@@ -30,7 +30,6 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
 
         //调用交叉合约函数
         (name, symbol, owner) = (_name, _sym, msg.sender);
-        enumBalance[address(this)].push(1);
         
     }
 
@@ -123,9 +122,9 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
     }
 
     //获取地址拥有的所有代币的数组
-    function tokensOwned(address addr)external view returns(uint[]memory) {
+    function tokensOwned(address addr) public view returns(uint[]memory) {
 
-        return enumBalance[addr];
+        return IDID(iProxy.addrs(3)).uintEnumData(addr, 5);
 
     }
 
@@ -172,8 +171,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
             (address contAddr, uint price) = (lv.contAddr, lv.price);
 
             //如果级别有价格要求，检查用户是否正确发送了价格
-            if (price > 0) {
-
+            if (price > 0) 
                 //如果不指定地址，则转入主币，否则从合约地址转入
                 if (contAddr == address(0)) {
 
@@ -186,8 +184,6 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
                     IERC20(contAddr).transfer(owner, price);
 
                 }
-
-            }
 
             //检查签名和更新指数
             check(addr, v, r, s);
