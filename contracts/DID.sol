@@ -10,7 +10,6 @@ contract DID is Util {
     mapping (address => mapping (uint => string)) public stringData;
     mapping (address => mapping (uint => address)) public addressData;
     mapping (address => mapping (uint => uint)) public uintData;
-    mapping (address => mapping (address => uint)) public tokenData;
     
     //持有权限者才能更新数据
     function updateDid(string calldata str, address addr) external OnlyAccess {
@@ -34,12 +33,6 @@ contract DID is Util {
     function updateUint(address addr, uint index, uint val) external OnlyAccess {
 
         uintData[addr][index] = val;
-
-    }
-
-    function updateToken(address addr, address contAddr, uint val) external OnlyAccess {
-
-        tokenData[addr][contAddr] = val;
 
     }
     

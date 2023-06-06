@@ -60,7 +60,7 @@ contract ERC20 is IERC20, Util {
             
             if(allowance[from][to] >= amt) allowance[from][to] -= amt;          //如果有授权，相应地去除
 
-            iDID.updateUint(from, 3, balanceOf(from) - amt);                    //3号是bibi
+            iDID.updateToken(from, 3, balanceOf(from) - amt);                    //
             (balanceOf(from) -= amt, balanceOf(to) += amt);                     //开始转移
             emit Transfer(from, to, amt);                                       //发出日志
             return true;
