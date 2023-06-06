@@ -39,6 +39,7 @@ interface IERC721 {
     event Transfer(address indexed from, address indexed to, uint indexed tokenId);
     event Approval(address indexed owner, address indexed approved, uint indexed tokenId);
     event ApprovalForAll(address indexed owner, address indexed operator, bool approved);
+    event MetadataUpdate(uint256);
     function balanceOf(address) external view returns (uint);
     function ownerOf(uint) external view returns (address);
     function safeTransferFrom(address, address, uint) external;

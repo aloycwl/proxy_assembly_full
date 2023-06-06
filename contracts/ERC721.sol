@@ -16,13 +16,13 @@ struct Level {
 contract ERC721 is IERC721, IERC721Metadata, Util, Sign {
     
     //ERC721标准变量 
-    address public owner;
     mapping(uint => string) public tokenURI;
     mapping(uint => address) public ownerOf;
     mapping(uint => address) public getApproved;
     mapping(address => uint) public balanceOf;
     mapping(address => uint[]) private enumBalance;
     mapping(address => mapping(address => bool)) public isApprovedForAll;
+    address public owner;
     string public name;
     string public symbol;
 
