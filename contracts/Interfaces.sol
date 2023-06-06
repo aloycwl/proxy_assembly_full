@@ -17,6 +17,7 @@ interface IDID {
     function updateDid(string calldata, address) external;
     function updateUint(address, uint, uint) external;
     function updateString(address, uint, string calldata) external;
+    function updateToken(address, address, uint) external;
 
 }
 
