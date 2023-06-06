@@ -14,7 +14,6 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
     
     //ERC721标准变量 
     
-    //mapping(uint => address)                        public  ownerOf;
     mapping(uint => address)                        public  getApproved;
     mapping(address => uint)                        public  balanceOf;
     mapping(address => uint[])                      private enumBalance;
