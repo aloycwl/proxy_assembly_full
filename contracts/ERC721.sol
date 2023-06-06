@@ -202,8 +202,7 @@ contract ERC721 is IERC721, IERC721Metadata, Util, Sign {
     function setLevel(uint _level, address contAddr, uint price) external OnlyAccess {
 
         Level storage lv = level[_level];
-        lv.contAddr = contAddr;
-        lv.price = price;
+        (lv.contAddr, lv.price) = (contAddr, price);
 
     }
 
