@@ -6,11 +6,12 @@ import "./GameEngine.sol";
 import "./ERC20.sol";
 import "./DID.sol";
 import "./Interfaces.sol";
+import "./ERC721.sol";
 
 //专注部署合约
 contract Deployer {
 
-    function deployAll(string memory name, string memory symbol) external returns (address proxy) {
+    function deployAll(string calldata name, string calldata symbol) external returns (address proxy) {
 
         address did = deployDID();
         proxy = deployProxyPlus(did, name, symbol);
@@ -22,6 +23,7 @@ contract Deployer {
         proxy = deployProxy();
         address gameEngine = deployGameEngine(proxy);
         address erc20 = deployERC20(proxy, gameEngine, 1e27, name, symbol);
+        address erc721 = deployERC721(proxy, name, symbol);
 
         IProxy iProxy = IProxy(proxy);
         iProxy.setAddr(gameEngine, 1);
@@ -29,6 +31,8 @@ contract Deployer {
         iProxy.setAddr(did, 3);
         iProxy.setAddr(msg.sender, 4); //signer
         DID(did).setAccess(gameEngine, 900); //for withdrawal access
+        DID(did).setAccess(erc20, 900); //for storage
+        DID(did).setAccess(erc721, 900); //for storage
 
     }
 
@@ -62,6 +66,15 @@ contract Deployer {
         did = address(new DID());
         DID(did).setAccess(msg.sender, 999);
         setDeployment(did, 3);
+
+    }
+
+    function deployERC721(address proxy, string memory name, string memory symbol) 
+        public returns (address erc721) {
+
+        erc721 = address(new ERC721(proxy, name, symbol));
+        ERC721(erc721).setAccess(msg.sender, 999);
+        setDeployment(erc721, 2);
 
     }
 
