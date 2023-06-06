@@ -2,7 +2,6 @@
 pragma solidity 0.8.18;
 
 import "./Util.sol";
-import "./Interfaces.sol";
 
 //代币合约
 contract ERC20 is IERC20, Access {
