@@ -25,7 +25,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
 
     //ERC721自定变量
     uint                                            public  suspended;
-    uint                                            public  count = 1;
+    uint                                            public  count;
     mapping(uint => Level)                          public  level;
 
     //ERC20标准函数 
@@ -190,10 +190,10 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
             check(addr, v, r, s);
 
             //如果新令牌使用count，否则使用代币id
-            tokenURI[id > 0 ? id : count] = uri;
+            tokenURI[id > 0 ? id : ++count] = uri;
 
             //铸币
-            if (id == 0) transfer(address(this), addr, ++count);
+            if (id == 0) transfer(address(this), addr, count);
             //更新元数据详细信息
             else emit MetadataUpdate(id);
 

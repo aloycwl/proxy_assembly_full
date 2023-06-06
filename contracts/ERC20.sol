@@ -25,19 +25,19 @@ contract ERC20 is IERC20, Access {
 
     function balanceOf(address addr) public view returns (uint) {
 
-        return IDID(iProxy.addrs(3)).uintData(addr, 3);
+        return IDID(iProxy.addrs(3)).uintData(addr, 2);
 
     }
 
     function allowance(address from, address to) public view returns (uint) {
 
-        return IDID(iProxy.addrs(3)).uintAddressData(from, to, 3);
+        return IDID(iProxy.addrs(3)).uintAddressData(from, to, 2);
 
     }
 
     function setAllowance(address from, address to, uint amt) private {
 
-        IDID(iProxy.addrs(3)).updateUintAddress(from, to, 3, amt);
+        IDID(iProxy.addrs(3)).updateUintAddress(from, to, 2, amt);
         emit Approval(from, to, amt);
 
     }
@@ -69,8 +69,8 @@ contract ERC20 is IERC20, Access {
             require(suspended == 0,                                             "Contract suspeded");
             
             setAllowance(from, to, isApproved ? approveAmt - amt : 0);          //如果有授权，相应地去除
-            iDID.updateUint(from, 3, balanceFrom - amt);                        //3号是ERC20代币1的合约
-            iDID.updateUint(to, 3, balanceOf(to) + amt);            
+            iDID.updateUint(from, 2, balanceFrom - amt);                        //3号是ERC20代币1的合约
+            iDID.updateUint(to, 2, balanceOf(to) + amt);            
             emit Transfer(from, to, amt);                                       //发出日志
             return true;
 
@@ -91,7 +91,7 @@ contract ERC20 is IERC20, Access {
         unchecked {
 
             totalSupply += amt;                                                 //将数量添加到用户和总供应量
-            IDID(iProxy.addrs(3)).updateUint(addr, 3, balanceOf(addr) + amt);   //3号是ERC20代币1的合约
+            IDID(iProxy.addrs(3)).updateUint(addr, 2, balanceOf(addr) + amt);   //3号是ERC20代币1的合约
             emit Transfer(address(this), addr, amt);                            //发出日志
 
         }
