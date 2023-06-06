@@ -7,11 +7,11 @@ import "./Util.sol";
 contract ERC20 is IERC20, Access {
 
     //ERC20标准变量 
-    uint public totalSupply;
-    uint public constant decimals = 18;
-    string public symbol;
-    string public name;
-    mapping(address => mapping (address => uint)) public allowance;
+    uint constant                                   public decimals = 18;
+    uint                                            public totalSupply;
+    string                                          public name;
+    string                                          public symbol;
+    mapping(address => mapping (address => uint))   public allowance;
 
     //ERC20自定变量 
     uint public suspended;
