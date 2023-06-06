@@ -35,10 +35,16 @@ contract ERC20 is IERC20, Access {
 
     }
 
+    function setAllowance(address from, address to, uint amt) private {
+
+        IDID(iProxy.addrs(3)).updateUintAddress(from, to, 3, amt);
+        emit Approval(from, to, amt);
+
+    }
+
     function approve(address to, uint amt) public returns (bool) {
 
-        IDID(iProxy.addrs(3)).updateUintAddress(msg.sender, to, 3, amt);
-        emit Approval(msg.sender, to, amt);
+        setAllowance(msg.sender, to, amt);
         return true;
 
     }
@@ -55,15 +61,15 @@ contract ERC20 is IERC20, Access {
 
             (IDID iDID, uint approveAmt, uint balanceFrom) = 
                 (IDID(iProxy.addrs(3)), allowance(from, to), balanceOf(from));
+            bool isApproved = approveAmt >= amt;
 
             require(balanceFrom >= amt,                                         "Insufficient amount");
-            require(from == msg.sender || approveAmt >= amt,                    "Unauthorised user");
+            require(from == msg.sender || isApproved,                           "Unauthorised amount");
             require(iDID.uintData(from, 0) == 0 && iDID.uintData(to, 0) == 0,   "User suspended");
             require(suspended == 0,                                             "Contract suspeded");
             
-            if(amt <= approveAmt) approve(to, approveAmt - amt);                //如果有授权，相应地去除
-
-            iDID.updateUint(from, 3, balanceFrom - amt);                    //3号是ERC20代币1的合约
+            setAllowance(from, to, isApproved ? approveAmt - amt : 0);          //如果有授权，相应地去除
+            iDID.updateUint(from, 3, balanceFrom - amt);                        //3号是ERC20代币1的合约
             iDID.updateUint(to, 3, balanceOf(to) + amt);            
             emit Transfer(from, to, amt);                                       //发出日志
             return true;
