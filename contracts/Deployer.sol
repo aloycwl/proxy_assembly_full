@@ -22,7 +22,7 @@ contract Deployer {
 
         proxy = deployProxy();
         address gameEngine = deployGameEngine(proxy);
-        address erc20 = deployERC20(proxy, name, symbol);
+        address erc20 = deployERC20(proxy, string(abi.encodePacked(name," Token")), string(abi.encodePacked(symbol, "T")));
         address erc721 = deployERC721(proxy, name, symbol);
         setDeployment(msg.sender, "[4 - signer]");
 

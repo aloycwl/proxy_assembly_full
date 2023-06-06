@@ -16,18 +16,18 @@ contract ERC20 is IERC20, Util {
 
     //ERC20自定变量 
     uint public suspended;
-    IDID public iDID;
+    IProxy public iProxy;
 
     //ERC20标准函数 
     constructor(address proxy, string memory _name, string memory _sym) {
 
-        (iDID, name, symbol) = (IDID(IProxy(proxy).addrs(3)), _name, _sym);     //调用交叉合约函数
+        (iProxy, name, symbol) = (IProxy(proxy), _name, _sym);     //调用交叉合约函数
 
     }
 
     function balanceOf(address addr) public view returns (uint) {
 
-        return iDID.uintData(addr, 3);
+        return IDID(iProxy.addrs(3)).uintData(addr, 3);
 
     }
 
@@ -47,6 +47,8 @@ contract ERC20 is IERC20, Util {
     function transferFrom(address from, address to, uint amt) public returns (bool) {
 
         unchecked {                                                             //使用assert而不是require来节省燃料
+
+            IDID iDID = IDID(iProxy.addrs(3));
 
             assert(balanceOf(from) >= amt);                                     //地址必须有足够的代币才能转账
             assert(from == msg.sender || allowance[from][to] >= amt);           //必须是地址所有者或接收者已获得授权
@@ -76,9 +78,9 @@ contract ERC20 is IERC20, Util {
 
         unchecked {
 
-            totalSupply += amt;                                 //将数量添加到用户和总供应量
-            iDID.updateUint(addr, 3, balanceOf(addr) + amt);    //3号是ERC20代币1的合约
-            emit Transfer(address(this), addr, amt);            //发出日志
+            totalSupply += amt;                                                 //将数量添加到用户和总供应量
+            IDID(iProxy.addrs(3)).updateUint(addr, 3, balanceOf(addr) + amt);   //3号是ERC20代币1的合约
+            emit Transfer(address(this), addr, amt);                            //发出日志
 
         }
 
@@ -89,9 +91,9 @@ contract ERC20 is IERC20, Util {
 
         unchecked {
 
-            assert(balanceOf(msg.sender) >= amt);               //燃烧者必须有足够的代币
-            transferFrom(msg.sender, address(0), amt);          //调用标准函数
-            totalSupply -= amt;                                 //减少总供应
+            assert(balanceOf(msg.sender) >= amt);                               //燃烧者必须有足够的代币
+            transferFrom(msg.sender, address(0), amt);                          //调用标准函数
+            totalSupply -= amt;                                                 //减少总供应
 
         }
 
