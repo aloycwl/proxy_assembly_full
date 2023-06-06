@@ -11,10 +11,9 @@ import "./Interfaces.sol";
 //专注部署合约
 contract Deployer {
 
-    function deployAll(string calldata name, string calldata symbol) external returns (address proxy) {
+    function deployAll(string calldata name, string calldata symbol) external returns (address) {
 
-        address did = deployDID();
-        proxy = deployProxyPlus(did, name, symbol);
+        return deployProxyPlus(deployDID(), name, symbol);
 
     }
 
@@ -100,7 +99,7 @@ contract Deployer {
 
             uint count = enumAddresses.length;
             (addresses, functions) = (new address[](count), new string[](count));
-            for (uint i=0; i<count; i++) (addresses[i], functions[i]) = (enumAddresses[i], enumFunctions[i]);
+            for (uint i; i < count; ++i) (addresses[i], functions[i]) = (enumAddresses[i], enumFunctions[i]);
 
         }
 
