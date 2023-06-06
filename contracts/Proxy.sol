@@ -2,9 +2,10 @@
 pragma solidity 0.8.18;
 
 import "./Util.sol";
+import "./Interfaces.sol";
 
 //代理合同
-contract Proxy is Util {
+contract Proxy is IProxy, Util {
 
     mapping (uint => address) public addrs;
 

@@ -23,7 +23,6 @@ interface IDID {
 interface IProxy {
 
     function addrs(uint) external view returns (address);
-    function setAddr(address, uint) external;
 
 }
 

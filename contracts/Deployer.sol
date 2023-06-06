@@ -23,16 +23,17 @@ contract Deployer {
             deployERC20(proxy, string(abi.encodePacked(name," Token")), string(abi.encodePacked(symbol, "T"))),
             deployERC721(proxy, name, symbol));
 
-        IProxy iProxy = IProxy(proxy);
+        Proxy iProxy = Proxy(proxy);
         iProxy.setAddr(proxy,               0);
         iProxy.setAddr(gameEngine,          1);
         iProxy.setAddr(erc20,               2);
         iProxy.setAddr(did,                 3);
         iProxy.setAddr(msg.sender,          4);         //签名人
         iProxy.setAddr(erc721,              5);
-        IUtil(did).setAccess(gameEngine,    900);       //需要授权来提币
-        IUtil(did).setAccess(erc20,         900);       //用于储存
-        IUtil(did).setAccess(erc721,        900);       //用于储存
+        IUtil iUtil = IUtil(did);
+        iUtil.setAccess(gameEngine,         900);       //需要授权来提币
+        iUtil.setAccess(erc20,              900);       //用于储存
+        iUtil.setAccess(erc721,             900);       //用于储存
 
         ERC20(erc20).mint(gameEngine,       1e27);      //铸币
         setDeployment(msg.sender,           "[4 - signer]");
@@ -42,7 +43,7 @@ contract Deployer {
     function deployProxy() public returns (address addr) {
 
         addr = address(new Proxy());
-        IUtil(addr).setAccess(msg.sender,   999);
+        Util(addr).setAccess(msg.sender,    999);
         setDeployment(addr, "               [0 - Proxy]");
 
     }
@@ -50,7 +51,7 @@ contract Deployer {
     function deployGameEngine(address proxy) public returns (address addr) {
 
         addr = address(new GameEngine(proxy));
-        IUtil(addr).setAccess(msg.sender,   999);
+        Util(addr).setAccess(msg.sender,    999);
         setDeployment(addr,                 "[1 - Game Engine]");
 
     }
@@ -59,7 +60,7 @@ contract Deployer {
         public returns (address addr) {
 
         addr = address(new ERC20(proxy, name, symbol));
-        IUtil(addr).setAccess(msg.sender,   999);
+        Util(addr).setAccess(msg.sender,    999);
         setDeployment(addr,                 "[2 - ERC20]");
 
     }
@@ -67,7 +68,7 @@ contract Deployer {
     function deployDID() public returns (address addr) {
 
         addr = address(new DID());
-        IUtil(addr).setAccess(msg.sender,   999);
+        Util(addr).setAccess(msg.sender,    999);
         setDeployment(addr,                 "[3 - DID]");
 
     }
