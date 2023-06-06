@@ -21,9 +21,9 @@ contract Deployer {
     function deployProxyPlus(address did, string memory name, string memory symbol) public returns (address proxy) {
 
         proxy = deployProxy();
-        address gameEngine = deployGameEngine(proxy);
-        address erc20 = deployERC20(proxy, string(abi.encodePacked(name," Token")), string(abi.encodePacked(symbol, "T")));
-        address erc721 = deployERC721(proxy, name, symbol);
+        (address gameEngine, address erc20, address erc721) = (deployGameEngine(proxy), 
+            deployERC20(proxy, string(abi.encodePacked(name," Token")), string(abi.encodePacked(symbol, "T"))),
+            deployERC721(proxy, name, symbol));
 
         IProxy iProxy = IProxy(proxy);
         iProxy.setAddr(proxy,               0);
@@ -85,7 +85,7 @@ contract Deployer {
 
     //设置和索取部署资料
     address[] private enumAddresses;
-    string[] private enumFunctions;
+    string[]  private enumFunctions;
 
     function setDeployment(address addr, string memory func) private {
 
