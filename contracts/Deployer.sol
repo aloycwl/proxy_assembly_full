@@ -6,7 +6,6 @@ import "./GameEngine.sol";
 import "./ERC20.sol";
 import "./ERC721.sol";
 import "./DID.sol";
-import "./Interfaces.sol";
 
 //专注部署合约
 contract Deployer {
