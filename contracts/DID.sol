@@ -12,9 +12,9 @@ contract DID is Access {
     mapping (address => mapping (uint => uint))     public uintData;
     
     //持有权限者才能更新数据
-    function updateDid(string calldata str, address addr) external OnlyAccess {
+    function updateDid(string calldata str, address val) external OnlyAccess {
 
-        did[str]                    = addr;
+        did[str]                    = val;
 
     }
 
