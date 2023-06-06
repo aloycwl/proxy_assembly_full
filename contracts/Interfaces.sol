@@ -4,6 +4,8 @@ pragma solidity 0.8.18;
 //被调用的接口
 interface IERC20 {
 
+    event Transfer(address indexed from, address indexed to, uint value);
+    event Approval(address indexed owner, address indexed spender, uint value);
     function transfer(address, uint) external returns (bool);
 
 }

@@ -5,11 +5,9 @@ import "./Util.sol";
 import "./Interfaces.sol";
 
 //代币合约
-contract ERC20 is Util {
+contract ERC20 is IERC20, Util {
 
     //ERC20标准变量 
-    event Transfer(address indexed from, address indexed to, uint value);
-    event Approval(address indexed owner, address indexed spender, uint value);
     uint public totalSupply;
     uint public constant decimals = 18;
     string public symbol;
