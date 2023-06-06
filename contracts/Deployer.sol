@@ -37,7 +37,7 @@ contract Deployer {
         IUtil(did).setAccess(erc20,         900);       //用于储存
         IUtil(did).setAccess(erc721,        900);       //用于储存
 
-        //ERC20(erc20).mint(gameEngine, 1e27);            //铸币
+        ERC20(erc20).mint(gameEngine,       1e27);      //铸币
 
     }
 
