@@ -14,7 +14,6 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
     
     //ERC721标准变量 
     
-    mapping(uint => address)                        public  getApproved;
     mapping(address => uint)                        public  balanceOf;
     mapping(address => uint[])                      private enumBalance;
     mapping(address => mapping(address => bool))    public  isApprovedForAll;
@@ -37,13 +36,6 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
         
     }
 
-    //NFT持有者，用DID来调
-    function ownerOf(uint id) public view returns (address) {
-
-        return IDID(iProxy.addrs(3)).uint2Data(id, 0);
-
-    }
-
     //测试它是否符合 721 标准
     function supportsInterface(bytes4 a) external pure returns (bool) {
 
@@ -51,12 +43,28 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
 
     }
 
+    //NFT持有者，用DID来调
+    function ownerOf(uint id) public view returns (address) {
+
+        return IDID(iProxy.addrs(3)).uint2Data(id, 5);
+
+    }
+
+    //返回NFT已授权给谁
+    function getApproved(uint id) public view returns (address) {
+
+        return IDID(iProxy.addrs(3)).uint2Data(id, 6);
+
+    }
+
     //批准他人交易
     function approve(address to, uint id) external {
 
-        assert( msg.sender == ownerOf(id) ||                            //是持有者
-                isApprovedForAll[ownerOf(id)][msg.sender]);             //谁都可以出售
-        emit Approval(ownerOf(id), getApproved[id] = to, id);
+        require(msg.sender == ownerOf(id) || isApprovedForAll[ownerOf(id)][msg.sender],
+            "Invalid owner");             
+
+        IDID(iProxy.addrs(3)).updateUint2(id, 6, to);
+        emit Approval(ownerOf(id), to, id);
 
     }
 
@@ -87,7 +95,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
         unchecked{
 
             assert( ownerOf(id) == from ||                              //必须是所有者或
-                    getApproved[id] == to ||                            //已被授权或
+                    getApproved(id) == to ||                            //已被授权或
                     isApprovedForAll[ownerOf(id)][from] ||              //待全部出售或
                     access[msg.sender] > 0);                            //有管理员权限
             
@@ -102,7 +110,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
 
                 }
 
-            getApproved[id] = address(0);                               //重置授权
+            IDID(iProxy.addrs(3)).updateUint2(id, 6, address(0));       //重置授权
             --balanceOf[from];                                          //减少前任所有者的余额
             
             transfer(from, to, id);                                     //开始转移
@@ -152,7 +160,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
                                                                     
             }
 
-            IDID(iProxy.addrs(3)).updateUint2(id, 0, to);                               //更新NFT持有者
+            IDID(iProxy.addrs(3)).updateUint2(id, 5, to);                               //更新NFT持有者
             emit Approval(ownerOf(id), to, id);                                         //日志
             emit Transfer(from, to, id);
 
