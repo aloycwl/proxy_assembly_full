@@ -21,10 +21,8 @@ contract ERC20 is IERC20, Util {
     //ERC20标准函数 
     constructor(address proxy, address receiver, uint amt, string memory _name, string memory _sym) {
 
-        //调用交叉合约函数
-        (iDID, name, symbol) = (IDID(IProxy(proxy).addrs(3)), _name, _sym);
-        //铸造给定地址的代币数量
-        mint(amt, receiver);
+        (iDID, name, symbol) = (IDID(IProxy(proxy).addrs(3)), _name, _sym);     //调用交叉合约函数
+        mint(amt, receiver);                                                    //铸造给定地址的代币数量
 
     }
 
@@ -66,8 +64,6 @@ contract ERC20 is IERC20, Util {
         }
 
     }
-
-    //自定义函数
 
     //切换暂停
     function toggleSuspend() external OnlyAccess {
