@@ -12,7 +12,7 @@ contract ERC20 is IERC20, Util {
     uint public constant decimals = 18;
     string public symbol;
     string public name;
-    mapping(address => uint) public balanceOf;
+    //mapping(address => uint) public balanceOf;
     mapping(address => mapping (address => uint)) public allowance;
 
     //ERC20自定变量 
@@ -26,6 +26,12 @@ contract ERC20 is IERC20, Util {
         (iProxy, name, symbol) = (IProxy(proxy), _name, _sym);
         //铸造给定地址的代币数量
         mint(amt, receiver);
+
+    }
+
+    function balanceOf (address addr) public view returns (uint) {
+
+        //
 
     }
 
@@ -44,18 +50,19 @@ contract ERC20 is IERC20, Util {
 
     function transferFrom(address from, address to, uint amt) public returns (bool) {
 
-        unchecked {                                                     //使用assert而不是require来节省燃料
+        unchecked {                                                             //使用assert而不是require来节省燃料
 
-            assert(balanceOf[from] >= amt);                             //地址必须有足够的代币才能转账
-            assert(from == msg.sender ||                                //必须是地址所有者或
-                allowance[from][to] >= amt);                            //接收者已获得授权
-            assert(IDID(iProxy.addrs(3)).uintData(from, 0) == 0 &&      //发件人不能被列入黑名单
-                IDID(iProxy.addrs(3)).uintData(to, 0) == 0);            //接收者也不能被列入黑名单
-            assert(suspended == 0);                                     //合约未被暂停
+            assert(balanceOf(from) >= amt);                                     //地址必须有足够的代币才能转账
+            assert(from == msg.sender || allowance[from][to] >= amt);           //必须是地址所有者或接收者已获得授权
+            IDID iDID = IDID(iProxy.addrs(3));
+            assert(iDID.uintData(from, 0) == 0 && iDID.uintData(to, 0) == 0);   //发件和接收者不能被列入黑名单
+            assert(suspended == 0);                                             //合约未被暂停
             
-            if(allowance[from][to] >= amt) allowance[from][to] -= amt;  //如果有授权，相应地去除
-            (balanceOf[from] -= amt, balanceOf[to] += amt);             //开始转移
-            emit Transfer(from, to, amt);                               //发出日志
+            if(allowance[from][to] >= amt) allowance[from][to] -= amt;          //如果有授权，相应地去除
+
+            iDID.updateUint(from, 3, balanceOf(from) - amt);                    //3号是bibi
+            (balanceOf(from) -= amt, balanceOf(to) += amt);                     //开始转移
+            emit Transfer(from, to, amt);                                       //发出日志
             return true;
 
         }
