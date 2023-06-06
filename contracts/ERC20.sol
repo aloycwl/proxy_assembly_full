@@ -11,9 +11,8 @@ contract ERC20 is IERC20, Access {
     uint                                            public  totalSupply;
     string                                          public  name;
     string                                          public  symbol;
-    mapping(address => mapping (address => uint))   public  allowance;
 
-    //ERC20自定变量 
+    //自定变量 
     uint                                            public  suspended;
     IProxy                                          private iProxy;
 
@@ -30,9 +29,16 @@ contract ERC20 is IERC20, Access {
 
     }
 
-    function approve(address to, uint amt) external returns (bool) {
+    function allowance(address from, address to) public view returns (uint) {
 
-        emit Approval(msg.sender, to, allowance[msg.sender][to] = amt);
+        return IDID(iProxy.addrs(3)).uintAddressData(from, to, 3);
+
+    }
+
+    function approve(address to, uint amt) public returns (bool) {
+
+        IDID(iProxy.addrs(3)).updateUintAddress(msg.sender, to, 3, amt);
+        emit Approval(msg.sender, to, amt);
         return true;
 
     }
@@ -45,16 +51,16 @@ contract ERC20 is IERC20, Access {
 
     function transferFrom(address from, address to, uint amt) public returns (bool) {
 
-        unchecked {                                                             //使用assert而不是require来节省燃料
+        unchecked {
 
-            IDID iDID = IDID(iProxy.addrs(3));
+            (IDID iDID, uint approveAmt) = (IDID(iProxy.addrs(3)), allowance(from, to));
 
-            assert(balanceOf(from) >= amt);                                     //地址必须有足够的代币才能转账
-            assert(from == msg.sender || allowance[from][to] >= amt);           //必须是地址所有者或接收者已获得授权
-            assert(iDID.uintData(from, 0) == 0 && iDID.uintData(to, 0) == 0);   //发件和接收者不能被列入黑名单
-            assert(suspended == 0);                                             //合约未被暂停
+            require(balanceOf(from) >= amt,                                     "Insufficient amount");
+            require(from == msg.sender || approveAmt >= amt,                    "Unauthorised user");
+            require(iDID.uintData(from, 0) == 0 && iDID.uintData(to, 0) == 0,   "User suspended");
+            require(suspended == 0,                                             "Contract suspeded");
             
-            if(allowance[from][to] >= amt) allowance[from][to] -= amt;          //如果有授权，相应地去除
+            if(approveAmt >= amt) approve(to, approveAmt - amt);                //如果有授权，相应地去除
 
             iDID.updateUint(from, 3, balanceOf(from) - amt);                    //3号是ERC20代币1的合约
             iDID.updateUint(from, 3, balanceOf(to) + amt);            

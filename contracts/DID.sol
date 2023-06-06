@@ -6,33 +6,40 @@ import "./Util.sol";
 //储存和去中心化身份合约
 contract DID is Access {
 
-    mapping (string => address)                     public did;
-    mapping (address => mapping (uint => string))   public stringData;
-    mapping (address => mapping (uint => address))  public addressData;
-    mapping (address => mapping (uint => uint))     public uintData;
+    mapping(string => address)                                      public did;
+    mapping(address => mapping(uint => string))                     public stringData;
+    mapping(address => mapping(uint => address))                    public addressData;
+    mapping(address => mapping(uint => uint))                       public uintData;
+    mapping(address => mapping(address => mapping(uint => uint)))   public uintAddressData;
     
     //持有权限者才能更新数据
-    function updateDid(string calldata str, address val) external OnlyAccess {
+    function updateDid(string calldata str, address val)                            external OnlyAccess {
 
-        did[str]                    = val;
-
-    }
-
-    function updateString(address addr, uint index, string calldata val) external OnlyAccess {
-
-        stringData[addr][index]     = val;
+        did[str]                                = val;
 
     }
 
-    function updateAddress(address addr, uint index, address val) external OnlyAccess {
+    function updateString(address addr, uint index, string calldata val)            external OnlyAccess {
 
-        addressData[addr][index]    = val;
+        stringData[addr][index]                 = val;
 
     }
 
-    function updateUint(address addr, uint index, uint val) external OnlyAccess {
+    function updateAddress(address addr, uint index, address val)                   external OnlyAccess {
 
-        uintData[addr][index]       = val;
+        addressData[addr][index]                = val;
+
+    }
+
+    function updateUint(address addr, uint index, uint val)                         external OnlyAccess {
+
+        uintData[addr][index]                   = val;
+
+    }
+
+    function updateUintAddress(address addr1, address addr2, uint index, uint val)  external OnlyAccess {
+
+        uintAddressData[addr1][addr2][index]    = val;
 
     }
     
