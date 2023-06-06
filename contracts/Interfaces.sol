@@ -2,11 +2,16 @@
 pragma solidity 0.8.18;
 
 //被调用的接口
-interface IERC20 {
 
-    event Transfer(address indexed from, address indexed to, uint value);
-    event Approval(address indexed owner, address indexed spender, uint value);
-    function transfer(address, uint) external returns (bool);
+interface IAccess {
+
+    function setAccess(address, uint) external;
+
+}
+
+interface IProxy {
+
+    function addrs(uint) external view returns (address);
 
 }
 
@@ -20,9 +25,11 @@ interface IDID {
 
 }
 
-interface IProxy {
+interface IERC20 {
 
-    function addrs(uint) external view returns (address);
+    event Transfer(address indexed from, address indexed to, uint value);
+    event Approval(address indexed owner, address indexed spender, uint value);
+    function transfer(address, uint) external returns (bool);
 
 }
 
@@ -49,11 +56,5 @@ interface IERC721Metadata {
     function name() external view returns (string memory);
     function symbol() external view returns (string memory);
     function tokenURI(uint) external view returns (string memory);
-
-}
-
-interface IAccess {
-
-    function setAccess(address, uint) external;
 
 }
