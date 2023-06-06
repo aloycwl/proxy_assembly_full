@@ -12,9 +12,8 @@ struct Level {
 
 contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
     
-    //ERC721标准变量 
-    
-    mapping(address => uint)                        public  balanceOf;
+    //ERC721标准变量    
+    //mapping(address => uint)                        public  balanceOf;
     mapping(address => uint[])                      private enumBalance;
     mapping(address => mapping(address => bool))    public  isApprovedForAll;
     mapping(uint => string)                         public  tokenURI;
@@ -36,28 +35,24 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
         
     }
 
-    //测试它是否符合 721 标准
     function supportsInterface(bytes4 a) external pure returns (bool) {
 
         return a == type(IERC721).interfaceId || a == type(IERC721Metadata).interfaceId;
 
     }
 
-    //NFT持有者，用DID来调
     function ownerOf(uint id) public view returns (address) {
 
         return IDID(iProxy.addrs(3)).uint2Data(id, 5);
 
     }
 
-    //返回NFT已授权给谁
     function getApproved(uint id) public view returns (address) {
 
         return IDID(iProxy.addrs(3)).uint2Data(id, 6);
 
     }
 
-    //批准他人交易
     function approve(address to, uint id) external {
 
         require(msg.sender == ownerOf(id) || isApprovedForAll[ownerOf(id)][msg.sender],
@@ -68,28 +63,30 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
 
     }
 
-    //所有不可替代的代币都将出售
     function setApprovalForAll(address to, bool bol) external {
 
         emit ApprovalForAll(msg.sender, to, isApprovedForAll[msg.sender][to] = bol);
 
     }
 
-    //省略，因为它具有相同的功能
+    function balanceOf(address addr) public view returns (uint) {
+
+        return IDID(iProxy.addrs(3)).uintData(addr, 5);
+
+    }
+
     function safeTransferFrom(address from, address to, uint id) external {
 
         transferFrom(from, to, id); 
 
     }
 
-    //省略，因为它具有相同的功能
     function safeTransferFrom(address from, address to, uint id, bytes memory) external {
 
         transferFrom(from, to, id); 
 
     }
 
-    //实际传递函数
     function transferFrom(address from, address to, uint id) public{
 
         unchecked{
@@ -99,7 +96,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
                     isApprovedForAll[ownerOf(id)][from] ||              //待全部出售或
                     access[msg.sender] > 0);                            //有管理员权限
             
-            uint bal = balanceOf[from];
+            uint bal = balanceOf(from);
             uint[] storage enumBal = enumBalance[from];
             for (uint i; i < bal; ++i)                                  //从所有者数组中删除
                 if (enumBal[i] == id) {
@@ -110,16 +107,14 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
 
                 }
 
-            IDID(iProxy.addrs(3)).updateUint2(id, 6, address(0));       //重置授权
-            --balanceOf[from];                                          //减少前任所有者的余额
-            
+            IDID iDID = IDID(iProxy.addrs(3));
+            iDID.updateUint2(id, 6, address(0));                        //重置授权
+            iDID.updateUint(to, 5, bal - 1);                            //减少前任所有者的余额
             transfer(from, to, id);                                     //开始转移
                                                
         }
 
     }
-
-    //自定义函数
 
     //切换暂停
     function toggleSuspend() external OnlyAccess {
@@ -147,21 +142,22 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
 
         unchecked {
 
-            require(suspended == 0, "Contract is suspended");                           //合约未被暂停
+            require(suspended == 0, "Contract is suspended");           //合约未被暂停
 
+            IDID iDID = IDID(iProxy.addrs(3));
             if(address(iProxy) != address(0))
-                require(IDID(iProxy.addrs(3)).uintData(from, 0) == 0 &&                 //发件人不能被列入黑名单
-                    IDID(iProxy.addrs(3)).uintData(to, 0) == 0, "User is blacklisted"); //接收者也不能被列入黑名单
+                require(iDID.uintData(from, 0) == 0 &&                  //发件人不能被列入黑名单
+                    iDID.uintData(to, 0) == 0, "User is blacklisted");  //接收者也不能被列入黑名单
 
             if (to != address(0)) {
 
-                enumBalance[msg.sender].push(id);                                       //添加到新的所有者数组
-                ++balanceOf[to];                                                        //添加当前所有者的余额
+                enumBalance[msg.sender].push(id);                       //添加到新的所有者数组                     
+                iDID.updateUint(to, 5, balanceOf(to) + 1);              //添加当前所有者的余额
                                                                     
             }
 
-            IDID(iProxy.addrs(3)).updateUint2(id, 5, to);                               //更新NFT持有者
-            emit Approval(ownerOf(id), to, id);                                         //日志
+            iDID.updateUint2(id, 5, to);                                //更新NFT持有者
+            emit Approval(ownerOf(id), to, id);                         //日志
             emit Transfer(from, to, id);
 
         }
