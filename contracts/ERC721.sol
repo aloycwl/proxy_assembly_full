@@ -94,20 +94,10 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
                     isApprovedForAll[ownerOf(id)][from] ||              //待全部出售或
                     access[msg.sender] > 0);                            //有管理员权限
             
-            uint bal = balanceOf(from);
-            uint[] storage enumBal = enumBalance[from];
-            for (uint i; i < bal; ++i)                                  //从所有者数组中删除
-                if (enumBal[i] == id) {
-
-                    enumBal[i] = enumBal[bal - 1];
-                    enumBal.pop();
-                    break;
-
-                }
-
             IDID iDID = IDID(iProxy.addrs(3));
+            iDID.popUintEnum(from, 5, id);                              //从所有者数组中删除
             iDID.updateUint2(id, 6, address(0));                        //重置授权
-            iDID.updateUint(to, 5, bal - 1);                            //减少前任所有者的余额
+            iDID.updateUint(to, 5, balanceOf(from) - 1);                //减少前任所有者的余额
             transfer(from, to, id);                                     //开始转移
                                                
         }
@@ -149,8 +139,8 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
 
             if (to != address(0)) {
 
-                enumBalance[msg.sender].push(id);                       //添加到新的所有者数组                     
-                iDID.updateUint(to, 5, balanceOf(to) + 1);              //添加当前所有者的余额
+                iDID.pushUintEnum(msg.sender, 5, id);                   //添加到新的所有者数组
+                iDID.updateUint(to, 5, ++balanceOf(to));                //添加当前所有者的余额
                                                                     
             }
 
