@@ -10,31 +10,45 @@ import "./DID.sol";
 contract DeployerStorage {
 
     mapping(string => address) public contracts;
-    string[] private enumContracts;
+    string[] private enumName;
+    address[] private enumContracts;
 
     function setContract(string calldata name, address contractAddress) external {
 
-        enumContracts.push(string(abi.encodePacked(name, " - ", contractAddress)));
+        enumName.push(name);
+        enumContracts.push(contractAddress);
         contracts[name] = contractAddress;
 
     }
 
-    function showContracts() external view returns (string[] memory) {
+    function showContracts() external view returns (string[] memory, address[] memory) {
 
-        return enumContracts;
+        return (enumName, enumContracts);
         
     }
 
 }
 
-contract DeployDID {
+contract DeployDID is Access {
 
     DeployerStorage private ds;
 
     constructor(address deployerStorageAddress) {
-        ds = DeployerStorage(deployerStorageAddress);
+        
         address addr = address(new DID());
         Access(addr).setAccess(msg.sender,    999);
+
+        DeployerStorage(deployerStorageAddress).setContract("DID", addr);
+        
+    }
+
+    function addAccessDID () external {
+        
+        Access iAccess = Access(ds.contracts("DID"));
+        iAccess.setAccess(ds.contracts("GameEngine"),       900);       //需要授权来提币
+        iAccess.setAccess(ds.contracts("ERC20"),            900);       //用于储存
+        iAccess.setAccess(ds.contracts("ERC721"),           900);       //用于储存
+
     }
 
 }
@@ -44,7 +58,7 @@ contract Deployer {
 
     function deployAll(string calldata name, string calldata symbol) external returns (address) {
 
-        return deployProxyPlus(deployDID(), name, symbol);
+        // return deployProxyPlus(deployDID(), name, symbol);
 
     }
 
@@ -95,14 +109,6 @@ contract Deployer {
         addr = address(new ERC20(proxy, name, symbol));
         Access(addr).setAccess(msg.sender,    999);
         setDeployment(addr,                 "[2 - ERC20]");
-
-    }
-
-    function deployDID() public returns (address addr) {
-
-        addr = address(new DID());
-        Access(addr).setAccess(msg.sender,    999);
-        setDeployment(addr,                 "[3 - DID]");
 
     }
 
