@@ -31,13 +31,13 @@ contract ERC20 is IERC20, Access {
 
     function allowance(address from, address to) public view returns (uint) {
 
-        return IDID(iProxy.addrs(3)).uintAddressData(from, to, 2);
+        return IDID(iProxy.addrs(3)).uintAddrData(from, to, 2);
 
     }
 
     function setAllowance(address from, address to, uint amt) private {
 
-        IDID(iProxy.addrs(3)).updateUintAddress(from, to, 2, amt);
+        IDID(iProxy.addrs(3)).updateUintAddr(from, to, 2, amt);
         emit Approval(from, to, amt);
 
     }
