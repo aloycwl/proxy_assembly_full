@@ -12,8 +12,7 @@ struct Level {
 
 contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
     
-    //ERC721标准变量    
-    //mapping(address => uint[])                      private enumBalance;
+    //ERC721标准变量
     mapping(address => mapping(address => bool))    public  isApprovedForAll;
     mapping(uint => string)                         public  tokenURI;
     address                                         public  owner;
@@ -140,7 +139,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
             if (to != address(0)) {
 
                 iDID.pushUintEnum(msg.sender, 5, id);                   //添加到新的所有者数组
-                iDID.updateUint(to, 5, ++balanceOf(to));                //添加当前所有者的余额
+                iDID.updateUint(to, 5, balanceOf(to) + 1);                //添加当前所有者的余额
                                                                     
             }
 

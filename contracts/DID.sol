@@ -4,7 +4,7 @@ pragma solidity 0.8.18;
 import "./Util.sol";
 
 //储存和去中心化身份合约
-contract DID is /*IDID,*/ Access {
+contract DID is IDID, Access {
 
     //DID需要变量
     mapping(string => address)                                                      public did;
