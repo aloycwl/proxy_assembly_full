@@ -53,6 +53,21 @@ contract DeployDID is Access {
 
 }
 
+contract DeployProxy is Access {
+
+    DeployerStorage private ds;
+
+    constructor(address deployerStorageAddress) {
+        
+        address addr = address(new DID());
+        Access(addr).setAccess(msg.sender,    999);
+
+        DeployerStorage(deployerStorageAddress).setContract("DID", addr);
+        
+    }
+
+}
+
 //专注部署合约
 contract Deployer {
 

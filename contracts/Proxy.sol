@@ -6,7 +6,7 @@ import "./Util.sol";
 //代理合同
 contract Proxy is Access {
 
-    mapping (uint => address) public addrs;
+    mapping(uint => address) public addrs;
 
     //动态设置要索引的地址
     function setAddr(address addr, uint index) external OnlyAccess() {
