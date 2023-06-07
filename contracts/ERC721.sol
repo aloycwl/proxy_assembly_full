@@ -13,7 +13,7 @@ struct Level {
 contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
     
     //ERC721标准变量
-    mapping(address => mapping(address => bool))    public  isApprovedForAll;
+    //mapping(address => mapping(address => bool))    public  isApprovedForAll;
     mapping(uint => string)                         public  tokenURI;
     address                                         public  owner;
     string                                          public  name;
@@ -47,6 +47,12 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
     function getApproved(uint id) public view returns (address) {
 
         return IDID(iProxy.addrs(3)).uint2Data(id, 6);
+
+    }
+
+    function isApprovedForAll(address from, address to) public view returns (bool) {
+
+        return IDID(iProxy.addrs(3)).uintAddrData(from, to, 5) > 0 ? true : false;
 
     }
 
