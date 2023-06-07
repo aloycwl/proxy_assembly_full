@@ -19,7 +19,7 @@ interface IDID {
     function uintEnumData(address, uint)                                external view returns (uint[] memory);
     function updateDid(string calldata, address)                        external;
     function updateUint(address, uint, uint)                            external;
-    function updateString(address, uint, string calldata)               external;
+    function updateString(address, uint, uint, string calldata)         external;
     function updateUintAddr(address, address, uint, uint)               external;
     function updateUint2(uint, uint, address)                           external;
     function pushUintEnum(address, uint, uint)                          external;

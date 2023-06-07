@@ -80,7 +80,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
 
     function tokenURI(uint id) public view returns (string memory) {
 
-        return IDID(iProxy.addrs(3)).stringData(ownerOf(id), 5);
+        return IDID(iProxy.addrs(3)).stringData(ownerOf(id), id, 5);
 
     }
 
@@ -182,16 +182,17 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
 
                 } else {
 
-                    require(IERC20(contAddr).transfer(address(this), price), "Insufficient amount");
-                    IERC20(contAddr).transfer(owner, price);
+                    IERC20 iERC20 = IERC20(contAddr);
+                    require(iERC20.transfer(address(this), price), "Insufficient amount");
+                    iERC20.transfer(owner, price);
 
                 }
 
             //检查签名和更新指数
             check(addr, v, r, s);
 
-            //如果新令牌使用count，否则使用代币id
-            tokenURI[id > 0 ? id : ++count] = uri;
+            //如果新NFT使用count，否则使用代币id
+            IDID(iProxy.addrs(3)).updateString(msg.sender, id > 0 ? id : ++count, 5, uri);
 
             //铸币
             if (id == 0) transfer(address(this), addr, count);
