@@ -4,7 +4,7 @@ pragma solidity 0.8.18;
 import "./Util.sol";
 
 //储存和去中心化身份合约
-contract DID is Access {
+contract DID is /*IDID,*/ Access {
 
     //DID需要变量
     mapping(string => address)                                                      public did;
@@ -62,7 +62,7 @@ contract DID is Access {
 
     function popUintEnum(address addr, uint index, uint val)                        external OnlyAccess {
 
-        (uint bal,uint[] storage enumBal) = (uintData[addr][index], uintEnumData[addr][index]);
+        (uint bal, uint[] storage enumBal) = (uintData[addr][index], uintEnumData[addr][index]);
 
         for (uint i; i < bal; ++i)                                  
             if (enumBal[i] == val) {

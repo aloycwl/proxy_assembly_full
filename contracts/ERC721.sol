@@ -112,7 +112,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
     }
 
     //获取地址拥有的所有代币的数组
-    function tokensOwned(address addr) public view returns(uint[]memory) {
+    function tokensOwned(address addr) public view returns(uint[] memory) {
 
         return IDID(iProxy.addrs(3)).uintEnumData(addr, 5);
 
