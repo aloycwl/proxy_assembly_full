@@ -19,7 +19,7 @@ interface IDID {
     function updateDid(string calldata, address)                        external;
     function updateUint(address, uint, uint)                            external;
     function updateString(address, uint, string calldata)               external;
-    function updateUintAddress(address, address, uint, uint)            external;
+    function uintAddrData(address, address, uint, uint)                 external;
     function updateUint2(uint, uint, address)                           external;
     function pushUintEnum(address, uint, uint)                          external;
     function popUintEnum(address, uint, uint)                           external;

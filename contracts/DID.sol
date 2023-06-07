@@ -4,14 +4,14 @@ pragma solidity 0.8.18;
 import "./Util.sol";
 
 //储存和去中心化身份合约
-contract DID is IDID, Access {
+contract DID is Access {
 
     //DID需要变量
     mapping(string => address)                                                      public did;
     mapping(address => mapping(uint => string))                                     public stringData;
     mapping(address => mapping(uint => address))                                    public addressData;
     mapping(address => mapping(uint => uint))                                       public uintData;
-    mapping(address => mapping(address => mapping(uint => uint)))                   public uintAddressData;
+    mapping(address => mapping(address => mapping(uint => uint)))                   public uintAddrData;
     mapping(address => mapping(uint => uint[]))                                     public uintEnumData;
 
     //其它储存变量
@@ -44,7 +44,7 @@ contract DID is IDID, Access {
 
     function updateUintAddress(address addr1, address addr2, uint index, uint val)  external OnlyAccess {
 
-        uintAddressData[addr1][addr2][index]    = val;
+        uintAddrData[addr1][addr2][index]    = val;
 
     }
 
