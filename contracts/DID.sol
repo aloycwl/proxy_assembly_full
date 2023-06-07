@@ -8,7 +8,7 @@ contract DID is Access {
 
     //DID需要变量
     mapping(string => address)                                                      public did;
-    mapping(address => mapping(uint => string))                                     public stringData;
+    mapping(address => mapping(uint => mapping(uint => string)))                    public stringData;
     mapping(address => mapping(uint => address))                                    public addressData;
     mapping(address => mapping(uint => uint))                                       public uintData;
     mapping(address => mapping(address => mapping(uint => uint)))                   public uintAddrData;
@@ -24,9 +24,9 @@ contract DID is Access {
 
     }
 
-    function updateString(address addr, uint index, string calldata val)            external OnlyAccess {
+    function updateString(address addr, uint index, uint id, string calldata val)  external OnlyAccess {
 
-        stringData[addr][index]                 = val;
+        stringData[addr][index][id]                 = val;
 
     }
 
