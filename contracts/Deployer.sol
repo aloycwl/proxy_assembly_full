@@ -7,6 +7,30 @@ import "./ERC20.sol";
 import "./ERC721.sol";
 import "./DID.sol";
 
+contract DeployerStorage {
+
+    mapping(string => address) public contracts;
+
+    function setContract (string calldata name, address contractAddress) external {
+
+        contracts[name] = contractAddress;
+
+    }
+
+}
+
+contract DeployDID {
+
+    DeployerStorage private ds;
+
+    constructor(address deployerStorageAddress) {
+        ds = DeployerStorage(deployerStorageAddress);
+        address addr = address(new DID());
+        Access(addr).setAccess(msg.sender,    999);
+    }
+
+}
+
 //专注部署合约
 contract Deployer {
 
@@ -19,9 +43,9 @@ contract Deployer {
     function deployProxyPlus(address did, string memory name, string memory symbol) public returns (address proxy) {
 
         proxy = deployProxy();
-        (address gameEngine, address erc20, address erc721) = (deployGameEngine(proxy), 
-            deployERC20(proxy, string(abi.encodePacked(name," Token")), string(abi.encodePacked(symbol, "T"))),
-            deployERC721(proxy, name, symbol));
+        (address gameEngine, address erc20/*, address erc721*/) = (deployGameEngine(proxy), 
+            deployERC20(proxy, string(abi.encodePacked(name," Token")), string(abi.encodePacked(symbol, "T")))/*,
+            deployERC721(proxy, name, symbol)*/);
 
         Proxy iProxy = Proxy(proxy);
         iProxy.setAddr(proxy,               0);
@@ -29,12 +53,12 @@ contract Deployer {
         iProxy.setAddr(erc20,               2);
         iProxy.setAddr(did,                 3);
         iProxy.setAddr(msg.sender,          4);         //签名人
-        iProxy.setAddr(erc721,              5);
+        //iProxy.setAddr(erc721,              5);
         
         Access iAccess = Access(did);
         iAccess.setAccess(gameEngine,       900);       //需要授权来提币
         iAccess.setAccess(erc20,            900);       //用于储存
-        iAccess.setAccess(erc721,           900);       //用于储存
+        //iAccess.setAccess(erc721,           900);       //用于储存
 
         ERC20(erc20).mint(gameEngine,       1e27);      //铸币
         setDeployment(msg.sender,           "[4 - Signer]");
@@ -74,7 +98,7 @@ contract Deployer {
 
     }
 
-    function deployERC721(address proxy, string memory name, string memory symbol) 
+    /*function deployERC721(address proxy, string memory name, string memory symbol) 
         public returns (address addr) {
 
         addr = address(new ERC721(proxy, name, symbol));
@@ -82,7 +106,7 @@ contract Deployer {
         setDeployment(addr,                 "[5 - ERC721]");
         return addr;
 
-    }
+    }*/
 
     //设置和索取部署资料
     address[] private enumAddresses;
