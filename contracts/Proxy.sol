@@ -1,9 +1,7 @@
 //SPDX-License-Identifier:None
 pragma solidity 0.8.18;
 
-import "./DID.sol";
-import "./GameEngine.sol";
-import "./ERC20.sol";
+import "./Util.sol";
 
 //代理合同
 contract Proxy is Access {
@@ -25,49 +23,20 @@ contract Proxy is Access {
     
 }
 
-contract DeployDID is Access {
-
-    function deployDID(address proxyAddr) external {
-
-        address addr = address(new DID());
-        Access(addr).setAccess(msg.sender,          999);
-        Proxy(proxyAddr).setAddr(addr,              3);
-
-    }
-
-    function addAccessDID(address proxyAddr) external {
-        
-        Proxy proxy = Proxy(proxyAddr);
-        Access iAccess = Access(proxy.addrs(3));
-        iAccess.setAccess(proxy.addrs(1),           900);       //需要授权来提币
-        iAccess.setAccess(proxy.addrs(2),           900);       //用于储存
-        iAccess.setAccess(proxy.addrs(5),           900);       //用于储存
-
-    }
-
-}
-
-contract DeployGameEngine is Access {
-
-    function deployGameEngine(address proxyAddr) external {
-
-        address addr = address(new GameEngine(proxyAddr));
-        Access(addr).setAccess(msg.sender,          999);
-        Proxy(proxyAddr).setAddr(addr,              1);
-
-    }
-    
-}
-
- 
-contract DeployERC20 is Access {
-
-    function deployGameEngine(address proxyAddr, string calldata name, string calldata symbol) external {
-
-        address addr = address(new ERC20(proxyAddr, name, symbol));
-        Access(addr).setAccess(msg.sender,          999);
-        Proxy(proxyAddr).setAddr(addr,              2);
-
-    }
-    
-}
+/*
+部署顺序：
+1.  Proxy
+2.  DID 
+3.  Proxy setAddr(DID, 3)
+4.  GameEngine
+5.  Proxy setAddr(GameEngine, 1)
+6.  ERC20
+7.  Proxy setAddr(ERC20, 2)
+8.  ERC721
+9.  Proxy setAddr(ERC721, 5)
+10. ERC20 mint() 铸币到 GameEngine
+11. DID setAccess() 授权到 GameEngine
+12. DID setAccess() 授权到 ERC20
+13. DID setAccess() 授权到 ERC721
+14. Proxy 加签名者 setAddr(signer, 4)
+*/
