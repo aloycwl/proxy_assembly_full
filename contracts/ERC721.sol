@@ -12,16 +12,12 @@ struct Level {
 
 contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
     
-    //ERC721标准变量
-    //mapping(uint => string)                         public  tokenURI;
-    address                                         public  owner;
-    string                                          public  name;
-    string                                          public  symbol;
-
-    //ERC721自定变量
-    uint                                            public  suspended;
-    uint                                            public  count;
-    mapping(uint => Level)                          public  level;
+    address                 public  owner;
+    string                  public  name;
+    string                  public  symbol;
+    uint                    public  suspended;
+    uint                    public  count;
+    mapping(uint => Level)  public  level;
 
     //ERC20标准函数 
     constructor(address proxy, string memory _name, string memory _sym) Sign(proxy) {
