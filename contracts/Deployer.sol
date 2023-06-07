@@ -29,44 +29,6 @@ contract DeployerStorage {
 
 }
 
-contract DeployDID is Access {
-
-    DeployerStorage private ds;
-
-    constructor(address deployerStorageAddress) {
-        
-        address addr = address(new DID());
-        Access(addr).setAccess(msg.sender,    999);
-
-        DeployerStorage(deployerStorageAddress).setContract("DID", addr);
-        
-    }
-
-    function addAccessDID () external {
-        
-        Access iAccess = Access(ds.contracts("DID"));
-        iAccess.setAccess(ds.contracts("GameEngine"),       900);       //需要授权来提币
-        iAccess.setAccess(ds.contracts("ERC20"),            900);       //用于储存
-        iAccess.setAccess(ds.contracts("ERC721"),           900);       //用于储存
-
-    }
-
-}
-
-contract DeployProxy is Access {
-
-    DeployerStorage private ds;
-
-    constructor(address deployerStorageAddress) {
-        
-        address addr = address(new DID());
-        Access(addr).setAccess(msg.sender,    999);
-
-        DeployerStorage(deployerStorageAddress).setContract("DID", addr);
-        
-    }
-
-}
 
 //专注部署合约
 contract Deployer {
