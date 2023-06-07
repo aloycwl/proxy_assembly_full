@@ -80,7 +80,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
 
     function tokenURI(uint id) public view returns (string memory) {
 
-        return IDID(iProxy.addrs(3)).stringData(addr, 5);
+        return IDID(iProxy.addrs(3)).stringData(ownerOf(id), 5);
 
     }
 

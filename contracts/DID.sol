@@ -7,12 +7,12 @@ import "./Util.sol";
 contract DID is Access {
 
     //DID需要变量
-    mapping(string => address)                                                      public did;
-    mapping(address => mapping(uint => mapping(uint => string)))                    public stringData;
-    mapping(address => mapping(uint => address))                                    public addressData;
-    mapping(address => mapping(uint => uint))                                       public uintData;
+    mapping(string  => address)                                                     public did;
+    mapping(address => mapping(uint    => mapping(uint => string)))                 public stringData;
+    mapping(address => mapping(uint    => address))                                 public addressData;
+    mapping(address => mapping(uint    => uint))                                    public uintData;
     mapping(address => mapping(address => mapping(uint => uint)))                   public uintAddrData;
-    mapping(address => mapping(uint => uint[]))                                     public uintEnumData;
+    mapping(address => mapping(uint    => uint[]))                                  public uintEnumData;
 
     //其它储存变量
     mapping(uint => mapping(uint => address))                                       public uint2Data;
@@ -24,9 +24,9 @@ contract DID is Access {
 
     }
 
-    function updateString(address addr, uint index, uint id, string calldata val)  external OnlyAccess {
+    function updateString(address addr, uint id, uint index, string calldata val)  external OnlyAccess {
 
-        stringData[addr][index][id]                 = val;
+        stringData[addr][id][index]             = val;
 
     }
 
@@ -44,7 +44,7 @@ contract DID is Access {
 
     function updateUintAddr(address addr1, address addr2, uint index, uint val)     external OnlyAccess {
 
-        uintAddrData[addr1][addr2][index]    = val;
+        uintAddrData[addr1][addr2][index]       = val;
 
     }
 
