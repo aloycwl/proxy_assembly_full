@@ -10,11 +10,19 @@ import "./DID.sol";
 contract DeployerStorage {
 
     mapping(string => address) public contracts;
+    string[] private enumContracts;
 
-    function setContract (string calldata name, address contractAddress) external {
+    function setContract(string calldata name, address contractAddress) external {
 
+        enumContracts.push(string(abi.encodePacked(name, " - ", contractAddress)));
         contracts[name] = contractAddress;
 
+    }
+
+    function showContracts() external view returns (string[] memory) {
+
+        return enumContracts;
+        
     }
 
 }
