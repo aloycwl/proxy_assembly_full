@@ -19,19 +19,17 @@ contract Proxy is Access {
 
 contract DeployDID is Access {
 
-    Proxy private proxy;
+    function deployDID(address proxyContractAddress) external {
 
-    constructor(address proxyContractAddress) {
-        
         address addr = address(new DID());
         Access(addr).setAccess(msg.sender,          999);
-
         Proxy(proxyContractAddress).setAddr(addr, 3);
-        
+
     }
 
-    function addAccessDID () external {
+    function addAccessDID(address proxyContractAddress) external {
         
+        Proxy proxy = Proxy(proxyContractAddress);
         Access iAccess = Access(proxy.addrs(3));
         iAccess.setAccess(proxy.addrs(1),           900);       //需要授权来提币
         iAccess.setAccess(proxy.addrs(2),           900);       //用于储存
@@ -40,3 +38,4 @@ contract DeployDID is Access {
     }
 
 }
+ 
