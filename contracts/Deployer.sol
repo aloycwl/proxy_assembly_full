@@ -33,12 +33,6 @@ contract DeployerStorage {
 //专注部署合约
 contract Deployer {
 
-    function deployAll(string calldata name, string calldata symbol) external returns (address) {
-
-        // return deployProxyPlus(deployDID(), name, symbol);
-
-    }
-
     function deployProxyPlus(address did, string memory name, string memory symbol) public returns (address proxy) {
 
         proxy = deployProxy();
