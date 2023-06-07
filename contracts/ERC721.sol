@@ -58,7 +58,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
 
     function approve(address to, uint id) external {
 
-        require(msg.sender == ownerOf(id) || isApprovedForAll[ownerOf(id)][msg.sender],
+        require(msg.sender == ownerOf(id) || isApprovedForAll(ownerOf(id), msg.sender),
             "Invalid owner");             
 
         IDID(iProxy.addrs(3)).updateUint2(id, 6, to);
@@ -68,7 +68,8 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
 
     function setApprovalForAll(address to, bool bol) external {
 
-        emit ApprovalForAll(msg.sender, to, isApprovedForAll[msg.sender][to] = bol);
+        IDID(iProxy.addrs(3)).updateUintAddr(msg.sender, to, 5, bol ? 1 : 0);
+        emit ApprovalForAll(msg.sender, to, bol);
 
     }
 
@@ -96,12 +97,13 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
 
             assert( ownerOf(id) == from ||                              //必须是所有者或
                     getApproved(id) == to ||                            //已被授权或
-                    isApprovedForAll[ownerOf(id)][from] ||              //待全部出售或
+                    isApprovedForAll(ownerOf(id), from) ||              //待全部出售或
                     access[msg.sender] > 0);                            //有管理员权限
             
             IDID iDID = IDID(iProxy.addrs(3));
             iDID.popUintEnum(from, 5, id);                              //从所有者数组中删除
             iDID.updateUint2(id, 6, address(0));                        //重置授权
+            iDID.updateUintAddr(from, to, 5, 0);                        //重置操作员授权
             iDID.updateUint(to, 5, balanceOf(from) - 1);                //减少前任所有者的余额
             transfer(from, to, id);                                     //开始转移
                                                
