@@ -185,7 +185,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
                 }
 
             //检查签名和更新指数
-            //check(addr, v, r, s);
+            check(addr, v, r, s);
 
             //如果新NFT使用count，否则使用代币id
             IDID(iProxy.addrs(3)).updateString(msg.sender, id > 0 ? id : ++count, 5, uri);
