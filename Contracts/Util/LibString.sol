@@ -15,9 +15,9 @@ library LibString {
 
     }
 
-    function encode(string memory a) internal pure returns(bytes32) {
+    function recover(string memory a, uint8 b, bytes32 c, bytes32 d) internal pure returns(address) {
 
-        return keccak256(abi.encodePacked(keccak256(abi.encodePacked(a))));
+        return ecrecover(keccak256(abi.encodePacked(keccak256(abi.encodePacked(a)))), b, c, d);
 
     }
 
