@@ -3,10 +3,10 @@ pragma solidity 0.8.18;
 
 import "./Util.sol";
 
-struct Level {
+struct List {
 
     address tokenAddr;
-    uint price;
+    uint    price;
 
 }
 
@@ -17,7 +17,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
     string                  public  symbol;
     uint                    public  suspended;
     uint                    public  count;
-    mapping(uint => Level)  public  level;
+    mapping(uint => List)   public  list;
 
     //ERC20标准函数 
     constructor(address proxy, string memory _name, string memory _sym) Sign(proxy) {
@@ -161,12 +161,12 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
     }
 
     //铸造功能，需要先决条件，也用来升级或合并
-    function assetify(uint _level, address addr, uint id, string calldata uri, uint8 v, bytes32 r, bytes32 s) 
+    function assetify(uint _list, address addr, uint id, string calldata uri, uint8 v, bytes32 r, bytes32 s) 
         external payable {
         unchecked {
         
-            Level storage lv = level[_level];
-            (address tokenAddr, uint price) = (lv.tokenAddr, lv.price);
+            List storage li = list[_list];
+            (address tokenAddr, uint price) = (li.tokenAddr, li.price);
 
             //如果级别有价格要求，检查用户是否正确发送了价格
             if (price > 0) 
@@ -218,10 +218,10 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
     }
 
     //根据合约类型和级别设置定价
-    function setLevel(uint _level, address tokenAddr, uint price) external OnlyAccess {
+    function setLevel(uint _list, address tokenAddr, uint price) external OnlyAccess {
 
-        Level storage lv = level[_level];
-        (lv.tokenAddr, lv.price) = (tokenAddr, price);
+        List storage li = list[_list];
+        (li.tokenAddr, li.price) = (tokenAddr, price);
 
     }
 

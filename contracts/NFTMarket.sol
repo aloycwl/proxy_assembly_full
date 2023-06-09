@@ -6,8 +6,8 @@ import "./Util.sol";
 contract NFTMarket is Access {
 
     address                                     private owner;
-    mapping(address => uint)                    public  fee; //小数点后两位的百分比，xxx.xx
-    mapping(address => mapping(uint => uint))   public  list;
+    uint                                        public fee; //小数点后两位的百分比，xxx.xx
+    mapping(address => mapping(uint => uint))   public list;
 
     constructor() {
 
