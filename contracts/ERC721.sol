@@ -105,7 +105,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
             iDID.popUintEnum(from, 5, id);                              //从所有者数组中删除
             iDID.updateUint2(id, 6, address(0));                        //重置授权
             iDID.updateUintAddr(from, to, 5, 0);                        //重置操作员授权
-            iDID.updateUint(to, 5, balanceOf(from) - 1);                //减少前任所有者的余额
+            iDID.updateUint(from, 5, balanceOf(from) - 1);              //减少前任所有者的余额
             transfer(from, to, id);                                     //开始转移
                                                
         }
@@ -147,8 +147,8 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
 
             if (to != address(0)) {
 
-                iDID.pushUintEnum(msg.sender, 5, id);                   //添加到新的所有者数组
-                iDID.updateUint(to, 5, balanceOf(to) + 1);                //添加当前所有者的余额
+                iDID.pushUintEnum(to, 5, id);                           //添加到新的所有者数组
+                iDID.updateUint(to, 5, balanceOf(to) + 1);              //添加当前所有者的余额
                                                                     
             }
 

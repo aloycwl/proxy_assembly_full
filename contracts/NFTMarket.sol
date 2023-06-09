@@ -40,12 +40,15 @@ contract NFTMarket is Access {
             uint price = list[contractAddr][tokenId];
             require(msg.value >= price,                                             "Insufficient price");
 
-            address seller = IERC721(contractAddr).ownerOf(tokenId);
-            //需要 ApproveForAll
-            IERC721(contractAddr).approve(msg.sender, tokenId);
-            IERC721(contractAddr).transferFrom(seller, msg.sender, tokenId);
+            IERC721 iERC721 = IERC721(contractAddr);
+            address seller = iERC721.ownerOf(tokenId);
 
-            payable(seller).transfer(price * (10000 - fee / 10000));
+            //需要 ApproveForAll
+            iERC721.approve(msg.sender, tokenId);
+            iERC721.transferFrom(seller, msg.sender, tokenId);
+
+            //payable(seller).transfer(price / 10000 * (10000 - fee));
+            payable(seller).transfer(price);
             payable(owner).transfer(address(this).balance);
             remove(contractAddr, tokenId);
 
