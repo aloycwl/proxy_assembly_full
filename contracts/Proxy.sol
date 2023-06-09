@@ -29,14 +29,14 @@ contract Proxy is IProxy, Access {
 2.  DID 
 3.  Proxy setAddr(DID, 3)
 4.  GameEngine
-5.  Proxy setAddr(GameEngine, 1)
-6.  ERC20
-7.  Proxy setAddr(ERC20, 2)
-8.  ERC721
-9.  Proxy setAddr(ERC721, 5)
-10. ERC20 mint() 铸币到 GameEngine
-11. DID setAccess() 授权到 GameEngine
-12. DID setAccess() 授权到 ERC20
-13. DID setAccess() 授权到 ERC721
+5.  DID setAccess() 授权到 GameEngine
+6.  Proxy setAddr(GameEngine, 1)
+7.  ERC20
+8.  DID setAccess() 授权到 ERC20
+9.  Proxy setAddr(ERC20, 2)
+10. ERC721
+11. DID setAccess() 授权到 ERC721
+12. Proxy setAddr(ERC721, 5)
+13. ERC20 mint() 铸币到 GameEngine
 14. Proxy 加签名者 setAddr(signer, 4)
 */
