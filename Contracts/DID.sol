@@ -1,7 +1,7 @@
 //SPDX-License-Identifier:None
 pragma solidity 0.8.18;
 
-import "./Util.sol";
+import "/Contracts/Util/Access.sol";
 
 //储存和去中心化身份合约
 contract DID is IDID, Access {
