@@ -5,7 +5,7 @@ import "./Util.sol";
 
 struct Level {
 
-    address contAddr;
+    address tokenAddr;
     uint price;
 
 }
@@ -166,19 +166,19 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
         unchecked {
         
             Level storage lv = level[_level];
-            (address contAddr, uint price) = (lv.contAddr, lv.price);
+            (address tokenAddr, uint price) = (lv.tokenAddr, lv.price);
 
             //如果级别有价格要求，检查用户是否正确发送了价格
             if (price > 0) 
                 //如果不指定地址，则转入主币，否则从合约地址转入
-                if (contAddr == address(0)) {
+                if (tokenAddr == address(0)) {
 
                     require(msg.value >= price, "Insufficient amount");
                     payable(owner).transfer(address(this).balance);
 
                 } else {
 
-                    IERC20 iERC20 = IERC20(contAddr);
+                    IERC20 iERC20 = IERC20(tokenAddr);
                     require(iERC20.transfer(address(this), price), "Insufficient amount");
                     iERC20.transfer(owner, price);
 
@@ -199,11 +199,23 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
 
     }
 
+    //测试功能
+    function tempMint() external {
+        unchecked {
+            //如果新NFT使用count，否则使用代币id
+            IDID(iProxy.addrs(3)).updateString(msg.sender, ++count, 5, "ipfs://tempNFT");
+            //铸币
+            transfer(address(this), msg.sender, count);
+
+        }
+
+    }
+
     //根据合约类型和级别设置定价
-    function setLevel(uint _level, address contAddr, uint price) external OnlyAccess {
+    function setLevel(uint _level, address tokenAddr, uint price) external OnlyAccess {
 
         Level storage lv = level[_level];
-        (lv.contAddr, lv.price) = (contAddr, price);
+        (lv.tokenAddr, lv.price) = (tokenAddr, price);
 
     }
 

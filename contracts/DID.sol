@@ -8,12 +8,12 @@ contract DID is IDID, Access {
 
     //DID需要变量和其它储存变量
     mapping(string  => address)                                                     public did;
-    mapping(address => mapping(uint    => mapping(uint => string)))                 public stringData;
-    mapping(address => mapping(uint    => address))                                 public addressData;
-    mapping(address => mapping(uint    => uint))                                    public uintData;
-    mapping(address => mapping(address => mapping(uint => uint)))                   public uintAddrData;
-    mapping(address => mapping(uint    => uint[]))                                  public uintEnum;
-    mapping(uint => mapping(uint => address))                                       public uint2Data;
+    mapping(address => mapping(uint     => mapping(uint => string)))                public stringData;
+    mapping(address => mapping(uint     => address))                                public addressData;
+    mapping(address => mapping(uint     => uint))                                   public uintData;
+    mapping(address => mapping(address  => mapping(uint => uint)))                  public uintAddrData;
+    mapping(address => mapping(uint     => uint[]))                                 public uintEnum;
+    mapping(uint    => mapping(uint     => address))                                public uint2Data;
 
     //数组只可以通过函数来调动
     function uintEnumData(address addr, uint index) public view returns (uint[] memory) {
@@ -60,7 +60,7 @@ contract DID is IDID, Access {
 
     function pushUintEnum(address addr, uint index, uint val)                       external OnlyAccess {
 
-        uintEnum[addr][index].push          (val);
+        uintEnum[addr][index].push              (val);
 
     }
 
