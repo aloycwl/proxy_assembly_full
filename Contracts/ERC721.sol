@@ -3,22 +3,15 @@ pragma solidity 0.8.18;
 
 import "/Contracts/Util/Access.sol";
 import "/Contracts/Util/Sign.sol";
+import "/Contracts/Util/DynamicPrice.sol";
 
-struct List {
-
-    address tokenAddr;
-    uint    price;
-
-}
-
-contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
+contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     
     address                 public  owner;
     string                  public  name;
     string                  public  symbol;
     uint                    public  suspended;
     uint                    public  count;
-    mapping(uint => List)   public  list;
 
     //ERC20标准函数 
     constructor(address proxy, string memory _name, string memory _sym) Sign(proxy) {
@@ -166,8 +159,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
         external payable {
         unchecked {
         
-            List storage li = list[_list];
-            (address tokenAddr, uint price) = (li.tokenAddr, li.price);
+            (address tokenAddr, uint price) = getList(_list);
 
             //如果级别有价格要求，检查用户是否正确发送了价格
             if (price > 0) 
@@ -179,6 +171,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
 
                 } else {
 
+                    //ERC20需要授权
                     IERC20 iERC20 = IERC20(tokenAddr);
                     require(iERC20.transfer(address(this), price), "Insufficient amount");
                     iERC20.transfer(owner, price);
@@ -221,8 +214,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
     //设置等级和价钱
     function setLevel(uint _list, address tokenAddr, uint price) external OnlyAccess {
 
-        List storage li = list[_list];
-        (li.tokenAddr, li.price) = (tokenAddr, price);
+        setList(_list, tokenAddr, price);
 
     }
 

@@ -21,7 +21,7 @@ contract DynamicPrice{
     }
 
     //调变量
-    function getList(uint _list) internal view returns(address, uint){
+    function getList(uint _list) public view returns(address, uint){
 
         List storage li = list[_list];
         return (li.tokenAddr, li.price);
