@@ -13,7 +13,7 @@ contract DynamicPrice {
 
     }
 
-    using UintLib for uint;
+    using LibUint for uint;
 
     address                                     public owner;
     mapping(address => mapping(uint => List))   public lists;

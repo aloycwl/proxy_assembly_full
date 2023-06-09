@@ -6,7 +6,7 @@ import "/Contracts/Interfaces.sol";
 
 contract Sign {
 
-    using UintLib for uint;
+    using LibUint for uint;
 
     IProxy internal iProxy;
 
