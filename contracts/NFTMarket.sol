@@ -41,6 +41,7 @@ contract NFTMarket is Access {
 
             address seller = IERC721(contractAddr).ownerOf(tokenId);
             //需要 ApproveForAll
+            IERC721(contractAddr).approve(msg.sender, tokenId);
             IERC721(contractAddr).transferFrom(seller, msg.sender, tokenId);
 
             payable(seller).transfer(price * (10000 - fee / 10000));
