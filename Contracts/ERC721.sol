@@ -218,7 +218,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign {
 
     }
 
-    //根据合约类型和级别设置定价
+    //设置等级和价钱
     function setLevel(uint _list, address tokenAddr, uint price) external OnlyAccess {
 
         List storage li = list[_list];
