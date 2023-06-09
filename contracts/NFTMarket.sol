@@ -18,7 +18,7 @@ contract NFTMarket is Access {
     //卖功能，需要先设置NFT合约的认可
     function sell(address contractAddr, uint tokenId, uint price) external {
 
-        require(IERC721(contractAddr).getApproved(tokenId) == address(this), "No approval");
+        require(IERC721(contractAddr).isApprovedForAll(msg.sender, address(this)), "No approval");
         list[contractAddr][tokenId] = price;
 
     }
