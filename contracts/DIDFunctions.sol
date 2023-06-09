@@ -32,10 +32,10 @@ contract DIDFunctions is Access {
     function createUser(address addr, string calldata userName, string calldata name, string calldata bio) 
         external OnlyUnique(userName) {
 
-            iDID.updateDid(userName, addr);         //创建用户名
-            iDID.updateString(addr, 0, userName);   //能够从地址中找到用户名
-            iDID.updateString(addr, 1, name);       //添加名称
-            iDID.updateString(addr, 2, bio);        //添加传记
+            iDID.updateDid(userName, addr);             //创建用户名
+            iDID.updateString(addr, 0, 0, userName);    //能够从地址中找到用户名
+            iDID.updateString(addr, 1, 0, name);        //添加名称
+            iDID.updateString(addr, 2, 0, bio);         //添加传记
 
     }
 
@@ -44,11 +44,11 @@ contract DIDFunctions is Access {
 
         address addr = iDID.did(strBefore);
 
-        assert(msg.sender == addr);                 //只有所有者可以更改他们的用户名
+        assert(msg.sender == addr);                     //只有所有者可以更改他们的用户名
         
-        iDID.updateDid(strBefore, address(0));      //删除旧用户名
-        iDID.updateDid(strAfter, addr);             //添加新用户名
-        iDID.updateString(addr, 0, strAfter);       //更新地址搜索
+        iDID.updateDid(strBefore, address(0));          //删除旧用户名
+        iDID.updateDid(strAfter, addr);                 //添加新用户名
+        iDID.updateString(addr, 0, 0, strAfter);        //更新地址搜索
 
     }
     
