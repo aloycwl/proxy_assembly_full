@@ -6,7 +6,7 @@ import "./Util.sol";
 contract NFTMarket is Access {
 
     address private owner;
-    uint    public fee = 0; //小数点后两位的百分比，xxx.xx
+    uint    public fee; //小数点后两位的百分比，xxx.xx
     mapping(address => mapping(uint => uint)) public list;
 
     constructor() {
@@ -38,6 +38,7 @@ contract NFTMarket is Access {
         unchecked {
 
             uint price = list[contractAddr][tokenId];
+            require(price > 0,                                                      "Item is not for sale");
             require(msg.value >= price,                                             "Insufficient price");
 
             IERC721 iERC721 = IERC721(contractAddr);
@@ -47,8 +48,9 @@ contract NFTMarket is Access {
             iERC721.approve(msg.sender, tokenId);
             iERC721.transferFrom(seller, msg.sender, tokenId);
 
-            //payable(seller).transfer(price / 10000 * (10000 - fee));
-            payable(seller).transfer(price);
+            //payable(seller).transfer(price / 10000 * (10000 - fee));  //1000000000000000000
+            //uint amt = 1e4 - fee;
+            payable(seller).transfer(price * (1e4 - fee) / 1e4);
             payable(owner).transfer(address(this).balance);
             remove(contractAddr, tokenId);
 
