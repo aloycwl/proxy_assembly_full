@@ -30,7 +30,7 @@ contract DynamicPrice {
 
     }
 
-    function pay(uint _list, address to) internal {
+    function pay(uint _list, address to, uint fee) internal {
 
         (address tokenAddr, uint price) = getList(_list);
 
@@ -39,14 +39,14 @@ contract DynamicPrice {
                 if (tokenAddr == address(0)) {
 
                     require(msg.value >= price, "Insufficient amount");
-                    payable(to).transfer(address(this).balance);
+                    payable(to).transfer(address(this).balance * (1e4 - fee) / 1e4);
 
                 } else {
 
                     //ERC20需要授权
                     IERC20 iERC20 = IERC20(tokenAddr);
                     require(iERC20.transfer(address(this), price), "Insufficient amount");
-                    iERC20.transfer(to, price);
+                    iERC20.transfer(to, iERC20.balanceOf(address(this)) * (1e4 - fee) / 1e4);
 
                 }
 

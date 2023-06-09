@@ -1,10 +1,10 @@
 //SPDX-License-Identifier:None
 pragma solidity 0.8.18;
 
-library Lib {
+library UintLib {
 
     //整数转移字符
-    function uintToString(uint num) internal pure returns (string memory) {
+    function toString(uint num) internal pure returns (string memory) {
 
         unchecked{
 

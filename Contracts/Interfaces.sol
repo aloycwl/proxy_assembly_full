@@ -32,6 +32,7 @@ interface IERC20 {
     event    Transfer(address indexed from, address indexed to, uint value);
     event    Approval(address indexed owner, address indexed spender, uint value);
     function transfer(address, uint)                                    external returns (bool);
+    function balanceOf(address)                                         external view returns (uint);
 
 }
 
