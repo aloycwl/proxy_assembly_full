@@ -1,8 +1,8 @@
 //SPDX-License-Identifier:None
 pragma solidity 0.8.18;
 
-import "./Lib.sol";
-import "../Interfaces.sol";
+import "/Contracts/Util/Lib.sol";
+import "/Contracts/Interfaces.sol";
 
 contract Sign {
 
