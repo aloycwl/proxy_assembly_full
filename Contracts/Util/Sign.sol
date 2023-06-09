@@ -29,8 +29,10 @@ contract Sign {
                             keccak256(                              //5. 首先散列和编码
                                 abi.encodePacked(           
                                     string.concat(                  //4. 合并字符串
-                                        uint(uint160(addr))                     //2. uint变string          
-                                        .toString()    //1. address变uint
+                                        uint(
+                                            uint160(addr)           //1. address变uint
+                                        )                   
+                                        .toString()                 //2. uint变string
                                         , 
                                         iDID.uintData(addr, 1)      //3. 记数uint变string
                                         .toString()
