@@ -1,7 +1,7 @@
 //SPDX-License-Identifier:None
 pragma solidity 0.8.18;
 
-import "./Util.sol";
+import "/Contracts/Util/Access.sol";
 
 contract NFTMarket is Access {
 
