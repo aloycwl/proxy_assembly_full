@@ -6,8 +6,7 @@
 //SPDX-License-Identifier:None
 pragma solidity 0.8.18;
 
-import "./Util/Access.sol";
-import "./Interfaces.sol";
+import "/contracts/Util/Access.sol";
 
 contract DIDFunctions is Access {
 
