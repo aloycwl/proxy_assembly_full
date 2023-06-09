@@ -1,8 +1,8 @@
 //SPDX-License-Identifier:None
 pragma solidity 0.8.18;
 
-import "./Lib.sol";
-import "./Interfaces.sol";
+import "../Lib.sol";
+import "../Interfaces.sol";
 
 //置对合约的访问
 contract Access {
