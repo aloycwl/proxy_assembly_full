@@ -29,23 +29,23 @@ contract NFTMarket is Access, DynamicPrice {
     }
 
     //用户必须发送大于或等于所列价格的以太币
-    function buy(address contractAddr, uint tokenId) external payable {
+    function buy(address contAddr, uint tokenId) external payable {
 
         unchecked {
 
-            uint price = lists[contractAddr][tokenId].price;
+            uint price = lists[contAddr][tokenId].price;
             require(price > 0,                                                      "Item is not for sale");
             require(msg.value >= price,                                             "Insufficient price");
 
-            IERC721 iERC721 = IERC721(contractAddr);
+            IERC721 iERC721 = IERC721(contAddr);
             address seller = iERC721.ownerOf(tokenId);
 
             iERC721.approve(msg.sender, tokenId);                                   //手动授权给新所有者
             iERC721.transferFrom(seller, msg.sender, tokenId);
 
-            pay(_list, owner, 0);payable(seller).transfer(price * (1e4 - fee) / 1e4);                    //转币给卖家减费用
-            payable(owner).transfer(address(this).balance);                         //若有剩余币转给行政
-            remove(contractAddr, tokenId);                                          //把币下市
+            pay(contAddr, tokenId, seller, fee);                                    //转币给卖家减费用
+            pay(contAddr, tokenId, owner, 0);                                       //若有剩余币转给行政
+            remove(contAddr, tokenId);                                              //把币下市
 
         }
 
