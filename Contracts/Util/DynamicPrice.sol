@@ -2,7 +2,7 @@
 pragma solidity 0.8.18;
 
 import "/Contracts/Interfaces.sol";
-import "/Contracts/Util/UintLib.sol";
+import "/Contracts/Util/LibUint.sol";
 
 contract DynamicPrice {
 
