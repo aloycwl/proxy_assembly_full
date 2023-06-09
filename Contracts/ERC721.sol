@@ -159,7 +159,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
         unchecked {
         
             //如果金额已设定，支付到地址
-            pay(_list, owner, 0);
+            pay(address(this), _list, owner, 0);
 
             //检查签名和更新指数
             check(addr, v, r, s);
@@ -197,7 +197,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     //设置等级和价钱
     function setLevel(uint _list, address tokenAddr, uint price) external OnlyAccess {
 
-        setList(_list, tokenAddr, price);
+        setList(address(this), _list, tokenAddr, price);
 
     }
 
