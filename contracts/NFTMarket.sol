@@ -44,15 +44,12 @@ contract NFTMarket is Access {
             IERC721 iERC721 = IERC721(contractAddr);
             address seller = iERC721.ownerOf(tokenId);
 
-            //需要 ApproveForAll
-            iERC721.approve(msg.sender, tokenId);
+            iERC721.approve(msg.sender, tokenId);                                   //手动授权给新所有者
             iERC721.transferFrom(seller, msg.sender, tokenId);
 
-            //payable(seller).transfer(price / 10000 * (10000 - fee));  //1000000000000000000
-            //uint amt = 1e4 - fee;
-            payable(seller).transfer(price * (1e4 - fee) / 1e4);
-            payable(owner).transfer(address(this).balance);
-            remove(contractAddr, tokenId);
+            payable(seller).transfer(price * (1e4 - fee) / 1e4);                    //转币给卖家减费用
+            payable(owner).transfer(address(this).balance);                         //若有剩余币转给行政
+            remove(contractAddr, tokenId);                                          //把币下市
 
         }
 
