@@ -1,19 +1,17 @@
 //SPDX-License-Identifier:None
 pragma solidity 0.8.18;
 
-import "./Interfaces.sol";
 import "./Util.sol";
 
 contract NFTMarket is Access {
 
-    address private wallet;
-    uint private counter;
-    uint public fee = 0; //小数点后两位的百分比，xxx.xx
+    address private owner;
+    uint    public fee = 0; //小数点后两位的百分比，xxx.xx
     mapping(address => mapping(uint => uint)) public list;
 
     constructor() {
 
-        wallet = msg.sender;
+        owner = msg.sender;
 
     }
 
@@ -46,7 +44,7 @@ contract NFTMarket is Access {
             IERC721(contractAddr).transferFrom(seller, msg.sender, tokenId);
 
             payable(seller).transfer(price * (10000 - fee / 10000));
-            payable(wallet).transfer(address(this).balance);
+            payable(owner).transfer(address(this).balance);
             remove(contractAddr, tokenId);
 
         }
