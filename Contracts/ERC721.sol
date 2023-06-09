@@ -159,24 +159,8 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
         external payable {
         unchecked {
         
-            (address tokenAddr, uint price) = getList(_list);
-
-            //如果级别有价格要求，检查用户是否正确发送了价格
-            if (price > 0) 
-                //如果不指定地址，则转入主币，否则从合约地址转入
-                if (tokenAddr == address(0)) {
-
-                    require(msg.value >= price, "Insufficient amount");
-                    payable(owner).transfer(address(this).balance);
-
-                } else {
-
-                    //ERC20需要授权
-                    IERC20 iERC20 = IERC20(tokenAddr);
-                    require(iERC20.transfer(address(this), price), "Insufficient amount");
-                    iERC20.transfer(owner, price);
-
-                }
+            //如果金额已设定，支付到地址
+            pay(_list, owner, 0);
 
             //检查签名和更新指数
             check(addr, v, r, s);
