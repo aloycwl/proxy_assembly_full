@@ -25,22 +25,10 @@ contract Sign {
         unchecked {
 
             require(
-                ecrecover(                                          //7. 还原
-                    keccak256(                                      //6. 再哈希与外部哈希对齐
-                        abi.encodePacked(
-                            keccak256(                              //5. 首先散列和编码
-                                abi.encodePacked(           
-                                        uint(                       
-                                            uint160(addr)           //1. address变uint
-                                        )                   
-                                        .toString().                //2. uint变string
-                                        append(                     //4. 合并字符串
-                                        iDID.uintData(addr, 1)      //3. 记数uint变string
-                                        .toString())
-                                )
-                            )
-                        )
-                    ) , v, r, s
+                ecrecover(           
+                    uint(uint160(addr)).toString().
+                        append(iDID.uintData(addr, 1).toString()).encode()
+                    , v, r, s
                 ) == iProxy.addrs(4),                               "Invalid signature");
             
             //更新计数器以防止类似的散列，并更新最后的时间戳

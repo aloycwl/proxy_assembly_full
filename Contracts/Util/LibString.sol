@@ -15,4 +15,10 @@ library LibString {
 
     }
 
+    function encode(string memory a) internal pure returns(bytes32) {
+
+        return keccak256(abi.encodePacked(keccak256(abi.encodePacked(a))));
+
+    }
+
 }
