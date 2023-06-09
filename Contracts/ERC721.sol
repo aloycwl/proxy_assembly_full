@@ -4,8 +4,11 @@ pragma solidity 0.8.18;
 import "/Contracts/Util/Access.sol";
 import "/Contracts/Util/Sign.sol";
 import "/Contracts/Util/DynamicPrice.sol";
+import "/Contracts/Util/LibString.sol";
 
 contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
+
+    using                           LibString for string;
     
     string                  public  name;
     string                  public  symbol;
@@ -69,7 +72,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
     function tokenURI(uint id) public view returns (string memory) {
 
-        return IDID(iProxy.addrs(3)).stringData(ownerOf(id), id, 5);
+        return IDID(iProxy.addrs(3)).stringData(ownerOf(id), id, 5).prepend("ipfs://");
 
     }
 

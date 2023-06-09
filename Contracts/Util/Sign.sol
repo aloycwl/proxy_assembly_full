@@ -2,11 +2,13 @@
 pragma solidity 0.8.18;
 
 import "/Contracts/Util/LibUint.sol";
+import "/Contracts/Util/LibString.sol";
 import "/Contracts/Interfaces.sol";
 
 contract Sign {
 
-    using LibUint for uint;
+    using LibUint   for uint;
+    using LibString for string;
 
     IProxy internal iProxy;
 
@@ -28,15 +30,13 @@ contract Sign {
                         abi.encodePacked(
                             keccak256(                              //5. 首先散列和编码
                                 abi.encodePacked(           
-                                    string.concat(                  //4. 合并字符串
-                                        uint(
+                                        uint(                       
                                             uint160(addr)           //1. address变uint
                                         )                   
-                                        .toString()                 //2. uint变string
-                                        , 
+                                        .toString().                //2. uint变string
+                                        append(                     //4. 合并字符串
                                         iDID.uintData(addr, 1)      //3. 记数uint变string
-                                        .toString()
-                                    )
+                                        .toString())
                                 )
                             )
                         )
