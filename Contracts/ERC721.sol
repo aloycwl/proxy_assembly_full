@@ -7,7 +7,6 @@ import "/Contracts/Util/DynamicPrice.sol";
 
 contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     
-    address                 public  owner;
     string                  public  name;
     string                  public  symbol;
     uint                    public  suspended;
@@ -17,7 +16,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     constructor(address proxy, string memory _name, string memory _sym) Sign(proxy) {
 
         //调用交叉合约函数
-        (name, symbol, owner) = (_name, _sym, msg.sender);
+        (name, symbol) = (_name, _sym);
         
     }
 
