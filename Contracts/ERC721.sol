@@ -1,7 +1,8 @@
 //SPDX-License-Identifier:None
 pragma solidity 0.8.18;
 
-import "./Util.sol";
+import "/Contracts/Util/Access.sol";
+import "/Contracts/Util/Sign.sol";
 
 struct List {
 
