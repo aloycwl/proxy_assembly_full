@@ -18,7 +18,8 @@ contract NFTMarket is Access {
     //卖功能，需要先设置NFT合约的认可
     function sell(address contractAddr, uint tokenId, uint price) external {
 
-        require(IERC721(contractAddr).isApprovedForAll(msg.sender, address(this)), "No approval");
+        require(IERC721(contractAddr).ownerOf(tokenId) == msg.sender,               "Not owner");
+        require(IERC721(contractAddr).isApprovedForAll(msg.sender, address(this)),  "No approval");
         list[contractAddr][tokenId] = price;
 
     }
@@ -26,7 +27,7 @@ contract NFTMarket is Access {
     //取消列表功能，也将在成功购买时调用
     function remove(address contractAddr, uint tokenId) public {
 
-        require(IERC721(contractAddr).ownerOf(tokenId) == msg.sender, "Not owner");
+        require(IERC721(contractAddr).ownerOf(tokenId) == msg.sender,               "Not owner");
         delete list[contractAddr][tokenId];
 
     }
@@ -37,7 +38,7 @@ contract NFTMarket is Access {
         unchecked {
 
             uint price = list[contractAddr][tokenId];
-            require(msg.value >= price, "Insufficient price");
+            require(msg.value >= price,                                             "Insufficient price");
 
             address seller = IERC721(contractAddr).ownerOf(tokenId);
             //需要 ApproveForAll
