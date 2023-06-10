@@ -2,9 +2,12 @@
 pragma solidity 0.8.18;
 
 import "/Contracts/Util/Access.sol";
+import "/Contracts/Util/LibUint.sol";
 
 //储存和去中心化身份合约
 contract DID is IDID, Access {
+
+    using LibUint for uint;
 
     //DID需要变量和其它储存变量
     mapping(string  => address)                                                     public did;
@@ -68,14 +71,18 @@ contract DID is IDID, Access {
 
         (uint bal, uint[] storage enumBal) = (uintData[addr][index], uintEnum[addr][index]);
 
-        for (uint i; i < bal; ++i)                                  
-            if (enumBal[i] == val) {
+        unchecked {
 
-                enumBal[i] = enumBal[bal - 1];
-                enumBal.pop();
-                break;
+            for (uint i; i < bal; ++i)                                  
+                if (enumBal[i] == val) {
 
-            }
+                    enumBal[i] = enumBal[bal - 1];
+                    enumBal.pop();
+                    break;
+
+                }
+
+        }
 
     }
     
