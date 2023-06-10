@@ -38,4 +38,26 @@ library LibUint {
 
     }
 
+    //增加
+    function p1(uint a) internal pure returns (uint) {
+
+        unchecked {
+
+            return ++a;
+
+        }
+
+    }
+
+    //减除
+    function m1(uint a) internal pure returns (uint) {
+
+        unchecked {
+
+            return --a;
+
+        }
+
+    }
+
 }
