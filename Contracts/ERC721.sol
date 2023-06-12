@@ -4,16 +4,13 @@ pragma solidity 0.8.18;
 import "/Contracts/Util/Access.sol";
 import "/Contracts/Util/Sign.sol";
 import "/Contracts/Util/DynamicPrice.sol";
-import "/Contracts/Util/LibString.sol";
 
 contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
-
-    using                           LibString for string;
     
-    string                  public  name;
-    string                  public  symbol;
-    uint                    public  suspended;
-    uint                    public  count;
+    string  public  name;
+    string  public  symbol;
+    uint    public  suspended;
+    uint    public  count;
 
     //ERC20标准函数 
     constructor(address proxy, string memory _name, string memory _sym) Sign(proxy) {
@@ -72,7 +69,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
     function tokenURI(uint id) public view returns (string memory) {
 
-        return IDID(iProxy.addrs(3)).stringData(ownerOf(id), id, 5).prepend("ipfs://");
+        return string.concat("ipfs://", IDID(iProxy.addrs(3)).stringData(ownerOf(id), id, 5));
 
     }
 
@@ -179,6 +176,13 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
     }
 
+    //设置等级和价钱
+    function setLevel(uint _list, address tokenAddr, uint price) external OnlyAccess {
+
+        setList(address(this), _list, tokenAddr, price);
+
+    }
+
     /***
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     测试功能
@@ -194,13 +198,6 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
             transfer(address(this), msg.sender, count);
 
         }
-
-    }
-
-    //设置等级和价钱
-    function setLevel(uint _list, address tokenAddr, uint price) external OnlyAccess {
-
-        setList(address(this), _list, tokenAddr, price);
 
     }
 

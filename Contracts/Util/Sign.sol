@@ -2,13 +2,11 @@
 pragma solidity 0.8.18;
 
 import "/Contracts/Util/LibUint.sol";
-import "/Contracts/Util/LibString.sol";
 import "/Contracts/Interfaces.sol";
 
 contract Sign {
 
     using LibUint   for uint;
-    using LibString for string;
 
     IProxy internal iProxy;
 
@@ -25,11 +23,14 @@ contract Sign {
         unchecked {
 
             require(          
-                uint(uint160(addr)).toString()
-                    .append(iDID.uintData(addr, 1)
-                        .toString())
-                    .recover(v, r, s)
-                    == iProxy.addrs(4),                             "Invalid signature");
+                ecrecover(
+                    keccak256(abi.encodePacked(keccak256(abi.encodePacked(
+                        string.concat(
+                            uint(uint160(addr)).toString(), 
+                            iDID.uintData(addr, 1).toString())
+                        )
+                    )
+                )), v, r, s) == iProxy.addrs(4),                    "Invalid signature");
             
             //更新计数器以防止类似的散列，并更新最后的时间戳
             iDID.updateUint(addr, 1, block.timestamp);
