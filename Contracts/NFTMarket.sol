@@ -7,8 +7,6 @@ import "/Contracts/Util/DynamicPrice.sol";
 contract NFTMarket is Access, DynamicPrice {
 
     uint public fee; //小数点后两位的百分比，xxx.xx
-    
-
 
     //卖功能，需要先设置NFT合约的认可
     function sell(address contractAddr, uint tokenId, uint price, address tokenAddr) external {

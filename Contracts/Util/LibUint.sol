@@ -26,16 +26,7 @@ library LibUint {
             return string(bstr);
 
         }
-    }
-
-    //将费用转换为百分比, xx.xx
-    function minusPercent(uint a, uint b) internal pure returns (uint) {
-
-        unchecked {
-
-            return a * (1e4 - b) / 1e4;
-        }
-
+        
     }
 
 }

@@ -2,7 +2,7 @@
 pragma solidity 0.8.18;
 
 import "/Contracts/Interfaces.sol";
-import "/Contracts/Util/LibUint.sol";
+//import "/Contracts/Util/LibUint.sol";
 
 contract DynamicPrice {
 
@@ -13,10 +13,19 @@ contract DynamicPrice {
 
     }
 
-    using LibUint for uint;
+    //using LibUint for uint;
 
     address                                     public owner;
     mapping(address => mapping(uint => List))   public lists;
+
+    function minusPercent(uint a, uint b) internal pure returns (uint) {
+
+        unchecked {
+
+            return a * (1e4 - b) / 1e4;
+        }
+
+    }
 
     function pay(address contAddr, uint _list, address to, uint fee) internal {
 
@@ -28,14 +37,14 @@ contract DynamicPrice {
                 if (tokenAddr == address(0)) {
 
                     require(msg.value >= price,                     "Insufficient amount");
-                    payable(to).transfer(address(this).balance.minusPercent(fee));
+                    payable(to).transfer(minusPercent(address(this).balance,fee));
 
                 } else {
 
                     //ERC20需要授权
                     IERC20 iERC20 = IERC20(tokenAddr);
                     require(iERC20.transfer(address(this), price),  "Insufficient amount");
-                    iERC20.transfer(to, iERC20.balanceOf(address(this)).minusPercent(fee));
+                    iERC20.transfer(to, minusPercent(iERC20.balanceOf(address(this)),fee));
 
                 }
 
