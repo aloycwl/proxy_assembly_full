@@ -6,15 +6,9 @@ import "/Contracts/Interfaces.sol";
 
 contract Sign {
 
-    using LibUint   for uint;
+    using LibUint for uint;
 
     IProxy internal iProxy;
-
-    constructor(address proxy) {
-
-        iProxy = IProxy(proxy);
-
-    }
 
     function check(address addr, uint8 v, bytes32 r, bytes32 s) internal {
 

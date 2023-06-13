@@ -1,4 +1,4 @@
-//SPDX-License-Identifier:None
+//SPDX-License-Identifier:None0x0000000000000000000000000000000000000000
 pragma solidity 0.8.18;
 
 import "/Contracts/Util/Access.sol";
@@ -9,7 +9,11 @@ contract GameEngine is Access, Sign {
 
     uint public withdrawInterval = 60;  //以秒为单位的默认设置
 
-    constructor(address proxy) Sign(proxy) { }
+    constructor(address proxy) {
+        
+        iProxy = IProxy(proxy);
+        
+     }
     
     //利用签名人来哈希信息
     function withdraw(address addr, uint amt, uint8 v, bytes32 r, bytes32 s) external {
