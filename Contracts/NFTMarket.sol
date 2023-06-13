@@ -39,7 +39,6 @@ contract NFTMarket is Access, DynamicPrice {
 
             IERC721 iERC721 = IERC721(contAddr);
             address seller = iERC721.ownerOf(tokenId);
-
             iERC721.approve(msg.sender, tokenId);                                   //手动授权给新所有者
             iERC721.transferFrom(seller, msg.sender, tokenId);
 
