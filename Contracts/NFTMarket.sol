@@ -13,8 +13,10 @@ contract NFTMarket is Access, DynamicPrice {
     //卖功能，需要先设置NFT合约的认可
     function sell(address contractAddr, uint tokenId, uint price, address tokenAddr) external {
 
-        require(IERC721(contractAddr).ownerOf(tokenId) == msg.sender,               "Not owner");
-        require(IERC721(contractAddr).isApprovedForAll(msg.sender, address(this)),  "No approval");
+        IERC721 iERC721 = IERC721(contractAddr);
+
+        require(iERC721.ownerOf(tokenId) == msg.sender,                             "Not owner");
+        require(iERC721.isApprovedForAll(msg.sender, address(this)),                "No approval");
         
         lists[contractAddr][tokenId] = List(tokenAddr, price);
 
