@@ -6,7 +6,7 @@ import "/Contracts/Util/DynamicPrice.sol";
 
 contract NFTMarket is Access, DynamicPrice {
 
-    uint                                        public fee; //小数点后两位的百分比，xxx.xx
+    uint public fee; //小数点后两位的百分比，xxx.xx
     
 
 
