@@ -18,7 +18,7 @@ contract Access {
     //用作函数的修饰符
     modifier OnlyAccess() {
 
-        require(access[msg.sender] > 0,             "Insufficient access");
+        require(access[msg.sender] > 0,         "Insufficient access");
         _;
 
     }
@@ -26,16 +26,12 @@ contract Access {
     //只可以管理权限币你小的人和授权比自己低的等级
     function setAccess(address addr, uint u) external OnlyAccess {
 
-        unchecked{
+        uint acc = access[msg.sender];
 
-            uint acc = access[msg.sender];
+        //不能修改访问权限高于用户的地址和授予高于自己的访问权限
+        require(acc > access[addr] && acc > u,  "Invalid access");
 
-            //不能修改访问权限高于用户的地址和授予高于自己的访问权限
-            require(acc > access[addr] && acc > u,  "Invalid access");
-
-            access[addr] = u;
-
-        }
+        access[addr] = u;
 
     }
     
