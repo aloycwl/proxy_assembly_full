@@ -11,7 +11,7 @@ import "Contracts/DID.sol";
 
 contract DIDFunctions is Access {
 
-    IDID iDID;
+    DID iDID;
 
     //用户名不能重复
     modifier OnlyUnique(string calldata userName) {
@@ -21,10 +21,10 @@ contract DIDFunctions is Access {
 
     }
 
-    constructor(address did){
+    constructor(address did) {
 
         //调用主合约
-        iDID = IDID(did);
+        iDID = DID(did);
 
     }
 
