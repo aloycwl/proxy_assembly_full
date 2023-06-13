@@ -46,7 +46,9 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
     function approve(address to, uint id) external {
 
-        require(msg.sender == ownerOf(id) || isApprovedForAll(ownerOf(id), msg.sender),
+        address ownerOfId = ownerOf(id);
+
+        require(msg.sender == ownerOfId || isApprovedForAll(ownerOf(id), msg.sender),
             "Invalid owner");             
 
         IDID(iProxy.addrs(3)).updateUint2(id, 6, to);
@@ -89,9 +91,11 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
         unchecked{
 
-            assert( ownerOf(id) == from ||                              //必须是所有者或
+            address ownerOfId = ownerOf(id);
+
+            assert( ownerOfId == from ||                              //必须是所有者或
                     getApproved(id) == to ||                            //已被授权或
-                    isApprovedForAll(ownerOf(id), from) ||              //待全部出售或
+                    isApprovedForAll(ownerOfId, from) ||              //待全部出售或
                     access[msg.sender] > 0);                            //有管理员权限
             
             IDID iDID = IDID(iProxy.addrs(3));
@@ -187,6 +191,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     测试功能
     在实时部署之前删除
+    0x0000000000000000000000000000000000000000
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ***/
 
