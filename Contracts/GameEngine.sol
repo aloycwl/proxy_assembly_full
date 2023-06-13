@@ -1,4 +1,4 @@
-//SPDX-License-Identifier:None0x0000000000000000000000000000000000000000
+//SPDX-License-Identifier:None
 pragma solidity 0.8.18;
 
 import "Contracts/Util/Access.sol";
