@@ -4,7 +4,7 @@ pragma solidity 0.8.18;
 import "/Contracts/Util/Access.sol";
 
 //代理合同
-contract Proxy is IProxy, Access {
+contract Proxy is Access {
 
     mapping(uint => address) public addrs;
 
