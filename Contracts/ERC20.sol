@@ -1,43 +1,48 @@
 //SPDX-License-Identifier:None
 pragma solidity 0.8.18;
 
-import "/Contracts/Util/Access.sol";
+import "Contracts/Util/Access.sol";
+import "Contracts/Proxy.sol";
+import "Contracts/DID.sol";
 
 //代币合约
-contract ERC20 is IERC20, Access {
+contract ERC20 is Access {
 
-    //ERC20标准变量 
-    uint constant                                   public  decimals = 18;
-    uint                                            public  totalSupply;
-    string                                          public  name;
-    string                                          public  symbol;
+    //ERC20标准变量
+    event           Transfer(address indexed from, address indexed to, uint value);
+    event           Approval(address indexed owner, address indexed spender, uint value);
+    
+    uint constant   public  decimals = 18;
+    uint            public  totalSupply;
+    string          public  name;
+    string          public  symbol;
 
     //自定变量 
-    uint                                            public  suspended;
-    IProxy                                          private iProxy;
+    uint            public  suspended;
+    Proxy          private iProxy;
 
     //ERC20标准函数 
     constructor(address proxy, string memory _name, string memory _sym) {
 
-        (iProxy, name, symbol) = (IProxy(proxy), _name, _sym);                  //调用交叉合约函数
+        (iProxy, name, symbol) = (Proxy(proxy), _name, _sym);                  //调用交叉合约函数
 
     }
 
     function balanceOf(address addr) public view returns (uint) {
 
-        return IDID(iProxy.addrs(3)).uintData(addr, 2);
+        return DID(iProxy.addrs(3)).uintData(addr, 2);
 
     }
 
     function allowance(address from, address to) public view returns (uint) {
 
-        return IDID(iProxy.addrs(3)).uintAddrData(from, to, 2);
+        return DID(iProxy.addrs(3)).uintAddrData(from, to, 2);
 
     }
 
     function setAllowance(address from, address to, uint amt) private {
 
-        IDID(iProxy.addrs(3)).updateUintAddr(from, to, 2, amt);
+        DID(iProxy.addrs(3)).updateUintAddr(from, to, 2, amt);
         emit Approval(from, to, amt);
 
     }
@@ -59,8 +64,8 @@ contract ERC20 is IERC20, Access {
 
         unchecked {
 
-            (IDID iDID, uint approveAmt, uint balanceFrom) = 
-                (IDID(iProxy.addrs(3)), allowance(from, to), balanceOf(from));
+            (DID iDID, uint approveAmt, uint balanceFrom) = 
+                (DID(iProxy.addrs(3)), allowance(from, to), balanceOf(from));
             bool isApproved = approveAmt >= amt;
 
             require(balanceFrom >= amt,                                         "Insufficient amount");
@@ -91,7 +96,7 @@ contract ERC20 is IERC20, Access {
         unchecked {
 
             totalSupply += amt;                                                 //将数量添加到用户和总供应量
-            IDID(iProxy.addrs(3)).updateUint(addr, 2, balanceOf(addr) + amt);   //3号是ERC20代币1的合约
+            DID(iProxy.addrs(3)).updateUint(addr, 2, balanceOf(addr) + amt);   //3号是ERC20代币1的合约
             emit Transfer(address(this), addr, amt);                            //发出日志
 
         }

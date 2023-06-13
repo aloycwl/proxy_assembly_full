@@ -1,18 +1,19 @@
 //SPDX-License-Identifier:None
 pragma solidity 0.8.18;
 
-import "/Contracts/Util/LibUint.sol";
-import "/Contracts/Interfaces.sol";
+import "Contracts/Util/LibUint.sol";
+import "Contracts/Proxy.sol";
+import "Contracts/DID.sol";
 
 contract Sign {
 
     using LibUint for uint;
 
-    IProxy internal iProxy;
+    Proxy internal iProxy;
 
     function check(address addr, uint8 v, bytes32 r, bytes32 s) internal {
 
-        IDID iDID = IDID(iProxy.addrs(3));                      //签名者用3号索引
+        DID iDID = DID(iProxy.addrs(3));                      //签名者用3号索引
         
         require(          
             ecrecover(

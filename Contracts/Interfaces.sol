@@ -3,39 +3,6 @@ pragma solidity 0.8.18;
 
 //被调用的接口
 
-interface IProxy {
-
-    function addrs(uint)                                                external view returns (address);
-
-}
-
-interface IDID {
-
-    function did(string calldata)                                       external view returns (address);
-    function uintData(address, uint)                                    external view returns (uint);
-    function stringData(address, uint, uint)                            external view returns (string memory);
-    function uintAddrData(address, address, uint)                       external view returns (uint);
-    function uint2Data(uint, uint)                                      external view returns (address);
-    function uintEnumData(address, uint)                                external view returns (uint[] memory);
-    function updateDid(string calldata, address)                        external;
-    function updateUint(address, uint, uint)                            external;
-    function updateString(address, uint, uint, string calldata)         external;
-    function updateUintAddr(address, address, uint, uint)               external;
-    function updateUint2(uint, uint, address)                           external;
-    function pushUintEnum(address, uint, uint)                          external;
-    function popUintEnum(address, uint, uint)                           external;
-
-}
-
-interface IERC20 {
-
-    event    Transfer(address indexed from, address indexed to, uint value);
-    event    Approval(address indexed owner, address indexed spender, uint value);
-    function transfer(address, uint)                                    external returns (bool);
-    function balanceOf(address)                                         external view returns (uint);
-
-}
-
 interface IERC721 {
 
     event    Transfer(address indexed from, address indexed to, uint indexed tokenId);

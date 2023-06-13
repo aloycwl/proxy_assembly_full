@@ -1,7 +1,7 @@
 //SPDX-License-Identifier:None
 pragma solidity 0.8.18;
 
-import "/Contracts/Interfaces.sol";
+import "Contracts/ERC20.sol";
 
 contract DynamicPrice {
 
@@ -32,7 +32,7 @@ contract DynamicPrice {
                     } else {
 
                         //ERC20需要授权
-                        IERC20 iERC20 = IERC20(tokenAddr);
+                        ERC20 iERC20 = ERC20(tokenAddr);
                         require(iERC20.transfer(address(this), price),  "Insufficient amount");
                         iERC20.transfer(to, iERC20.balanceOf(address(this)) * (1e4 - fee) / 1e4);
 

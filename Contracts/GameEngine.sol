@@ -1,8 +1,9 @@
 //SPDX-License-Identifier:None0x0000000000000000000000000000000000000000
 pragma solidity 0.8.18;
 
-import "/Contracts/Util/Access.sol";
-import "/Contracts/Util/Sign.sol";
+import "Contracts/Util/Access.sol";
+import "Contracts/Util/Sign.sol";
+import "Contracts/ERC20.sol";
 
 //游戏引擎
 contract GameEngine is Access, Sign {
@@ -11,8 +12,8 @@ contract GameEngine is Access, Sign {
 
     constructor(address proxy) {
         
-        iProxy = IProxy(proxy);
-        
+        iProxy = Proxy(proxy);
+
      }
     
     //利用签名人来哈希信息
@@ -21,13 +22,13 @@ contract GameEngine is Access, Sign {
         unchecked {
 
             //确保账户不会被暂停、提款过早或签名错误
-            IDID idid = IDID(iProxy.addrs(3));
+            DID idid = DID(iProxy.addrs(3));
             require(idid.uintData(addr, 0) == 0,                                    "Account is suspended");
             require(idid.uintData(addr, 1) + withdrawInterval < block.timestamp,    "Withdraw too soon");
 
             check(addr, v, r, s);                           //检查签名和更新指数
 
-            IERC20(iProxy.addrs(2)).transfer(addr, amt);    //开始转移
+            ERC20(iProxy.addrs(2)).transfer(addr, amt);    //开始转移
 
         }
         
