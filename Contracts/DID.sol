@@ -3,10 +3,9 @@ pragma solidity 0.8.18;
 
 import "Contracts/Util/Access.sol";
 import "Contracts/Util/LibUint.sol";
-import "Contracts/Interfaces.sol";
 
 //储存和去中心化身份合约
-contract DID is IDID, Access {
+contract DID is Access {
 
     using LibUint for uint;
 
