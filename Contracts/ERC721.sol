@@ -48,11 +48,11 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
         address ownerOfId = ownerOf(id);
 
-        require(msg.sender == ownerOfId || isApprovedForAll(ownerOf(id), msg.sender),
+        require(msg.sender == ownerOfId || isApprovedForAll(ownerOfId, msg.sender),
             "Invalid owner");             
 
         IDID(iProxy.addrs(3)).updateUint2(id, 6, to);
-        emit Approval(ownerOf(id), to, id);
+        emit Approval(ownerOfId, to, id);
 
     }
 
@@ -93,9 +93,9 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
             address ownerOfId = ownerOf(id);
 
-            assert( ownerOfId == from ||                              //必须是所有者或
+            assert( ownerOfId == from ||                                //必须是所有者或
                     getApproved(id) == to ||                            //已被授权或
-                    isApprovedForAll(ownerOfId, from) ||              //待全部出售或
+                    isApprovedForAll(ownerOfId, from) ||                //待全部出售或
                     access[msg.sender] > 0);                            //有管理员权限
             
             IDID iDID = IDID(iProxy.addrs(3));
