@@ -89,9 +89,9 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
     }
 
-    function transferFrom(address from, address to, uint id) public{
+    function transferFrom(address from, address to, uint id) public {
 
-        unchecked{
+        unchecked {
 
             address ownerOfId = ownerOf(id);
 
