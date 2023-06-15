@@ -1,27 +1,19 @@
 //SPDX-License-Identifier:None
 pragma solidity 0.8.18;
 
+import {LibString} from "Contracts/Util/LibString.sol";
+
 contract Test {
 
-    mapping(address => uint) uintData;
+    using LibString for string;
 
-    /*function storeUint(address addr, uint value) external {
-        assembly {
-            // Store the uint value in the mapping
-            sstore(add(uintData.slot, addr), value)
-        }
-    }*/
+    function test() external pure returns (string memory) {
 
-    function setUint(address addr, uint value) external {
+        string memory a = "a";
+        string memory b = "b";
 
-        uintData[addr] = value;
+        return a.prepend(b);
 
-    }
-
-    function getUint(address addr) external view returns (uint) {
-        return uintData[addr];
     }
 
 }
-
-//

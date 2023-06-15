@@ -11,11 +11,6 @@ contract Access {
 
         access[msg.sender] = 1e3;
 
-        /*assembly {
-            // Store the uint value in the mapping
-            sstore(add(access.slot, calldataload(0x00)), 1000)
-        }*/
-
     }
 
     //用作函数的修饰符
