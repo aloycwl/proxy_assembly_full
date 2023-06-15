@@ -10,14 +10,14 @@ contract GameEngine is Access, Sign {
 
     uint public withdrawInterval = 60;  //以秒为单位的默认设置
 
-    constructor(address proxy) {
+    constructor (address proxy) {
         
         iProxy = Proxy(proxy);
 
      }
     
     //利用签名人来哈希信息
-    function withdraw(address addr, uint amt, uint8 v, bytes32 r, bytes32 s) external {
+    function withdraw (address addr, uint amt, uint8 v, bytes32 r, bytes32 s) external {
 
         unchecked {
 
@@ -35,7 +35,7 @@ contract GameEngine is Access, Sign {
     }
 
     //设置取款间隔
-    function setWithdrawInterval(uint _withdrawInterval) external OnlyAccess {
+    function setWithdrawInterval (uint _withdrawInterval) external OnlyAccess {
 
         withdrawInterval = _withdrawInterval;
 
