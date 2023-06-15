@@ -15,38 +15,38 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     uint    public  count;
 
     //ERC20标准函数 
-    constructor(address proxy, string memory _name, string memory _sym) {
+    constructor (address proxy, string memory _name, string memory _sym) {
 
         //调用交叉合约函数
         (iProxy, name, symbol) = (Proxy(proxy), _name, _sym);
         
     }
 
-    function supportsInterface(bytes4 a) external pure returns (bool) {
+    function supportsInterface (bytes4 a) external pure returns (bool) {
 
         return a == type(IERC721).interfaceId || a == type(IERC721Metadata).interfaceId;
 
     }
 
-    function ownerOf(uint id) public view returns (address) {
+    function ownerOf (uint id) public view returns (address) {
 
         return DID(iProxy.addrs(3)).uint2Data(id, 5);
 
     }
 
-    function getApproved(uint id) public view returns (address) {
+    function getApproved (uint id) public view returns (address) {
 
         return DID(iProxy.addrs(3)).uint2Data(id, 6);
 
     }
 
-    function isApprovedForAll(address from, address to) public view returns (bool) {
+    function isApprovedForAll (address from, address to) public view returns (bool) {
 
         return DID(iProxy.addrs(3)).uintAddrData(from, to, 5) > 0 ? true : false;
 
     }
 
-    function approve(address to, uint id) external {
+    function approve (address to, uint id) external {
 
         address ownerOfId = ownerOf(id);
 
@@ -58,38 +58,38 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
     }
 
-    function setApprovalForAll(address to, bool bol) external {
+    function setApprovalForAll (address to, bool bol) external {
 
         DID(iProxy.addrs(3)).updateUintAddr(msg.sender, to, 5, bol ? 1 : 0);
         emit ApprovalForAll(msg.sender, to, bol);
 
     }
 
-    function balanceOf(address addr) public view returns (uint) {
+    function balanceOf (address addr) public view returns (uint) {
 
         return DID(iProxy.addrs(3)).uintData(addr, 5);
 
     }
 
-    function tokenURI(uint id) public view returns (string memory) {
+    function tokenURI (uint id) public view returns (string memory) {
 
         return string.concat("ipfs://", DID(iProxy.addrs(3)).stringData(ownerOf(id), id, 5));
 
     }
 
-    function safeTransferFrom(address from, address to, uint id) external {
+    function safeTransferFrom (address from, address to, uint id) external {
 
         transferFrom(from, to, id); 
 
     }
 
-    function safeTransferFrom(address from, address to, uint id, bytes memory) external {
+    function safeTransferFrom (address from, address to, uint id, bytes memory) external {
 
         transferFrom(from, to, id); 
 
     }
 
-    function transferFrom(address from, address to, uint id) public {
+    function transferFrom (address from, address to, uint id) public {
 
         unchecked {
 
@@ -112,28 +112,28 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     }
 
     //切换暂停
-    function toggleSuspend() external OnlyAccess {
+    function toggleSuspend () external OnlyAccess {
 
         suspended = suspended == 0 ? 1 : 0;
 
     }
 
     //获取地址拥有的所有代币的数组
-    function tokensOwned(address addr) public view returns(uint[] memory) {
+    function tokensOwned (address addr) public view returns(uint[] memory) {
 
         return DID(iProxy.addrs(3)).uintEnumData(addr, 5);
 
     }
 
     //通过将令牌转移到0x地址来销毁代币
-    function burn(uint id) external {
+    function burn (uint id) external {
 
         transferFrom(ownerOf(id), address(0), id);
 
     }
 
     //用于转移和铸币
-    function transfer(address from, address to, uint id) private {
+    function transfer (address from, address to, uint id) private {
 
         unchecked {
 
@@ -160,7 +160,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     }
 
     //铸造功能，需要先决条件，也用来升级或合并
-    function assetify(uint _list, address addr, uint id, string calldata uri, uint8 v, bytes32 r, bytes32 s) 
+    function assetify (uint _list, address addr, uint id, string calldata uri, uint8 v, bytes32 r, bytes32 s) 
         external payable {
         unchecked {
         
@@ -183,7 +183,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     }
 
     //设置等级和价钱
-    function setLevel(uint _list, address tokenAddr, uint price) external OnlyAccess {
+    function setLevel (uint _list, address tokenAddr, uint price) external OnlyAccess {
 
         lists[address(this)][_list] = List(tokenAddr, price);
 
@@ -197,7 +197,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     ***/
 
-    function tempMint() external {
+    function tempMint () external {
         unchecked {
             //如果新NFT使用count，否则使用代币id
             DID(iProxy.addrs(3)).updateString(msg.sender, ++count, 5, "ipfs://tempNFT");
