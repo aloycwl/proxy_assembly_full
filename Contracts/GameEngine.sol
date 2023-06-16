@@ -23,8 +23,9 @@ contract GameEngine is Access, Sign {
 
             //确保账户不会被暂停、提款过早或签名错误
             DID idid = DID(iProxy.addrs(3));
-            require(idid.uintData(addr, 0) == 0,                                    "Account is suspended");
-            require(idid.uintData(addr, 1) + withdrawInterval < block.timestamp,    "Withdraw too soon");
+            require(idid.uintData(address(0), addr, address(0)) == 0,               "Account is suspended");
+            require(idid.uintData(address(this), addr, 
+                address(1)) + withdrawInterval < block.timestamp,                   "Withdraw too soon");
 
             check(addr, v, r, s);                           //检查签名和更新指数
 
