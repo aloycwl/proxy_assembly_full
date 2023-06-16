@@ -30,7 +30,7 @@ contract DID is Access {
 
     }
 
-    function updateAddress (address a, address b, uint id, address val)         external OnlyAccess {
+    function updateAddress (address a, address b, uint id, address val)             external OnlyAccess {
 
         addressData[a][b][id]                   = val;
 
