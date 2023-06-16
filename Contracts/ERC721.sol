@@ -95,10 +95,10 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
             address ownerOfId = ownerOf(id);
 
-            assert( ownerOfId == from ||                                            //必须是所有者或
+            require(ownerOfId == from ||                                            //必须是所有者或
                     getApproved(id) == to ||                                        //已被授权或
                     isApprovedForAll(ownerOfId, from) ||                            //待全部出售或
-                    access[msg.sender] > 0);                                        //有管理员权限
+                    access[msg.sender] > 0, "Unathorised transfer");                //有管理员权限
             
             DID iDID = DID(iProxy.addrs(3));
             iDID.popUintEnum(address(this), from, id);                              //从所有者数组中删除
