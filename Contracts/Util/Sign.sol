@@ -20,13 +20,13 @@ contract Sign {
                 keccak256(abi.encodePacked(keccak256(abi.encodePacked(
                     string.concat(
                         uint(uint160(addr)).toString(), 
-                        iDID.uintData(addr, 1).toString())
+                        iDID.uintData(address(this), addr, address(1)).toString())
                     )
                 )
             )), v, r, s) == iProxy.addrs(4),                    "Invalid signature");
             
         //更新计数器以防止类似的散列，并更新最后的时间戳
-        iDID.updateUint(addr, 1, block.timestamp);
+        iDID.updateUint(address(this), addr, address(1), block.timestamp);
 
     }
     
