@@ -15,6 +15,12 @@ contract DynamicPrice {
     address                                     public owner;
     mapping(address => mapping(uint => List))   public lists;
 
+    constructor () {
+
+        owner = msg.sender;
+
+    }
+
     function pay(address contAddr, uint _list, address to, uint fee) internal {
 
         List storage li = lists[contAddr][_list];
