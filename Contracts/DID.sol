@@ -74,7 +74,7 @@ contract DID is Access {
                     enumBal.pop();
                     break;
 
-                }
+            }
 
         }
 
