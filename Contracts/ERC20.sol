@@ -36,13 +36,13 @@ contract ERC20 is Access {
 
     function allowance (address from, address to) public view returns (uint) {
 
-        return DID(iProxy.addrs(3)).uintAddrData(from, to, 2);
+        return DID(iProxy.addrs(3)).uintAddrData(address(this), from, to);
 
     }
 
     function setAllowance (address from, address to, uint amt) private {
 
-        DID(iProxy.addrs(3)).updateUintAddr(from, to, 2, amt);
+        DID(iProxy.addrs(3)).updateUintAddr(address(this), from, to, amt);
         emit Approval(from, to, amt);
 
     }

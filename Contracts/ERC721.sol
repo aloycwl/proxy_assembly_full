@@ -42,7 +42,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
     function isApprovedForAll (address from, address to) public view returns (bool) {
 
-        return DID(iProxy.addrs(3)).uintAddrData(from, to, 5) > 0 ? true : false;
+        return DID(iProxy.addrs(3)).uintAddrData(address(this), from, to) > 0 ? true : false;
 
     }
 
@@ -60,7 +60,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
     function setApprovalForAll (address to, bool bol) external {
 
-        DID(iProxy.addrs(3)).updateUintAddr(msg.sender, to, 5, bol ? 1 : 0);
+        DID(iProxy.addrs(3)).updateUintAddr(address(this), msg.sender, to, bol ? 1 : 0);
         emit ApprovalForAll(msg.sender, to, bol);
 
     }
@@ -103,7 +103,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
             DID iDID = DID(iProxy.addrs(3));
             iDID.popUintEnum(address(this), from, id);                  //从所有者数组中删除
             iDID.updateAddress(address(this), 1, id, address(0));       //重置授权
-            iDID.updateUintAddr(from, to, 5, 0);                        //重置操作员授权
+            iDID.updateUintAddr(address(this), from, to, 0);            //重置操作员授权
             iDID.updateUint(from, 5, balanceOf(from) - 1);              //减少前任所有者的余额
             transfer(from, to, id);                                     //开始转移
                                                
