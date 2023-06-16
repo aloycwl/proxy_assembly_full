@@ -11,12 +11,11 @@ contract DID is Access {
 
     //DID需要变量和其它储存变量
     mapping(string  => address)                                                     public did;
-    mapping(address => mapping(uint     => mapping(uint => string)))                public stringData;
-    mapping(address => mapping(uint     => address))                                public addressData;
     mapping(address => mapping(uint     => uint))                                   public uintData;
-    mapping(address => mapping(address  => mapping(uint => uint)))                  public uintAddrData;
     mapping(address => mapping(uint     => uint[]))                                 public uintEnum;
-    mapping(uint    => mapping(uint     => address))                                public uint2Data;
+    mapping(address => mapping(uint     => mapping(uint => string)))                public stringData;
+    mapping(address => mapping(uint     => mapping(uint => address)))               public addressData;
+    mapping(address => mapping(address  => mapping(uint => uint)))                  public uintAddrData;
 
     //数组只可以通过函数来调动
     function uintEnumData(address addr, uint index) public view returns (uint[] memory) {
@@ -25,43 +24,37 @@ contract DID is Access {
     }
     
     //持有权限者才能更新数据
-    function updateDid(string calldata str, address val)                            external OnlyAccess {
+    function updateDid (string calldata str, address val)                           external OnlyAccess {
 
         did[str]                                = val;
 
     }
 
-    function updateString(address addr, uint id, uint index, string calldata val)   external OnlyAccess {
+    function updateString (address addr, uint id, uint index, string calldata val)  external OnlyAccess {
 
         stringData[addr][id][index]             = val;
 
     }
 
-    function updateAddress(address addr, uint index, address val)                   external OnlyAccess {
+    function updateAddress (address addr, uint index, uint id, address val)         external OnlyAccess {
 
-        addressData[addr][index]                = val;
+        addressData[addr][index][id]            = val;
 
     }
 
-    function updateUint(address addr, uint index, uint val)                         external OnlyAccess {
+    function updateUint (address addr, uint index, uint val)                        external OnlyAccess {
 
         uintData[addr][index]                   = val;
 
     }
 
-    function updateUintAddr(address addr1, address addr2, uint index, uint val)     external OnlyAccess {
+    function updateUintAddr (address addr1, address addr2, uint index, uint val)    external OnlyAccess {
 
         uintAddrData[addr1][addr2][index]       = val;
 
     }
 
-    function updateUint2(uint id, uint index, address val)                          external OnlyAccess {
-
-        uint2Data[id][index]                    = val;
-
-    }
-
-    function pushUintEnum(address addr, uint index, uint val)                       external OnlyAccess {
+    function pushUintEnum (address addr, uint index, uint val)                      external OnlyAccess {
 
         uintEnum[addr][index].push              (val);
 
