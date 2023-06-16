@@ -12,9 +12,9 @@ contract DID is Access {
     //DID需要变量和其它储存变量
     mapping(string  => address)                                                     public did;
     mapping(address => mapping(uint     => uint))                                   public uintData;
-    mapping(address => mapping(uint     => mapping(uint => address)))               public addressData;
-    mapping(address => mapping(address  => mapping(uint => uint)))                  public uintAddrData;
-    mapping(address => mapping(address  => mapping(uint => string)))                public stringData;
+    mapping(address => mapping(address  => mapping(address  => uint)))              public uintAddrData;
+    mapping(address => mapping(uint     => mapping(uint     => address)))           public addressData;
+    mapping(address => mapping(address  => mapping(uint     => string)))            public stringData;
     mapping(address => mapping(address  => uint[]))                                 public uintEnum;
 
     //持有权限者才能更新数据
@@ -42,9 +42,9 @@ contract DID is Access {
 
     }
 
-    function updateUintAddr (address addr1, address addr2, uint index, uint val)    external OnlyAccess {
+    function updateUintAddr (address a, address b, address c, uint val)             external OnlyAccess {
 
-        uintAddrData[addr1][addr2][index]       = val;
+        uintAddrData[a][b][c]                   = val;
 
     }
 

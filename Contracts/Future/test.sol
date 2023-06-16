@@ -3,9 +3,9 @@ pragma solidity 0.8.18;
 
 contract Test {
 
-    function test() external pure returns (uint8) {
+    function test() external pure returns (bytes1) {
 
-        return 1;
+        return 0x01;
 
     }
 
