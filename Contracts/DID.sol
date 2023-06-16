@@ -13,7 +13,7 @@ contract DID is Access {
     mapping(string  => address)                                                     public did;
     mapping(address => mapping(uint     => uint))                                   public uintData;
     mapping(address => mapping(address  => mapping(uint => uint)))                  public uintAddrData;
-    mapping(address => mapping(uint     => mapping(uint => address)))               public addressData;
+    mapping(address => mapping(address  => mapping(uint => address)))               public addressData;
     mapping(address => mapping(address  => mapping(uint => string)))                public stringData;
     mapping(address => mapping(uint     => uint[]))                                 public uintEnum;
 
@@ -30,9 +30,9 @@ contract DID is Access {
 
     }
 
-    function updateAddress (address addr, uint index, uint id, address val)         external OnlyAccess {
+    function updateAddress (address a, address b, uint id, address val)         external OnlyAccess {
 
-        addressData[addr][index][id]            = val;
+        addressData[a][b][id]                   = val;
 
     }
 
