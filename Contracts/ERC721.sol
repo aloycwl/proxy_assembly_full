@@ -101,7 +101,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
                     access[msg.sender] > 0);                            //有管理员权限
             
             DID iDID = DID(iProxy.addrs(3));
-            iDID.popUintEnum(from, 5, id);                              //从所有者数组中删除
+            iDID.popUintEnum(address(this), from, id);                  //从所有者数组中删除
             iDID.updateAddress(address(this), 1, id, address(0));       //重置授权
             iDID.updateUintAddr(from, to, 5, 0);                        //重置操作员授权
             iDID.updateUint(from, 5, balanceOf(from) - 1);              //减少前任所有者的余额
@@ -121,7 +121,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     //获取地址拥有的所有代币的数组
     function tokensOwned (address addr) public view returns(uint[] memory) {
 
-        return DID(iProxy.addrs(3)).uintEnumData(addr, 5);
+        return DID(iProxy.addrs(3)).uintEnumData(address(this), addr);
 
     }
 
@@ -140,13 +140,12 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
             require(suspended == 0, "Contract is suspended");           //合约未被暂停
 
             DID iDID = DID(iProxy.addrs(3));
-            if(address(iProxy) != address(0))
-                require(iDID.uintData(from, 0) == 0 &&                  //发件人不能被列入黑名单
-                    iDID.uintData(to, 0) == 0, "User is blacklisted");  //接收者也不能被列入黑名单
+            require(iDID.uintData(from, 0) == 0 &&                      //发件人不能被列入黑名单
+                iDID.uintData(to, 0) == 0, "User is blacklisted");      //接收者也不能被列入黑名单
 
             if (to != address(0)) {
 
-                iDID.pushUintEnum(to, 5, id);                           //添加到新的所有者数组
+                iDID.pushUintEnum(address(this), to, id);               //添加到新的所有者数组
                 iDID.updateUint(to, 5, balanceOf(to) + 1);              //添加当前所有者的余额
                                                                     
             }
