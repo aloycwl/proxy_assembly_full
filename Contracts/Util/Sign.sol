@@ -13,7 +13,7 @@ contract Sign {
 
     function check(address addr, uint8 v, bytes32 r, bytes32 s) internal {
 
-        DID iDID = DID(iProxy.addrs(3));                      //签名者用3号索引
+        DID iDID = DID(iProxy.addrs(3));                        //签名者用3号索引
         
         require(          
             ecrecover(

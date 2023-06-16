@@ -42,7 +42,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
     function isApprovedForAll (address from, address to) public view returns (bool) {
 
-        return DID(iProxy.addrs(3)).uintAddrData(address(this), from, to) > 0 ? true : false;
+        return DID(iProxy.addrs(3)).uintData(address(this), from, to) > 0 ? true : false;
 
     }
 
@@ -60,14 +60,14 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
     function setApprovalForAll (address to, bool bol) external {
 
-        DID(iProxy.addrs(3)).updateUintAddr(address(this), msg.sender, to, bol ? 1 : 0);
+        DID(iProxy.addrs(3)).updateUint(address(this), msg.sender, to, bol ? 1 : 0);
         emit ApprovalForAll(msg.sender, to, bol);
 
     }
 
     function balanceOf (address addr) public view returns (uint) {
 
-        return DID(iProxy.addrs(3)).uintData(addr, 5);
+        return DID(iProxy.addrs(3)).uintData(address(this), addr, address(0));
 
     }
 
@@ -95,17 +95,17 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
             address ownerOfId = ownerOf(id);
 
-            assert( ownerOfId == from ||                                //必须是所有者或
-                    getApproved(id) == to ||                            //已被授权或
-                    isApprovedForAll(ownerOfId, from) ||                //待全部出售或
-                    access[msg.sender] > 0);                            //有管理员权限
+            assert( ownerOfId == from ||                                            //必须是所有者或
+                    getApproved(id) == to ||                                        //已被授权或
+                    isApprovedForAll(ownerOfId, from) ||                            //待全部出售或
+                    access[msg.sender] > 0);                                        //有管理员权限
             
             DID iDID = DID(iProxy.addrs(3));
-            iDID.popUintEnum(address(this), from, id);                  //从所有者数组中删除
-            iDID.updateAddress(address(this), 1, id, address(0));       //重置授权
-            iDID.updateUintAddr(address(this), from, to, 0);            //重置操作员授权
-            iDID.updateUint(from, 5, balanceOf(from) - 1);              //减少前任所有者的余额
-            transfer(from, to, id);                                     //开始转移
+            iDID.popUintEnum(address(this), from, id);                              //从所有者数组中删除
+            iDID.updateAddress(address(this), 1, id, address(0));                   //重置授权
+            iDID.updateUint(address(this), from, to, 0);                            //重置操作员授权
+            iDID.updateUint(address(this), from, address(0), balanceOf(from) - 1);  //减少前任所有者的余额
+            transfer(from, to, id);                                                 //开始转移
                                                
         }
 
@@ -137,21 +137,21 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
         unchecked {
 
-            require(suspended == 0, "Contract is suspended");           //合约未被暂停
+            require(suspended == 0, "Contract is suspended");                       //合约未被暂停
 
             DID iDID = DID(iProxy.addrs(3));
-            require(iDID.uintData(from, 0) == 0 &&                      //发件人不能被列入黑名单
-                iDID.uintData(to, 0) == 0, "User is blacklisted");      //接收者也不能被列入黑名单
+            require(iDID.uintData(address(0), from, address(0)) == 0 &&             //发件人不能被列入黑名单
+                iDID.uintData(address(0), to, address(0)) == 0, "User blacklisted");//接收者也不能被列入黑名单
 
             if (to != address(0)) {
 
-                iDID.pushUintEnum(address(this), to, id);               //添加到新的所有者数组
-                iDID.updateUint(to, 5, balanceOf(to) + 1);              //添加当前所有者的余额
+                iDID.pushUintEnum(address(this), to, id);                           //添加到新的所有者数组
+                iDID.updateUint(address(this), to, address(0), balanceOf(to) + 1);  //添加当前所有者的余额
                                                                     
             }
 
-            iDID.updateAddress(address(this), 0, id, to);               //更新NFT持有者
-            emit Approval(ownerOf(id), to, id);                         //日志
+            iDID.updateAddress(address(this), 0, id, to);                           //更新NFT持有者
+            emit Approval(ownerOf(id), to, id);                                     //日志
             emit Transfer(from, to, id);
 
         }
