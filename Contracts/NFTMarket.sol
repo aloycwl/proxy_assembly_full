@@ -33,7 +33,7 @@ contract NFTMarket is Access, DynamicPrice {
 
         unchecked {
 
-            uint price      = lists[contAddr][tokenId].price;
+            uint price = lists[contAddr][tokenId].price;
             require(price > 0,                                                      "Item is not for sale");
             require(msg.value >= price,                                             "Insufficient price");
 
