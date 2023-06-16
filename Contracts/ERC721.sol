@@ -102,7 +102,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
             
             DID iDID = DID(iProxy.addrs(3));
             iDID.popUintEnum(from, 5, id);                              //从所有者数组中删除
-            iDID.updateAddress(address(this), id, 6, address(0));                        //重置授权
+            iDID.updateAddress(address(this), id, 6, address(0));       //重置授权
             iDID.updateUintAddr(from, to, 5, 0);                        //重置操作员授权
             iDID.updateUint(from, 5, balanceOf(from) - 1);              //减少前任所有者的余额
             transfer(from, to, id);                                     //开始转移
@@ -151,7 +151,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
                                                                     
             }
 
-            iDID.updateAddress(id, 5, to);                                //更新NFT持有者
+            iDID.updateAddress(address(this), id, 5, to);               //更新NFT持有者
             emit Approval(ownerOf(id), to, id);                         //日志
             emit Transfer(from, to, id);
 

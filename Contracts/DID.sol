@@ -12,17 +12,11 @@ contract DID is Access {
     //DID需要变量和其它储存变量
     mapping(string  => address)                                                     public did;
     mapping(address => mapping(uint     => uint))                                   public uintData;
-    mapping(address => mapping(uint     => uint[]))                                 public uintEnum;
-    mapping(address => mapping(uint     => mapping(uint => string)))                public stringData;
-    mapping(address => mapping(uint     => mapping(uint => address)))               public addressData;
     mapping(address => mapping(address  => mapping(uint => uint)))                  public uintAddrData;
+    mapping(address => mapping(uint     => mapping(uint => address)))               public addressData;
+    mapping(address => mapping(uint     => mapping(uint => string)))                public stringData;
+    mapping(address => mapping(uint     => uint[]))                                 public uintEnum;
 
-    //数组只可以通过函数来调动
-    function uintEnumData(address addr, uint index) public view returns (uint[] memory) {
-    
-        return uintEnum[addr][index];
-    }
-    
     //持有权限者才能更新数据
     function updateDid (string calldata str, address val)                           external OnlyAccess {
 
@@ -52,6 +46,12 @@ contract DID is Access {
 
         uintAddrData[addr1][addr2][index]       = val;
 
+    }
+
+    //数组只可以通过函数来调动
+    function uintEnumData(address addr, uint index) public view returns (uint[] memory) {
+    
+        return uintEnum[addr][index];
     }
 
     function pushUintEnum (address addr, uint index, uint val)                      external OnlyAccess {
