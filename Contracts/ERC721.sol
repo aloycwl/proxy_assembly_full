@@ -73,7 +73,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
     function tokenURI (uint id) public view returns (string memory) {
 
-        return string.concat("ipfs://", DID(iProxy.addrs(3)).stringData(ownerOf(id), id, 5));
+        return string.concat("ipfs://", DID(iProxy.addrs(3)).stringData(address(this), id, 5));
 
     }
 
@@ -151,7 +151,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
                                                                     
             }
 
-            iDID.updateAddress(address(this), id, 5, to);                                //更新NFT持有者
+            iDID.updateAddress(id, 5, to);                                //更新NFT持有者
             emit Approval(ownerOf(id), to, id);                         //日志
             emit Transfer(from, to, id);
 
@@ -171,7 +171,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
             check(addr, v, r, s);
 
             //如果新NFT使用count，否则使用代币id
-            DID(iProxy.addrs(3)).updateString(msg.sender, id > 0 ? id : ++count, 5, uri);
+            DID(iProxy.addrs(3)).updateString(address(this), id > 0 ? id : ++count, 5, uri);
 
             //铸币
             if (id == 0) transfer(address(this), addr, count);
