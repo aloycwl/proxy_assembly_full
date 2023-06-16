@@ -7,14 +7,14 @@ contract Access {
     mapping(address => uint) public access;
 
     //立即授予创建者访问权限
-    constructor() {
+    constructor () {
 
         access[msg.sender] = 1e3;
 
     }
 
     //用作函数的修饰符
-    modifier OnlyAccess() {
+    modifier OnlyAccess () {
 
         require(access[msg.sender] > 0,         "Insufficient access");
         _;
@@ -22,7 +22,7 @@ contract Access {
     }
 
     //只可以管理权限币你小的人和授权比自己低的等级
-    function setAccess(address addr, uint u) external OnlyAccess {
+    function setAccess (address addr, uint u) external OnlyAccess {
 
         uint acc = access[msg.sender];
 
