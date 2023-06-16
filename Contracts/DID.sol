@@ -11,7 +11,7 @@ contract DID is Access {
 
     //DID需要变量和其它储存变量
     mapping(string  => address)                                                     public did;
-    mapping(address => mapping(uint     => uint))                                   public uintData;
+    //mapping(address => mapping(uint     => uint))                                   public uintData;
     mapping(address => mapping(address  => mapping(address  => uint)))              public uintAddrData;
     mapping(address => mapping(uint     => mapping(uint     => address)))           public addressData;
     mapping(address => mapping(address  => mapping(uint     => string)))            public stringData;
@@ -36,11 +36,11 @@ contract DID is Access {
 
     }
 
-    function updateUint (address addr, uint index, uint val)                        external OnlyAccess {
+    /*function updateUint (address addr, uint index, uint val)                        external OnlyAccess {
 
         uintData[addr][index]                   = val;
 
-    }
+    }*/
 
     function updateUintAddr (address a, address b, address c, uint val)             external OnlyAccess {
 
