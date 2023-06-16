@@ -31,24 +31,26 @@ contract DIDFunctions is Access {
     //谁都可以创造新用户
     function createUser(address addr, string calldata userName, string calldata name, string calldata bio) 
         external OnlyUnique(userName) {
+            
+            address did = address(iDID);
 
             iDID.updateDid(userName, addr);             //创建用户名
-            iDID.updateString(addr, 0, 0, userName);    //能够从地址中找到用户名
-            iDID.updateString(addr, 1, 0, name);        //添加名称
-            iDID.updateString(addr, 2, 0, bio);         //添加传记
+            iDID.updateString(did, addr, 0, userName);  //能够从地址中找到用户名
+            iDID.updateString(did, addr, 1, name);      //添加名称
+            iDID.updateString(did, addr, 2, bio);       //添加传记
 
     }
 
     //改用户名，删除旧名来省燃料
-    function changeUsername(string calldata strBefore, string calldata strAfter) external OnlyUnique(strAfter) {
+    function changeUsername(string calldata before, string calldata aft) external OnlyUnique(aft) {
 
-        address addr = iDID.did(strBefore);
+        address addr = iDID.did(before);
 
         assert(msg.sender == addr);                     //只有所有者可以更改他们的用户名
         
-        iDID.updateDid(strBefore, address(0));          //删除旧用户名
-        iDID.updateDid(strAfter, addr);                 //添加新用户名
-        iDID.updateString(addr, 0, 0, strAfter);        //更新地址搜索
+        iDID.updateDid(before, address(0));             //删除旧用户名
+        iDID.updateDid(aft, addr);                      //添加新用户名
+        iDID.updateString(address(iDID), addr, 0, aft); //更新地址搜索
 
     }
     
