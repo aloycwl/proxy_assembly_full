@@ -12,10 +12,10 @@ contract DID is Access {
     //DID需要变量和其它储存变量
     mapping(string  => address)                                                     public did;
     mapping(address => mapping(uint     => uint))                                   public uintData;
+    mapping(address => mapping(uint     => mapping(uint => address)))               public addressData;
     mapping(address => mapping(address  => mapping(uint => uint)))                  public uintAddrData;
-    mapping(address => mapping(uint  => mapping(uint => address)))                  public addressData;
     mapping(address => mapping(address  => mapping(uint => string)))                public stringData;
-    mapping(address => mapping(uint     => uint[]))                                 public uintEnum;
+    mapping(address => mapping(address  => uint[]))                                 public uintEnum;
 
     //持有权限者才能更新数据
     function updateDid (string calldata str, address val)                           external OnlyAccess {
@@ -49,20 +49,21 @@ contract DID is Access {
     }
 
     //数组只可以通过函数来调动
-    function uintEnumData(address addr, uint index) public view returns (uint[] memory) {
+    function uintEnumData (address a, address b) public view returns (uint[] memory) {
     
-        return uintEnum[addr][index];
+        return uintEnum[a][b];
     }
 
-    function pushUintEnum (address addr, uint index, uint val)                      external OnlyAccess {
+    function pushUintEnum (address a, address b, uint val)                          external OnlyAccess {
 
-        uintEnum[addr][index].push              (val);
+        uintEnum[a][b].push                     (val);
 
     }
 
-    function popUintEnum(address addr, uint index, uint val)                        external OnlyAccess {
+    function popUintEnum (address a, address b, uint val)                           external OnlyAccess {
 
-        (uint bal, uint[] storage enumBal) = (uintData[addr][index], uintEnum[addr][index]);
+        uint[] storage enumBal = uintEnum[a][b];
+        uint bal               = enumBal.length;
 
         unchecked {
 
