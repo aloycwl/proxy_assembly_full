@@ -30,19 +30,19 @@ contract ERC20 is Access {
 
     function balanceOf (address addr) public view returns (uint) {
 
-        return DID(iProxy.addrs(3)).uintData(addr, 2);
+        return DID(iProxy.addrs(3)).uintData(address(this), addr, address(0));
 
     }
 
     function allowance (address from, address to) public view returns (uint) {
 
-        return DID(iProxy.addrs(3)).uintAddrData(address(this), from, to);
+        return DID(iProxy.addrs(3)).uintData(address(this), from, to);
 
     }
 
     function setAllowance (address from, address to, uint amt) private {
 
-        DID(iProxy.addrs(3)).updateUintAddr(address(this), from, to, amt);
+        DID(iProxy.addrs(3)).updateUint(address(this), from, to, amt);
         emit Approval(from, to, amt);
 
     }
@@ -70,12 +70,13 @@ contract ERC20 is Access {
 
             require(balanceFrom >= amt,                                         "Insufficient amount");
             require(from == msg.sender || isApproved,                           "Unauthorised amount");
-            require(iDID.uintData(from, 0) == 0 && iDID.uintData(to, 0) == 0,   "User suspended");
+            require(iDID.uintData(address(0), from, address(0)) == 0 && 
+                iDID.uintData(address(0), to, address(0)) == 0,                 "User suspended");
             require(suspended == 0,                                             "Contract suspeded");
             
             setAllowance(from, to, isApproved ? approveAmt - amt : 0);          //如果有授权，相应地去除
-            iDID.updateUint(from, 2, balanceFrom - amt);                        //3号是ERC20代币1的合约
-            iDID.updateUint(to, 2, balanceOf(to) + amt);            
+            iDID.updateUint(address(this), from, address(0), balanceFrom - amt);
+            iDID.updateUint(address(this), to, address(0), balanceOf(to) + amt);            
             emit Transfer(from, to, amt);                                       //发出日志
             return true;
 
@@ -96,7 +97,7 @@ contract ERC20 is Access {
         unchecked {
 
             totalSupply += amt;                                                 //将数量添加到用户和总供应量
-            DID(iProxy.addrs(3)).updateUint(addr, 2, balanceOf(addr) + amt);   //3号是ERC20代币1的合约
+            DID(iProxy.addrs(3)).updateUint(address(this), addr, address(0), balanceOf(addr) + amt);
             emit Transfer(address(this), addr, amt);                            //发出日志
 
         }
