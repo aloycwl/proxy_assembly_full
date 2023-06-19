@@ -173,7 +173,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
             DID(iProxy.addrs(3)).updateString(address(this), address(0), id > 0 ? id : ++count, uri);
 
             //铸币
-            if (id == 0) transfer(address(this), addr, count);
+            if (id == 0) transfer(address(0), addr, count);
             //更新元数据详细信息
             else emit MetadataUpdate(id);
 

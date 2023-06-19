@@ -98,7 +98,7 @@ contract ERC20 is Access {
 
             totalSupply += amt;                                                 //将数量添加到用户和总供应量
             DID(iProxy.addrs(3)).updateUint(address(this), addr, address(0), balanceOf(addr) + amt);
-            emit Transfer(address(this), addr, amt);                            //发出日志
+            emit Transfer(address(0), addr, amt);                               //发出日志
 
         }
 
