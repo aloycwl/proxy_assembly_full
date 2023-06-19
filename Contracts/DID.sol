@@ -6,12 +6,20 @@ import "Contracts/Util/Access.sol";
 //储存和去中心化身份合约
 contract DID is Access {
 
+    struct List {
+
+        address tokenAddr;
+        uint    price;
+
+    }
+
     //DID需要变量和其它储存变量
     mapping(string  => address)                                                     public did;
     mapping(address => mapping(address  => mapping(address  => uint)))              public uintData;
     mapping(address => mapping(uint     => mapping(uint     => address)))           public addressData;
     mapping(address => mapping(address  => mapping(uint     => string)))            public stringData;
     mapping(address => mapping(address  => uint[]))                                 public uintEnum;
+    mapping(address => mapping(uint     => List))                                   public lists;
 
     //持有权限者才能更新数据
     function updateDid (string calldata str, address val)                           external OnlyAccess {
