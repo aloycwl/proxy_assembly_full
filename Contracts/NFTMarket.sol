@@ -9,7 +9,7 @@ contract NFTMarket is Access, DynamicPrice {
     uint public fee; //小数点后两位的百分比，xxx.xx
 
     //卖功能，需要先设置NFT合约的认可
-    function sell (address contractAddr, uint tokenId, uint price, address tokenAddr) external {
+    function list (address contractAddr, uint tokenId, uint price, address tokenAddr) external {
 
         IERC721 iERC721 = IERC721(contractAddr);
 
@@ -21,7 +21,7 @@ contract NFTMarket is Access, DynamicPrice {
     }
 
     //取消列表功能，也将在成功购买时调用
-    function remove (address contractAddr, uint tokenId) public {
+    function delist (address contractAddr, uint tokenId) public {
 
         require(IERC721(contractAddr).ownerOf(tokenId) == msg.sender,               "Not owner");
         delete lists[contractAddr][tokenId];
@@ -46,7 +46,7 @@ contract NFTMarket is Access, DynamicPrice {
             pay(contAddr, tokenId, seller, fee);                                    //转币给卖家减费用
             pay(contAddr, tokenId, owner, 0);                                       //若有剩余币转给行政
             
-            remove(contAddr, tokenId);                                              //把币下市
+            delist(contAddr, tokenId);                                              //把币下市
 
         }
 
