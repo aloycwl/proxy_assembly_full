@@ -188,23 +188,4 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
     }
 
-    /***
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    测试功能
-    在实时部署之前删除
-    0x0000000000000000000000000000000000000000
-    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    ***/
-
-    function tempMint () external {
-        unchecked {
-            //如果新NFT使用count，否则使用代币id
-            DID(iProxy.addrs(3)).updateString(address(this), address(0), ++count, "ipfs://tempNFT");
-            //铸币
-            transfer(address(this), msg.sender, count);
-
-        }
-
-    }
-
 }
