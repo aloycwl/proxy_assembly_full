@@ -3,8 +3,18 @@ pragma solidity ^0.8.0;
 
 import "Contracts/Util/DynamicPrice.sol";
 import "Contracts/Interfaces.sol";
+import "Contracts/NFTMarketData.sol";
 
 contract NFTMarket is Access, DynamicPrice {
+
+    NFTMarketData nmd;
+
+    constructor (address data) {
+
+        //自动生成数据库若地址为0
+        nmd = NFTMarketData(data == address(0) ? data : address(new NFTMarketData()));
+
+    }
 
     uint public fee; //小数点后两位的百分比，xxx.xx
 
@@ -49,13 +59,6 @@ contract NFTMarket is Access, DynamicPrice {
             delist(contAddr, tokenId);                                              //把币下市
 
         }
-
-    }
-
-    //设置费用
-    function setFee (uint amt) external OnlyAccess {
-
-        fee = amt;
 
     }
     
