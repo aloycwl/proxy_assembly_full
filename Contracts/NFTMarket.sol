@@ -15,8 +15,8 @@ contract NFTMarket is Access, DynamicPrice {
 
         require(iERC721.ownerOf(tokenId) == msg.sender,                             "Not owner");
         require(iERC721.isApprovedForAll(msg.sender, address(this)),                "No approval");
-        
-        lists[contractAddr][tokenId] = List(tokenAddr, price);
+
+        DID(iProxy.addrs(3)).updateList(address(this), contractAddr, tokenId, List(tokenAddr, price));
 
     }
 

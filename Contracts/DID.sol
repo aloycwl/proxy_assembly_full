@@ -19,7 +19,7 @@ contract DID is Access {
     mapping(address => mapping(uint     => mapping(uint     => address)))           public addressData;
     mapping(address => mapping(address  => mapping(uint     => string)))            public stringData;
     mapping(address => mapping(address  => uint[]))                                 public uintEnum;
-    mapping(address => mapping(uint     => List))                                   public lists;
+    mapping(address => mapping(address  => mapping(uint     => List)))              public lists;
 
     //持有权限者才能更新数据
     function updateDid (string calldata str, address val)                           external OnlyAccess {
@@ -42,7 +42,13 @@ contract DID is Access {
 
     function updateUint (address a, address b, address c, uint val)                 external OnlyAccess {
 
-        uintData[a][b][c]                   = val;
+        uintData[a][b][c]                       = val;
+
+    }
+
+    function updateList (address a, address b, uint c, List calldata val)           external OnlyAccess {
+
+        lists[a][b][c]                          = val;
 
     }
 

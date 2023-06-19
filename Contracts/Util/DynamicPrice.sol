@@ -6,7 +6,7 @@ import "Contracts/ERC20.sol";
 contract DynamicPrice {
 
     address public  owner;
-    Proxy private iProxy;
+    Proxy   public iProxy;
 
     constructor (address proxy) {
 
@@ -17,7 +17,7 @@ contract DynamicPrice {
 
     function pay(address contAddr, uint _list, address to, uint fee) internal {
 
-        (address tokenAddr, uint price) = DID(iProxy.addrs(3)).lists(contAddr, _list);
+        (address tokenAddr, uint price) = DID(iProxy.addrs(3)).lists(address(this), contAddr, _list);
 
         unchecked {
 
