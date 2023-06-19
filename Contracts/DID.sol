@@ -3,15 +3,15 @@ pragma solidity ^0.8.0;
 
 import "Contracts/Util/Access.sol";
 
+struct List {
+
+    address tokenAddr;
+    uint    price;
+
+}
+
 //储存和去中心化身份合约
 contract DID is Access {
-
-    struct List {
-
-        address tokenAddr;
-        uint    price;
-
-    }
 
     //DID需要变量和其它储存变量
     mapping(string  => address)                                                     public did;

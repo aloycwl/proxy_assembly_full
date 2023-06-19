@@ -14,7 +14,7 @@ contract GameEngine is Access, Sign {
         
         iProxy = Proxy(proxy);
 
-     }
+    }
     
     //利用签名人来哈希信息
     function withdraw (address addr, uint amt, uint8 v, bytes32 r, bytes32 s) external {
@@ -29,7 +29,7 @@ contract GameEngine is Access, Sign {
 
             check(addr, v, r, s);                           //检查签名和更新指数
 
-            ERC20(iProxy.addrs(2)).transfer(addr, amt);    //开始转移
+            ERC20(iProxy.addrs(2)).transfer(addr, amt);     //开始转移
 
         }
         

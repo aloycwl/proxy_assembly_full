@@ -5,26 +5,20 @@ import "Contracts/ERC20.sol";
 
 contract DynamicPrice {
 
-    struct List {
+    address public  owner;
+    Proxy private iProxy;
+    //mapping(address => mapping(uint => List))   public lists;
 
-        address tokenAddr;
-        uint    price;
-
-    }
-
-    address                                     public owner;
-    mapping(address => mapping(uint => List))   public lists;
-
-    constructor () {
+    constructor (address proxy) {
 
         owner = msg.sender;
+        iProxy = Proxy(proxy);
 
     }
 
     function pay(address contAddr, uint _list, address to, uint fee) internal {
 
-        List storage li = lists[contAddr][_list];
-        (address tokenAddr, uint price) = (li.tokenAddr, li.price);
+        (address tokenAddr, uint price) = DID(iProxy.addrs(3)).lists(contAddr, _list);
 
         unchecked {
 
