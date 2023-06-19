@@ -39,4 +39,6 @@ contract Proxy is Access {
 12. Proxy setAddr(ERC721, 5)
 13. ERC20 mint() 铸币到 GameEngine
 14. Proxy 加签名者 setAddr(signer, 4)
+15. NFTMarket
+16. DID setAccess() 授权到 NFTMarket
 */

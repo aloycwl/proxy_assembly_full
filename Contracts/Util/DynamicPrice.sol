@@ -7,7 +7,6 @@ contract DynamicPrice {
 
     address public  owner;
     Proxy private iProxy;
-    //mapping(address => mapping(uint => List))   public lists;
 
     constructor (address proxy) {
 
