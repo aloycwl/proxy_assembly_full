@@ -6,6 +6,8 @@ import "Contracts/Interfaces.sol";
 
 contract NFTMarket is Access, DynamicPrice {
 
+    constructor (address iProxy) DynamicPrice (iProxy) { }
+
     uint public fee; //小数点后两位的百分比，xxx.xx
 
     //卖功能，需要先设置NFT合约的认可
@@ -21,10 +23,10 @@ contract NFTMarket is Access, DynamicPrice {
     }
 
     //取消列表功能，也将在成功购买时调用
-    function delist (address contractAddr, uint tokenId) public {
+    function delist (address contAddr, uint tokenId) public {
 
-        require(IERC721(contractAddr).ownerOf(tokenId) == msg.sender,               "Not owner");
-        delete lists[contractAddr][tokenId];
+        require(IERC721(contAddr).ownerOf(tokenId) == msg.sender,               "Not owner");
+        DID(iProxy.addrs(3)).deleteList(address(this), contAddr, tokenId);
 
     }
 
@@ -33,7 +35,7 @@ contract NFTMarket is Access, DynamicPrice {
 
         unchecked {
 
-            uint price = lists[contAddr][tokenId].price;
+            (, uint price) = DID(iProxy.addrs(3)).lists(address(this), contAddr, tokenId);
             require(price > 0,                                                      "Item is not for sale");
             require(msg.value >= price,                                             "Insufficient price");
 

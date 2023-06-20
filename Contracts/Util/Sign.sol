@@ -9,7 +9,7 @@ contract Sign {
 
     using LibUint for uint;
 
-    Proxy internal iProxy;
+    Proxy private iProxy;
 
     function check(address addr, uint8 v, bytes32 r, bytes32 s) internal {
 

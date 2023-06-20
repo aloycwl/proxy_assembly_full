@@ -46,9 +46,16 @@ contract DID is Access {
 
     }
 
+    //特别用于NFTMarket和ERC721的储存
     function updateList (address a, address b, uint c, List calldata val)           external OnlyAccess {
 
         lists[a][b][c]                          = val;
+
+    }
+
+    function deleteList (address a, address b, uint c)                              external OnlyAccess {
+
+        delete lists[a][b][c];
 
     }
 
