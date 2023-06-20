@@ -15,7 +15,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     uint    public  count;
 
     //ERC20标准函数 
-    constructor (address proxy, string memory _name, string memory _sym) {
+    constructor (address proxy, string memory _name, string memory _sym) DynamicPrice(proxy) {
 
         //调用交叉合约函数
         (iProxy, name, symbol) = (Proxy(proxy), _name, _sym);
@@ -184,7 +184,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     //设置等级和价钱
     function setLevel (uint _list, address tokenAddr, uint price) external OnlyAccess {
 
-        lists[address(this)][_list] = List(tokenAddr, price);
+        DID(iProxy.addrs(3)).updateList(address(this), address(this), _list, List(tokenAddr, price));
 
     }
 
