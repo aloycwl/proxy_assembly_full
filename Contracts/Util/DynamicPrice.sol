@@ -5,8 +5,8 @@ import "Contracts/ERC20.sol";
 
 contract DynamicPrice {
 
-    address public      owner;
-    Proxy   internal    iProxy;
+    address public  owner;
+    Proxy   private iProxy;
 
     constructor (address proxy) {
 

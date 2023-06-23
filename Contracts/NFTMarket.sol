@@ -6,7 +6,13 @@ import "Contracts/Interfaces.sol";
 
 contract NFTMarket is Access, DynamicPrice {
 
-    constructor (address iProxy) DynamicPrice (iProxy) { }
+    Proxy private iProxy;
+
+    constructor (address proxy) DynamicPrice (proxy) {
+
+        iProxy = Proxy(proxy);
+
+     }
 
     uint public fee; //小数点后两位的百分比，xxx.xx
 
