@@ -8,8 +8,8 @@ import "Contracts/ERC20.sol";
 //游戏引擎
 contract GameEngine is Access, Sign {
 
-    uint    public      withdrawInterval = 60;  //以秒为单位的默认设置
-    Proxy   private     iProxy;
+    uint    public  withdrawInterval = 60;  //以秒为单位的默认设置
+    Proxy   private iProxy;
 
     constructor (address proxy) Sign (proxy) {
         

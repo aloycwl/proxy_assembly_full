@@ -34,10 +34,10 @@ contract Proxy is Access {
 7.  ERC20
 8.  DID setAccess() 授权到 ERC20
 9.  Proxy setAddr(ERC20, 2)
-10. ERC721
-11. DID setAccess() 授权到 ERC721
-12. Proxy setAddr(ERC721, 5)
-13. ERC20 mint() 铸币到 GameEngine
+10. ERC20 mint() 铸币到 GameEngine
+11. ERC721
+12. DID setAccess() 授权到 ERC721
+13. Proxy setAddr(ERC721, 5)
 14. Proxy 加签名者 setAddr(signer, 4)
 15. NFTMarket
 16. DID setAccess() 授权到 NFTMarket
