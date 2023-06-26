@@ -40,5 +40,6 @@ ERC721
 Proxy   => setAddr      (ERC721,    5)
 DID     => setAccess    (ERC721,    100) 
 Market
+Proxy   => setAddr      (Market,    6)
 DID     => setAccess    (Market,    100) 
 */
