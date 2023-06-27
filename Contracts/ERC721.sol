@@ -152,7 +152,6 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
             }
 
             iDID.updateAddress(address(this), 0, id, to);                           //更新NFT持有者
-            emit Approval(ownerOf(id), to, id);                                     //日志
             emit Transfer(from, to, id);
 
         }
