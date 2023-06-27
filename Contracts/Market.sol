@@ -8,7 +8,7 @@ contract NFTMarket is Access, DynamicPrice {
 
     Proxy private iProxy;
 
-    event Record (address contAddr, address tokenAddr, uint tokenId, uint price);
+    event Item (address contAddr, address tokenAddr, uint tokenId, uint price);
 
     constructor (address proxy) DynamicPrice (proxy) {
 
@@ -28,7 +28,7 @@ contract NFTMarket is Access, DynamicPrice {
 
         DID(iProxy.addrs(3)).updateList(address(this), contAddr, tokenId, List(tokenAddr, price));
 
-        emit Record (contAddr, tokenAddr, tokenId, price);
+        emit Item (contAddr, tokenAddr, tokenId, price);
 
     }
 
@@ -38,7 +38,7 @@ contract NFTMarket is Access, DynamicPrice {
         require(IERC721(contAddr).ownerOf(tokenId) == msg.sender,                   "Not owner");
         DID(iProxy.addrs(3)).deleteList(address(this), contAddr, tokenId);
 
-        emit Record (contAddr, address(0), tokenId, 0);
+        emit Item (contAddr, address(0), tokenId, 0);
 
     }
 
