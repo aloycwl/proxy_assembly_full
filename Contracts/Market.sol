@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "Contracts/Util/DynamicPrice.sol";
 import "Contracts/Interfaces.sol";
 
-contract NFTMarket is Access, DynamicPrice {
+contract Market is Access, DynamicPrice {
 
     Proxy private iProxy;
 
