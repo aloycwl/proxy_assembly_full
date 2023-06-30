@@ -2,9 +2,8 @@
 pragma solidity ^0.8.18;
 pragma abicoder v1;
 
-import {Access}           from "Contracts/Util/Access.sol";
 import {DID, Sign, Proxy} from "Contracts/Util/Sign.sol";
-import {ERC20}            from "Contracts/ERC20.sol";
+import {Access, ERC20}    from "Contracts/ERC20.sol";
 
 //游戏引擎
 contract Engine is Access, Sign {
