@@ -1,6 +1,6 @@
 //SPDX-License-Identifier:None
 pragma solidity ^0.8.18;
-pragma abicoder v2;
+pragma abicoder v1;
 
 import "Contracts/Util/DynamicPrice.sol";
 import "Contracts/Interfaces.sol";
@@ -27,7 +27,7 @@ contract Market is Access, DynamicPrice {
         require(iERC721.ownerOf(tokenId) == msg.sender,                             "Not owner");
         require(iERC721.isApprovedForAll(msg.sender, address(this)),                "No approval");
 
-        DID(iProxy.addrs(3)).updateList(address(this), contAddr, tokenId, List(tokenAddr, price));
+        DID(iProxy.addrs(3)).updateList(address(this), contAddr, tokenId, tokenAddr, price);
 
         emit Item (contAddr, tokenAddr, tokenId, price);
 
