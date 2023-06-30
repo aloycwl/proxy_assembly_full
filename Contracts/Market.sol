@@ -2,8 +2,8 @@
 pragma solidity ^0.8.18;
 pragma abicoder v1;
 
-import "Contracts/Util/DynamicPrice.sol";
-import "Contracts/Interfaces.sol";
+import {DID, Access, DynamicPrice, Proxy} from "Contracts/Util/DynamicPrice.sol";
+import {IERC721}                          from "Contracts/Interfaces.sol";
 
 contract Market is Access, DynamicPrice {
 
