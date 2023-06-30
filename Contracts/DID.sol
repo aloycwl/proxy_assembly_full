@@ -2,7 +2,7 @@
 pragma solidity ^0.8.18;
 pragma abicoder v1;
 
-import "Contracts/Util/Access.sol";
+import {Access} from "Contracts/Util/Access.sol";
 
 struct List {
 

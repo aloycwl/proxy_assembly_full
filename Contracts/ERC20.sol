@@ -2,9 +2,9 @@
 pragma solidity ^0.8.18;
 pragma abicoder v1;
 
-import "Contracts/Util/Access.sol";
-import "Contracts/Proxy.sol";
-import "Contracts/DID.sol";
+import {Access} from "Contracts/Util/Access.sol";
+import {Proxy}  from "Contracts/Proxy.sol";
+import {DID}    from "Contracts/DID.sol";
 
 //代币合约
 contract ERC20 is Access {
