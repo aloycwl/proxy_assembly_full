@@ -2,7 +2,7 @@
 pragma solidity ^0.8.18;
 pragma abicoder v1;
 
-import "Contracts/ERC20.sol";
+import {DID, Proxy, ERC20} from "Contracts/ERC20.sol";
 
 contract DynamicPrice {
 
