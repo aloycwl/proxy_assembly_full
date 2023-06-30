@@ -2,9 +2,9 @@
 pragma solidity ^0.8.18;
 pragma abicoder v1;
 
-import "Contracts/Util/LibUint.sol";
-import "Contracts/Proxy.sol";
-import "Contracts/DID.sol";
+import {LibUint} from "Contracts/Util/LibUint.sol";
+import {Proxy}   from "Contracts/Proxy.sol";
+import {DID}     from "Contracts/DID.sol";
 
 contract Sign {
 
