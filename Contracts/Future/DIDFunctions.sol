@@ -3,8 +3,8 @@ pragma solidity ^0.8.18;
 pragma abicoder v1;
 
 
-import "Contracts/Util/Access.sol";
-import "Contracts/DID.sol";
+import {Access} from "Contracts/Util/Access.sol";
+import {DID}    from "Contracts/DID.sol";
 
 contract DIDFunctions is Access {
 
