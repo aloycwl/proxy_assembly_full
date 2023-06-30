@@ -1,5 +1,6 @@
 //SPDX-License-Identifier:None
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.18;
+pragma abicoder v2;
 
 import "Contracts/Util/DynamicPrice.sol";
 import "Contracts/Interfaces.sol";
