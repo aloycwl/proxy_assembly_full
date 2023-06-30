@@ -2,10 +2,9 @@
 pragma solidity ^0.8.18;
 pragma abicoder v1;
 
-import {Access}                   from "Contracts/Util/Access.sol";
-import {DID, Sign}                from "Contracts/Util/Sign.sol";
-import {DynamicPrice, Proxy}      from "Contracts/Util/DynamicPrice.sol";
-import {IERC721, IERC721Metadata} from "Contracts/Interfaces.sol";
+import {Access}                                        from "Contracts/Util/Access.sol";
+import {DID, Sign}                                     from "Contracts/Util/Sign.sol";
+import {DynamicPrice, Proxy, IERC721, IERC721Metadata} from "Contracts/Util/DynamicPrice.sol";
 
 contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     

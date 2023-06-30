@@ -1,6 +1,5 @@
 //SPDX-License-Identifier:None
-pragma solidity ^0.8.18;
-pragma abicoder v1;
+pragma solidity ^0.8.0;
 
 //被调用的接口
 
