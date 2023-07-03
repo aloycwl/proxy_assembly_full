@@ -1,7 +1,8 @@
 //SPDX-License-Identifier:None
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.18;
+pragma abicoder v1;
 
-import "Contracts/Util/Access.sol";
+import {Access} from "Contracts/Util/Access.sol";
 
 struct List {
 
@@ -47,9 +48,9 @@ contract DID is Access {
     }
 
     //特别用于NFTMarket和ERC721的储存
-    function updateList (address a, address b, uint c, List calldata val)           external OnlyAccess {
+    function updateList (address a, address b, uint c, address d, uint e)           external OnlyAccess {
 
-        lists[a][b][c]                          = val;
+        lists[a][b][c]                          = List(d, e);
 
     }
 

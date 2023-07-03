@@ -1,9 +1,9 @@
 //SPDX-License-Identifier:None
-pragma solidity 0.8.18;
+pragma solidity ^0.8.18;
+pragma abicoder v1;
 
-import "Contracts/Util/Access.sol";
-import "Contracts/Util/Sign.sol";
-import "Contracts/ERC20.sol";
+import {DID, Sign, Proxy} from "Contracts/Util/Sign.sol";
+import {Access, ERC20}    from "Contracts/ERC20.sol";
 
 //游戏引擎
 contract Engine is Access, Sign {

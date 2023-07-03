@@ -1,13 +1,8 @@
-/***
-需要DID授权
-先部署这合约，拿此地址再过去DID合约setAccess
-***/
-
 //SPDX-License-Identifier:None
-pragma solidity 0.8.18;
+pragma solidity ^0.8.18;
+pragma abicoder v1;
 
-import "Contracts/Util/Access.sol";
-import "Contracts/DID.sol";
+import {Access, DID} from "Contracts/DID.sol";
 
 contract DIDFunctions is Access {
 

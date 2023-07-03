@@ -1,11 +1,9 @@
 //SPDX-License-Identifier:None
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.18;
+pragma abicoder v1;
 
-import "Contracts/Util/Access.sol";
-import "Contracts/Util/Sign.sol";
-import "Contracts/Util/DynamicPrice.sol";
-import "Contracts/DID.sol";
-import "Contracts/Interfaces.sol";
+import {Sign}                                                       from "Contracts/Util/Sign.sol";
+import {DID, Access, DynamicPrice, Proxy, IERC721, IERC721Metadata} from "Contracts/Util/DynamicPrice.sol";
 
 contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     
@@ -184,7 +182,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     //设置等级和价钱
     function setLevel (uint _list, address tokenAddr, uint price) external OnlyAccess {
 
-        DID(iProxy.addrs(3)).updateList(address(this), address(this), _list, List(tokenAddr, price));
+        DID(iProxy.addrs(3)).updateList(address(this), address(this), _list, tokenAddr, price);
 
     }
 
