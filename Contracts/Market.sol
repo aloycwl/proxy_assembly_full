@@ -6,7 +6,7 @@ import {DID, DynamicPrice, Proxy, IERC721, Access} from "Contracts/Util/DynamicP
 
 contract Market is Access, DynamicPrice {
 
-    Proxy public iProxy;
+    Proxy private iProxy;
 
     event Item (address contAddr, address tokenAddr, uint tokenId, uint price);
 
