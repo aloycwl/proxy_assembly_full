@@ -28,8 +28,9 @@ contract DynamicPrice {
                 //如果不指定地址，则转入主币，否则从合约地址转入
                 if (tokenAddr == address(0)) {
 
-                    require(msg.value >= price,                     "Insufficient $");
+                    require(msg.value >= price,                                     "Insufficient $");
                     payable(to).transfer(address(this).balance * (1e4 - fee) / 1e4);
+                    payable(owner).transfer(address(this).balance);
 
                 } else {
 
@@ -37,6 +38,7 @@ contract DynamicPrice {
                     ERC20 iERC20 = ERC20(tokenAddr);
                     require(iERC20.transferFrom(msg.sender, address(this), price),  "Insufficient ERC20");
                     iERC20.transferFrom(address(this), to, iERC20.balanceOf(address(this)) * (1e4 - fee) / 1e4);
+                    iERC20.transferFrom(address(this), owner, iERC20.balanceOf(address(this)));
 
                 }
 

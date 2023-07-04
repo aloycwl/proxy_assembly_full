@@ -57,7 +57,6 @@ contract Market is Access, DynamicPrice {
             iERC721.transferFrom(seller, msg.sender, tokenId);
 
             pay(contAddr, tokenId, seller, fee);                                    //转币给卖家减费用
-            pay(contAddr, tokenId, owner, 0);                                       //若有剩余币转给行政
             
             delist(contAddr, tokenId);                                              //把币下市
 
