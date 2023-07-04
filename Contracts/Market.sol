@@ -6,7 +6,7 @@ import {DID, DynamicPrice, Proxy, IERC721, Access} from "Contracts/Util/DynamicP
 
 contract Market is Access, DynamicPrice {
 
-    Proxy private iProxy;
+    Proxy public iProxy;
 
     event Item (address contAddr, address tokenAddr, uint tokenId, uint price);
 
@@ -49,7 +49,6 @@ contract Market is Access, DynamicPrice {
 
             (, uint price) = DID(iProxy.addrs(3)).lists(address(this), contAddr, tokenId);
             require(price > 0,                                                      "Item is not for sale");
-            require(msg.value >= price,                                             "Insufficient price");
 
             IERC721 iERC721 = IERC721(contAddr);
             address seller  = iERC721.ownerOf(tokenId);

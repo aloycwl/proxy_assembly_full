@@ -179,6 +179,14 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
     }
 
+    /*** TESTING ONLY ***/
+    function assetify () external payable {
+        
+            DID(iProxy.addrs(3)).updateString(address(this), address(0), ++count, "hahaha");
+            transfer(address(0), msg.sender, count);
+
+    }
+
     //设置等级和价钱
     function setLevel (uint _list, address tokenAddr, uint price) external OnlyAccess {
 
