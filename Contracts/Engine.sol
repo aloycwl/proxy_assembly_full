@@ -9,13 +9,8 @@ import {Access, ERC20} from "Contracts/ERC20.sol";
 contract Engine is Access, Sign {
 
     uint  public  withdrawInterval = 60;  //以秒为单位的默认设置
-    DID   private iDID;
 
-    constructor(address did) Sign(did) {
-        
-        iDID = DID(did);
-
-    }
+    constructor(address did) Sign(did) { }
     
     //利用签名人来哈希信息
     function withdraw(address addr, uint amt, uint8 v, bytes32 r, bytes32 s) external {

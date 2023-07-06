@@ -9,7 +9,7 @@ contract Sign {
 
     using LibUint for uint;
 
-    DID private iDID;
+    DID internal iDID;
 
     constructor(address did) {
 
