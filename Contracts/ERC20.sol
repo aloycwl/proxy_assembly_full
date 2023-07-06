@@ -60,7 +60,7 @@ contract ERC20 is Access {
             (uint approveAmt, uint balanceFrom) = (allowance(from, to), balanceOf(from));
             bool isApproved = approveAmt >= amt;
 
-            require(balanceFrom >= amt || access[msg.sender] > 0,   "Insufficient balance");
+            require(balanceFrom >= amt,                             "Insufficient balance");
             require(from == msg.sender || isApproved,               "Insufficient approval");
             require(iDID.uintData(address(0), from, address(0)) == 0 && 
                 iDID.uintData(address(0), to, address(0)) == 0,     "User suspended");
@@ -69,12 +69,19 @@ contract ERC20 is Access {
             //相应去除授权
             iDID.updateUint(address(this), from, to, isApproved ? approveAmt - amt : 0);
             iDID.updateUint(address(this), from, address(0), balanceFrom - amt);
-            iDID.updateUint(address(this), to, address(0), balanceOf(to) + amt);         
 
-            emit Transfer(from, to, amt);
+            _transfer(from, to, amt);
             return true;
 
         }
+
+    }
+
+    //方便转移和铸币
+    function _transfer(address from, address to, uint amt) private {
+
+        iDID.updateUint(address(this), to, address(0), balanceOf(to) + amt);         
+        emit Transfer(from, to, amt);
 
     }
 
@@ -91,7 +98,7 @@ contract ERC20 is Access {
         unchecked {
 
             totalSupply += amt;                                     //将数量添加到用户和总供应量
-            transferFrom(address(0), addr, amt);                    //调用标准函数
+            _transfer(address(0), addr, amt);                       //调用标准函数
 
         }
 
