@@ -2,8 +2,7 @@
 pragma solidity ^0.8.18;
 pragma abicoder v1;
 
-import {DID, ERC20, Access}       from "Contracts/ERC20.sol";
-//import {IERC721, IERC721Metadata} from "Contracts/Interfaces.sol";
+import {DID, ERC20, Access} from "Contracts/ERC20.sol";
 
 contract DynamicPrice {
 
