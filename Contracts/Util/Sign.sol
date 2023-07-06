@@ -12,7 +12,7 @@ contract Sign {
 
     Proxy private iProxy;
 
-    constructor (address proxy) {
+    constructor(address proxy) {
 
         iProxy = Proxy(proxy);
 
@@ -20,7 +20,7 @@ contract Sign {
 
     function check(address addr, uint8 v, bytes32 r, bytes32 s) internal {
 
-        DID iDID = DID(iProxy.addrs(3));                        //签名者用3号索引
+        DID iDID = DID(iProxy.addrs(3));     //签名者用3号索引
         
         require(          
             ecrecover(
@@ -30,7 +30,7 @@ contract Sign {
                         iDID.uintData(address(this), addr, address(1)).toString())
                     )
                 )
-            )), v, r, s) == iProxy.addrs(4),                    "Invalid signature");
+            )), v, r, s) == iProxy.addrs(4), "Invalid signature");
             
         //更新计数器以防止类似的散列，并更新最后的时间戳
         iDID.updateUint(address(this), addr, address(1), block.timestamp);
