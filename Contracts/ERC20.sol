@@ -40,27 +40,21 @@ contract ERC20 is Access {
 
     }
 
-    function setAllowance(address from, address to, uint amt) private {
+    function approve(address to, uint amt) public returns(bool) {
 
-        DID(iProxy.addrs(3)).updateUint(address(this), from, to, amt);
-        emit Approval(from, to, amt);
-
-    }
-
-    function approve(address to, uint amt) public returns (bool) {
-
-        setAllowance(msg.sender, to, amt);
+        DID(iProxy.addrs(3)).updateUint(address(this), msg.sender, to, amt);
+        emit Approval(msg.sender, to, amt);
         return true;
 
     }
 
-    function transfer(address to, uint amt) external returns (bool) {
+    function transfer(address to, uint amt) external returns(bool) {
 
         return transferFrom(msg.sender, to, amt);
 
     }
 
-    function transferFrom(address from, address to, uint amt) public returns (bool) {
+    function transferFrom(address from, address to, uint amt) public returns(bool) {
 
         unchecked {
 
@@ -74,10 +68,12 @@ contract ERC20 is Access {
                 iDID.uintData(address(0), to, address(0)) == 0,                 "User suspended");
             require(suspended == 0,                                             "Contract suspended");
             
-            setAllowance(from, to, isApproved ? approveAmt - amt : 0);          //如果有授权，相应地去除
+            //相应去除授权
+            iDID.updateUint(address(this), from, to, isApproved ? approveAmt - amt : 0);
             iDID.updateUint(address(this), from, address(0), balanceFrom - amt);
-            iDID.updateUint(address(this), to, address(0), balanceOf(to) + amt);            
-            emit Transfer(from, to, amt);                                       //发出日志
+            iDID.updateUint(address(this), to, address(0), balanceOf(to) + amt);         
+
+            emit Transfer(from, to, amt);
             return true;
 
         }
