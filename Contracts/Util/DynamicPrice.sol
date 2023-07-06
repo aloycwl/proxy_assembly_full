@@ -2,24 +2,23 @@
 pragma solidity ^0.8.18;
 pragma abicoder v1;
 
-import {DID, Proxy, ERC20, Access} from "Contracts/ERC20.sol";
+import {DID, ERC20, Access} from "Contracts/ERC20.sol";
 import {IERC721, IERC721Metadata}  from "Contracts/Interfaces.sol";
 
 contract DynamicPrice {
 
     address public  owner;
-    Proxy   private iProxy;
+    DID     private iDID;
 
-    constructor(address proxy) {
+    constructor(address did) {
 
-        owner = msg.sender;
-        iProxy = Proxy(proxy);
+        (owner, iDID) = (msg.sender, DID(did));
 
     }
 
     function pay(address contAddr, uint _list, address to, uint fee) internal {
 
-        (address tokenAddr, uint price) = DID(iProxy.addrs(3)).lists(address(this), contAddr, _list);
+        (address tokenAddr, uint price) = iDID.lists(address(this), contAddr, _list);
 
         unchecked {
 
