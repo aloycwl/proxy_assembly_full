@@ -28,7 +28,7 @@ contract DID is Access {
     mapping(address => mapping(address  => mapping(uint     => string)))    public stringData;
     mapping(address => mapping(address  => mapping(uint     => List)))      public lists;
     mapping(address => mapping(address  => uint[]))                         public uintEnum;
-    
+
     //数组只可以通过函数来调动
     function uintEnumData(address a, address b) public view returns(uint[] memory) {
     
@@ -38,32 +38,32 @@ contract DID is Access {
     //持有权限者才能更新数据
     function updateDid(string calldata a, address b)                        external OnlyAccess {
 
-        did[a]                                = b;
+        did[a]                  = b;
 
     }
 
     function updateString(address a, address b, uint c, string calldata d)  external OnlyAccess {
 
-        stringData[a][b][c]                 = d;
+        stringData[a][b][c]     = d;
 
     }
 
     function updateAddress(address a, uint b, uint c, address d)            external OnlyAccess {
 
-        addressData[a][b][c]                   = d;
+        addressData[a][b][c]    = d;
 
     }
 
     function updateUint(address a, address b, address c, uint d)            external OnlyAccess {
 
-        uintData[a][b][c]                       = d;
+        uintData[a][b][c]       = d;
 
     }
 
     //特别用于NFTMarket和ERC721的储存
     function updateList(address a, address b, uint c, address d, uint e)    external OnlyAccess {
 
-        lists[a][b][c]                          = List(d, e);
+        lists[a][b][c]          = List(d, e);
 
     }
 
@@ -75,7 +75,7 @@ contract DID is Access {
 
     function pushUintEnum(address a, address b, uint c)                     external OnlyAccess {
 
-        uintEnum[a][b].push                     (c);
+        uintEnum[a][b].push(c);
 
     }
 
