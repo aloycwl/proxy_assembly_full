@@ -26,8 +26,14 @@ contract DID is Access {
     mapping(address => mapping(address  => mapping(address  => uint)))      public uintData;
     mapping(address => mapping(uint     => mapping(uint     => address)))   public addressData;
     mapping(address => mapping(address  => mapping(uint     => string)))    public stringData;
-    mapping(address => mapping(address  => uint[]))                         public uintEnum;
     mapping(address => mapping(address  => mapping(uint     => List)))      public lists;
+    mapping(address => mapping(address  => uint[]))                         public uintEnum;
+    
+    //数组只可以通过函数来调动
+    function uintEnumData(address a, address b) public view returns(uint[] memory) {
+    
+        return uintEnum[a][b];
+    }
 
     //持有权限者才能更新数据
     function updateDid(string calldata a, address b)                        external OnlyAccess {
@@ -65,12 +71,6 @@ contract DID is Access {
 
         delete lists[a][b][c];
 
-    }
-
-    //数组只可以通过函数来调动
-    function uintEnumData(address a, address b) public view returns(uint[] memory) {
-    
-        return uintEnum[a][b];
     }
 
     function pushUintEnum(address a, address b, uint c)                     external OnlyAccess {
