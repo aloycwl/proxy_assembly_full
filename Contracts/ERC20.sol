@@ -72,7 +72,7 @@ contract ERC20 is Access {
             require(from == msg.sender || isApproved,                           "Unauthorised amount");
             require(iDID.uintData(address(0), from, address(0)) == 0 && 
                 iDID.uintData(address(0), to, address(0)) == 0,                 "User suspended");
-            require(suspended == 0,                                             "Contract suspeded");
+            require(suspended == 0,                                             "Contract suspended");
             
             setAllowance(from, to, isApproved ? approveAmt - amt : 0);          //如果有授权，相应地去除
             iDID.updateUint(address(this), from, address(0), balanceFrom - amt);
