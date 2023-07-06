@@ -10,7 +10,7 @@ library LibUint {
         unchecked {
 
             //如果整数为 0，则不需要移位
-            if (a == 0) return "0";                   
+            if(a == 0) return "0";                   
             uint j = a;
             uint l;
 
