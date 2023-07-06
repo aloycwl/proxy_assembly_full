@@ -2,8 +2,7 @@
 pragma solidity ^0.8.18;
 pragma abicoder v1;
 
-import {Access, Proxy} from "Contracts/Proxy.sol";
-import {DID}           from "Contracts/DID.sol";
+import {Access, DID} from "Contracts/DID.sol";
 
 //代币合约
 contract ERC20 is Access {
@@ -19,30 +18,30 @@ contract ERC20 is Access {
 
     //自定变量 
     uint            public  suspended;
-    Proxy           private iProxy;
+    DID             private iDID;
 
     //ERC20标准函数 
-    constructor(address proxy, string memory nam, string memory sym) {
+    constructor(address did, string memory nam, string memory sym) {
 
-        (iProxy, name, symbol) = (Proxy(proxy), nam, sym);                      //调用交叉合约函数
+        (iDID, name, symbol) = (DID(did), nam, sym);                        //调用交叉合约函数
 
     }
 
     function balanceOf(address addr) public view returns(uint) {
 
-        return DID(iProxy.addrs(3)).uintData(address(this), addr, address(0));
+        return iDID.uintData(address(this), addr, address(0));
 
     }
 
     function allowance(address from, address to) public view returns(uint) {
 
-        return DID(iProxy.addrs(3)).uintData(address(this), from, to);
+        return iDID.uintData(address(this), from, to);
 
     }
 
     function approve(address to, uint amt) public returns(bool) {
 
-        DID(iProxy.addrs(3)).updateUint(address(this), msg.sender, to, amt);
+        iDID.updateUint(address(this), msg.sender, to, amt);
         emit Approval(msg.sender, to, amt);
         return true;
 
@@ -58,8 +57,7 @@ contract ERC20 is Access {
 
         unchecked {
 
-            (DID iDID, uint approveAmt, uint balanceFrom) = 
-                (DID(iProxy.addrs(3)), allowance(from, to), balanceOf(from));
+            (uint approveAmt, uint balanceFrom) = (allowance(from, to), balanceOf(from));
             bool isApproved = approveAmt >= amt;
 
             require(balanceFrom >= amt || access[msg.sender] > 0,               "Insufficient balance");
