@@ -21,13 +21,21 @@ contract DynamicPrice {
 
         unchecked {
 
-            if(price > 0) 
+            if(price > 0) {
+
+                if(fee > 0) price *= (1e4 - fee) / 1e4;
+
+                /*assembly {
+                        
+                    price := div(mul(price, sub(10000, fee)), 10000)
+
+                }*/
                 
                 //如果不指定地址，则转入主币，否则从合约地址转入
                 if(tokenAddr == address(0)) {
 
                     require(msg.value >= price,                                    "Insufficient coin");
-                    payable(to).transfer(price * (1e4 - fee) / 1e4);
+                    payable(to).transfer(price);
                     payable(owner).transfer(address(this).balance);
 
                 } else {
@@ -35,10 +43,12 @@ contract DynamicPrice {
                     //ERC20需要授权
                     ERC20 iERC20 = ERC20(tokenAddr);
                     require(iERC20.transferFrom(msg.sender, address(this), price), "Insufficient ERC20");
-                    iERC20.transferFrom(address(this), to, price * (1e4 - fee) / 1e4);
+                    iERC20.transferFrom(address(this), to, price);
                     iERC20.transferFrom(address(this), owner, iERC20.balanceOf(address(this)));
 
                 }
+
+            }
 
         }
 
