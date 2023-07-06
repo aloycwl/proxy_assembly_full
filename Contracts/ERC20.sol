@@ -9,8 +9,8 @@ import {DID}           from "Contracts/DID.sol";
 contract ERC20 is Access {
 
     //ERC20标准变量
-    event           Transfer (address indexed from, address indexed to, uint value);
-    event           Approval (address indexed owner, address indexed spender, uint value);
+    event           Transfer(address indexed from, address indexed to, uint value);
+    event           Approval(address indexed owner, address indexed spender, uint value);
     
     uint constant   public  decimals = 18;
     uint            public  totalSupply;
@@ -22,45 +22,45 @@ contract ERC20 is Access {
     Proxy           private iProxy;
 
     //ERC20标准函数 
-    constructor (address proxy, string memory _name, string memory _sym) {
+    constructor(address proxy, string memory _name, string memory _sym) {
 
         (iProxy, name, symbol) = (Proxy(proxy), _name, _sym);                  //调用交叉合约函数
 
     }
 
-    function balanceOf (address addr) public view returns (uint) {
+    function balanceOf(address addr) public view returns(uint) {
 
         return DID(iProxy.addrs(3)).uintData(address(this), addr, address(0));
 
     }
 
-    function allowance (address from, address to) public view returns (uint) {
+    function allowance(address from, address to) public view returns(uint) {
 
         return DID(iProxy.addrs(3)).uintData(address(this), from, to);
 
     }
 
-    function setAllowance (address from, address to, uint amt) private {
+    function setAllowance(address from, address to, uint amt) private {
 
         DID(iProxy.addrs(3)).updateUint(address(this), from, to, amt);
         emit Approval(from, to, amt);
 
     }
 
-    function approve (address to, uint amt) public returns (bool) {
+    function approve(address to, uint amt) public returns (bool) {
 
         setAllowance(msg.sender, to, amt);
         return true;
 
     }
 
-    function transfer (address to, uint amt) external returns (bool) {
+    function transfer(address to, uint amt) external returns (bool) {
 
         return transferFrom(msg.sender, to, amt);
 
     }
 
-    function transferFrom (address from, address to, uint amt) public returns (bool) {
+    function transferFrom(address from, address to, uint amt) public returns (bool) {
 
         unchecked {
 
@@ -68,8 +68,8 @@ contract ERC20 is Access {
                 (DID(iProxy.addrs(3)), allowance(from, to), balanceOf(from));
             bool isApproved = approveAmt >= amt;
 
-            require(balanceFrom >= amt,                                         "Insufficient amount");
-            require(from == msg.sender || isApproved,                           "Unauthorised amount");
+            require(balanceFrom >= amt,                                         "Insufficient balance");
+            require(from == msg.sender || isApproved,                           "Insufficient approval");
             require(iDID.uintData(address(0), from, address(0)) == 0 && 
                 iDID.uintData(address(0), to, address(0)) == 0,                 "User suspended");
             require(suspended == 0,                                             "Contract suspended");
@@ -85,14 +85,14 @@ contract ERC20 is Access {
     }
 
     //切换暂停
-    function toggleSuspend () external OnlyAccess {
+    function toggleSuspend() external OnlyAccess {
 
         suspended = suspended == 0 ? 1 : 0;
 
     }
 
     //铸币代币，只允许有访问权限的地址
-    function mint (address addr, uint amt) public OnlyAccess {
+    function mint(address addr, uint amt) public OnlyAccess {
 
         unchecked {
 
@@ -105,7 +105,7 @@ contract ERC20 is Access {
     }
 
     //烧毁代币，任何人都可以烧毁
-    function burn (uint amt) external {
+    function burn(uint amt) external {
 
         unchecked {
 
