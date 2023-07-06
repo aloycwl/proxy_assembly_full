@@ -8,9 +8,9 @@ contract Market is Access, DynamicPrice {
 
     Proxy private iProxy;
 
-    event Item (address contAddr, address tokenAddr, uint tokenId, uint price);
+    event Item(address contAddr, address tokenAddr, uint tokenId, uint price);
 
-    constructor (address proxy) DynamicPrice (proxy) {
+    constructor(address proxy) DynamicPrice (proxy) {
 
         iProxy = Proxy(proxy);
 
@@ -19,7 +19,7 @@ contract Market is Access, DynamicPrice {
     uint public fee; //小数点后两位的百分比，xxx.xx
 
     //卖功能，需要先设置NFT合约的认可
-    function list (address contAddr, uint tokenId, uint price, address tokenAddr) external {
+    function list(address contAddr, uint tokenId, uint price, address tokenAddr) external {
 
         IERC721 iERC721 = IERC721(contAddr);
 
@@ -28,22 +28,22 @@ contract Market is Access, DynamicPrice {
 
         DID(iProxy.addrs(3)).updateList(address(this), contAddr, tokenId, tokenAddr, price);
 
-        emit Item (contAddr, tokenAddr, tokenId, price);
+        emit Item(contAddr, tokenAddr, tokenId, price);
 
     }
 
     //取消列表功能，也将在成功购买时调用
-    function delist (address contAddr, uint tokenId) public {
+    function delist(address contAddr, uint tokenId) public {
 
         require(IERC721(contAddr).ownerOf(tokenId) == msg.sender,                   "Not owner");
         DID(iProxy.addrs(3)).deleteList(address(this), contAddr, tokenId);
 
-        emit Item (contAddr, address(0), tokenId, 0);
+        emit Item(contAddr, address(0), tokenId, 0);
 
     }
 
     //用户必须发送大于或等于所列价格的以太币
-    function buy (address contAddr, uint tokenId) external payable {
+    function buy(address contAddr, uint tokenId) external payable {
 
         unchecked {
 
@@ -65,7 +65,7 @@ contract Market is Access, DynamicPrice {
     }
 
     //设置费用
-    function setFee (uint amt) external OnlyAccess {
+    function setFee(uint amt) external OnlyAccess {
 
         fee = amt;
 
