@@ -22,9 +22,9 @@ contract ERC20 is Access {
     Proxy           private iProxy;
 
     //ERC20标准函数 
-    constructor(address proxy, string memory _name, string memory _sym) {
+    constructor(address proxy, string memory nam, string memory sym) {
 
-        (iProxy, name, symbol) = (Proxy(proxy), _name, _sym);                  //调用交叉合约函数
+        (iProxy, name, symbol) = (Proxy(proxy), nam, sym);                      //调用交叉合约函数
 
     }
 
@@ -62,7 +62,7 @@ contract ERC20 is Access {
                 (DID(iProxy.addrs(3)), allowance(from, to), balanceOf(from));
             bool isApproved = approveAmt >= amt;
 
-            require(balanceFrom >= amt,                                         "Insufficient balance");
+            require(balanceFrom >= amt || access[msg.sender] > 0,               "Insufficient balance");
             require(from == msg.sender || isApproved,                           "Insufficient approval");
             require(iDID.uintData(address(0), from, address(0)) == 0 && 
                 iDID.uintData(address(0), to, address(0)) == 0,                 "User suspended");
@@ -93,8 +93,7 @@ contract ERC20 is Access {
         unchecked {
 
             totalSupply += amt;                                                 //将数量添加到用户和总供应量
-            DID(iProxy.addrs(3)).updateUint(address(this), addr, address(0), balanceOf(addr) + amt);
-            emit Transfer(address(0), addr, amt);                               //发出日志
+            transferFrom(address(0), addr, amt);                                //调用标准函数
 
         }
 
@@ -105,9 +104,8 @@ contract ERC20 is Access {
 
         unchecked {
 
-            assert(balanceOf(msg.sender) >= amt);                               //燃烧者必须有足够的代币
-            transferFrom(msg.sender, address(0), amt);                          //调用标准函数
             totalSupply -= amt;                                                 //减少总供应
+            transferFrom(msg.sender, address(0), amt);                          //调用标准函数
 
         }
 
