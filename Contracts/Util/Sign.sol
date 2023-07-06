@@ -8,8 +8,8 @@ import {DID}     from "Contracts/DID.sol";
 contract Sign {
 
     using LibUint for uint;
-    
-    DID public iDID;
+
+    DID private iDID;
 
     constructor(address did) {
 

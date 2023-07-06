@@ -14,6 +14,13 @@ struct List {
 //储存和去中心化身份合约
 contract DID is Access {
 
+    constructor() {
+
+        //设置签名人
+        addressData[address(0)][0][0] = msg.sender;
+
+    }
+
     //DID需要变量和其它储存变量
     mapping(string  => address)                                             public did;
     mapping(address => mapping(address  => mapping(address  => uint)))      public uintData;
