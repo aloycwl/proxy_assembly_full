@@ -8,12 +8,12 @@ import {Access, ERC20} from "Contracts/ERC20.sol";
 //游戏引擎
 contract Engine is Access, Sign {
 
-    uint    public  withdrawInterval = 60;  //以秒为单位的默认设置
-    Proxy   private iProxy;
+    uint  public  withdrawInterval = 60;  //以秒为单位的默认设置
+    DID   private iDID;
 
-    constructor(address proxy) Sign (proxy) {
+    constructor(address did) Sign(did) {
         
-        iProxy = Proxy(proxy);
+        iDID = DID(did);
 
     }
     
@@ -23,14 +23,13 @@ contract Engine is Access, Sign {
         unchecked {
 
             //确保账户不会被暂停、提款过早或签名错误
-            DID idid = DID(iProxy.addrs(3));
-            require(idid.uintData(address(0), addr, address(0)) == 0,   "User suspended");
-            require(idid.uintData(address(this), addr, 
-                address(1)) + withdrawInterval < block.timestamp,       "Withdraw too soon");
+            require(iDID.uintData(address(0), addr, address(0)) == 0,       "User suspended");
+            require(iDID.uintData(address(this), addr, 
+                address(1)) + withdrawInterval < block.timestamp,           "Withdraw too soon");
 
-            check(addr, v, r, s);                                       //检查签名和更新指数
+            check(addr, v, r, s);                                           //检查签名和更新指数
 
-            ERC20(iProxy.addrs(2)).transfer(addr, amt);                 //开始转移
+            ERC20(iDID.addressData(address(0), 0, 2)).transfer(addr, amt);  //开始转移
 
         }
 
