@@ -2,22 +2,22 @@
 pragma solidity ^0.8.18;
 pragma abicoder v1;
 
-import {Sign}                                                       from "Contracts/Util/Sign.sol";
-import {DID, Access, DynamicPrice, Proxy, IERC721, IERC721Metadata} from "Contracts/Util/DynamicPrice.sol";
+import {Sign}                                                from "Contracts/Util/Sign.sol";
+import {DID, Access, DynamicPrice, IERC721, IERC721Metadata} from "Contracts/Util/DynamicPrice.sol";
 
 contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     
-    string  public  name;
-    string  public  symbol;
-    uint    public  suspended;
-    uint    public  count;
-    Proxy   private iProxy;
+    string public  name;
+    string public  symbol;
+    uint   public  suspended;
+    uint   public  count;
+    DID    private iDID;
 
     //ERC20标准函数 
-    constructor(address proxy, string memory _name, string memory _sym) DynamicPrice(proxy) Sign(proxy) {
+    constructor(address did, string memory _name, string memory _sym) DynamicPrice(did) Sign(did) {
 
         //调用交叉合约函数
-        (iProxy, name, symbol) = (Proxy(proxy), _name, _sym);
+        (iDID, name, symbol) = (DID(did), _name, _sym);
         
     }
 
@@ -29,19 +29,19 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
     function ownerOf(uint id) public view returns(address) {
 
-        return DID(iProxy.addrs(3)).addressData(address(this), 0, id);
+        return iDID.addressData(address(this), 0, id);
 
     }
 
     function getApproved(uint id) public view returns(address) {
 
-        return DID(iProxy.addrs(3)).addressData(address(this), 1, id);
+        return iDID.addressData(address(this), 1, id);
 
     }
 
     function isApprovedForAll(address from, address to) public view returns(bool) {
 
-        return DID(iProxy.addrs(3)).uintData(address(this), from, to) > 0 ? true : false;
+        return iDID.uintData(address(this), from, to) > 0 ? true : false;
 
     }
 
@@ -52,27 +52,27 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
         require(msg.sender == ownerOfId || isApprovedForAll(ownerOfId, msg.sender),
             "Invalid owner");             
 
-        DID(iProxy.addrs(3)).updateAddress(address(this), 1, id, to);
+        iDID.updateAddress(address(this), 1, id, to);
         emit Approval(ownerOfId, to, id);
 
     }
 
     function setApprovalForAll(address to, bool bol) external {
 
-        DID(iProxy.addrs(3)).updateUint(address(this), msg.sender, to, bol ? 1 : 0);
+        iDID.updateUint(address(this), msg.sender, to, bol ? 1 : 0);
         emit ApprovalForAll(msg.sender, to, bol);
 
     }
 
     function balanceOf(address addr) public view returns (uint) {
 
-        return DID(iProxy.addrs(3)).uintData(address(this), addr, address(0));
+        return iDID.uintData(address(this), addr, address(0));
 
     }
 
     function tokenURI(uint id) public view returns (string memory) {
 
-        return string.concat("ipfs://", DID(iProxy.addrs(3)).stringData(address(this), address(0), id));
+        return string.concat("ipfs://", iDID.stringData(address(this), address(0), id));
 
     }
 
@@ -99,7 +99,6 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
                     isApprovedForAll(ownerOfId, from) ||                            //待全部出售或
                     access[msg.sender] > 0, "Unathorised transfer");                //有管理员权限
             
-            DID iDID = DID(iProxy.addrs(3));
             iDID.popUintEnum(address(this), from, id);                              //从所有者数组中删除
             iDID.updateAddress(address(this), 1, id, address(0));                   //重置授权
             iDID.updateUint(address(this), from, to, 0);                            //重置操作员授权
@@ -120,7 +119,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     //获取地址拥有的所有代币的数组
     function tokensOwned(address addr) public view returns(uint[] memory) {
 
-        return DID(iProxy.addrs(3)).uintEnumData(address(this), addr);
+        return iDID.uintEnumData(address(this), addr);
 
     }
 
@@ -138,7 +137,6 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
             require(suspended == 0, "Contract is suspended");                       //合约未被暂停
 
-            DID iDID = DID(iProxy.addrs(3));
             require(iDID.uintData(address(0), from, address(0)) == 0 &&             //发件人不能被列入黑名单
                 iDID.uintData(address(0), to, address(0)) == 0, "User blacklisted");//接收者也不能被列入黑名单
 
@@ -168,7 +166,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
             check(addr, v, r, s);
 
             //如果新NFT使用count，否则使用代币id
-            DID(iProxy.addrs(3)).updateString(address(this), address(0), id > 0 ? id : ++count, uri);
+            iDID.updateString(address(this), address(0), id > 0 ? id : ++count, uri);
 
             //铸币
             if (id == 0) transfer(address(0), addr, count);
@@ -182,7 +180,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     /*** TESTING ONLY ***/
     function assetify() external payable {
         
-            DID(iProxy.addrs(3)).updateString(address(this), address(0), ++count, "hahaha");
+            iDID.updateString(address(this), address(0), ++count, "hahaha");
             transfer(address(0), msg.sender, count);
 
     }
@@ -190,7 +188,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     //设置等级和价钱
     function setLevel(uint _list, address tokenAddr, uint price) external OnlyAccess {
 
-        DID(iProxy.addrs(3)).updateList(address(this), address(this), _list, tokenAddr, price);
+        iDID.updateList(address(this), address(this), _list, tokenAddr, price);
 
     }
 
