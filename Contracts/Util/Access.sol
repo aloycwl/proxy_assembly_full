@@ -28,7 +28,7 @@ contract Access {
         uint acc = access[msg.sender];
 
         //不能修改访问权限高于用户的地址和授予高于自己的访问权限
-        require(acc > access[addr] && acc > u, "Invalid access");
+        require(acc > access[addr] && acc > u,  "Invalid access");
 
         access[addr] = u;
 
