@@ -11,13 +11,12 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     string public  symbol;
     uint   public  suspended;
     uint   public  count;
-    DID    private iDID;
 
     //ERC20标准函数 
     constructor(address did, string memory _name, string memory _sym) DynamicPrice(did) Sign(did) {
 
         //调用交叉合约函数
-        (iDID, name, symbol) = (DID(did), _name, _sym);
+        (name, symbol) = (_name, _sym);
         
     }
 
