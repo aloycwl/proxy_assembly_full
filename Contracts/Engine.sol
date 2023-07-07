@@ -16,7 +16,7 @@ contract Engine is Access, Sign {
         unchecked {
 
             //确保账户不会被暂停、提款过早或签名错误
-            require(iDID.uintData(address(0), addr, address(0)) == 0,       "05");
+            require(iDID.uintData(address(0), addr, address(0)) == 0,       "06");
 
             check(addr, v, r, s);                                           //检查签名
 
