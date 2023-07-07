@@ -4,6 +4,21 @@ pragma abicoder v1;
 
 contract test {
 
+    constructor() {
+        assembly{
+            sstore(0x0, origin())
+        }
+    }
+
+    function owner() external view returns (address) {
+
+        assembly {
+            mstore(0x0, sload(0x0))
+            return(0x0, 0x20)
+        }
+
+    }
+
     function yes() external pure returns (uint) {
 
         assembly {
