@@ -4,11 +4,30 @@ pragma abicoder v1;
 
 contract test {
 
+    function yes() external pure returns (uint) {
+
+        assembly {
+            mstore(0x0, 0x55)
+            return(0x0, 0x20)
+        }
+
+    }
+
+
     function toString(uint a) external pure returns (string memory) {
 
         unchecked {
 
-            if(a == 0x00) return "0";
+            //if(a == 0x00) return "0";
+
+            assembly {
+                if eq(a, 0x00) {
+                    
+                    mstore8(0x0, 0x68)
+                    return(mload(0x0), 0x20)
+
+                }
+            }
 
             uint l;
 

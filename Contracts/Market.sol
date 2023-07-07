@@ -23,22 +23,16 @@ contract Market is Access, DynamicPrice {
 
         IERC721 i721 = IERC721(contAddr);
 
-        require(i721.ownerOf(tokenId) == msg.sender,                "0F");
-        require(i721.isApprovedForAll(msg.sender, address(this)),   "10");
+        require(i721.ownerOf(tokenId) == msg.sender,                    "0F");
 
-        iDID.updateList(address(this), contAddr, tokenId, tokenAddr, price);
+        if(price > 0) {
 
-        emit Item(contAddr, tokenAddr, tokenId, price);
+            require(i721.isApprovedForAll(msg.sender, address(this)),   "10");
+            iDID.updateList(address(this), contAddr, tokenId, tokenAddr, price);
 
-    }
+        } else
 
-    //取消列表功能，也将在成功购买时调用
-    function delist(address contAddr, uint tokenId) public {
-
-        require(IERC721(contAddr).ownerOf(tokenId) == msg.sender,   "0F");
-        iDID.deleteList(address(this), contAddr, tokenId);
-
-        emit Item(contAddr, address(0), tokenId, 0);
+            iDID.deleteList(address(this), contAddr, tokenId);
 
     }
 
@@ -49,12 +43,12 @@ contract Market is Access, DynamicPrice {
         IERC721 iERC721 = IERC721(contAddr);
         address seller  = iERC721.ownerOf(tokenId);
 
-        require(price > 0,                                          "11");
+        require(price > 0,                                              "11");
 
-        pay(contAddr, tokenId, seller, fee);                        //转币给卖家减费用
-        iERC721.approve(msg.sender, tokenId);                       //手动授权给新所有者
+        pay(contAddr, tokenId, seller, fee);                            //转币给卖家减费用
+        iERC721.approve(msg.sender, tokenId);                           //手动授权给新所有者
         iERC721.transferFrom(seller, msg.sender, tokenId);
-        delist(contAddr, tokenId);                                  //把币下市
+        iDID.deleteList(address(this), contAddr, tokenId);              //把币下市                        
 
     }
 
