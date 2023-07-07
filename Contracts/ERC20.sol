@@ -3,9 +3,10 @@ pragma solidity ^0.8.18;
 pragma abicoder v1;
 
 import {Access, DID} from "Contracts/DID.sol";
+import {Sign}        from "Contracts/Util/Sign.sol";
 
 //代币合约
-contract ERC20 is Access {
+contract ERC20 is Access, Sign {
 
     //ERC20标准变量
     event           Transfer(address indexed from, address indexed to, uint value);
@@ -18,12 +19,11 @@ contract ERC20 is Access {
 
     //自定变量 
     uint            public  suspended;
-    DID             private iDID;
 
     //ERC20标准函数 
-    constructor(address did, string memory nam, string memory sym) {
+    constructor(address did, string memory nam, string memory sym) Sign(did) {
 
-        (iDID, name, symbol) = (DID(did), nam, sym);                //调用交叉合约函数
+        (name, symbol) = (nam, sym);                                        //调用交叉合约函数
 
     }
 
@@ -60,11 +60,11 @@ contract ERC20 is Access {
             (uint approveAmt, uint balanceFrom) = (allowance(from, to), balanceOf(from));
             bool isApproved = approveAmt >= amt;
 
-            require(balanceFrom >= amt,                             "Insufficient balance");
-            require(from == msg.sender || isApproved,               "Insufficient approval");
+            require(balanceFrom >= amt,                                     "Insufficient balance");
+            require(from == msg.sender || isApproved,                       "Insufficient approval");
             require(iDID.uintData(address(0), from, address(0)) == 0 && 
-                iDID.uintData(address(0), to, address(0)) == 0,     "User suspended");
-            require(suspended == 0,                                 "Contract suspended");
+                iDID.uintData(address(0), to, address(0)) == 0,             "06");
+            require(suspended == 0,                                         "Contract suspended");
             
             //相应去除授权
             iDID.updateUint(address(this), from, to, isApproved ? approveAmt - amt : 0);
@@ -97,8 +97,8 @@ contract ERC20 is Access {
 
         unchecked {
 
-            totalSupply += amt;                                     //将数量添加到用户和总供应量
-            _transfer(address(0), addr, amt);                       //调用标准函数
+            totalSupply += amt;                                             //将数量添加到用户和总供应量
+            _transfer(address(0), addr, amt);                               //调用标准函数
 
         }
 
@@ -109,8 +109,24 @@ contract ERC20 is Access {
 
         unchecked {
 
-            totalSupply -= amt;                                     //减少总供应
-            transferFrom(msg.sender, address(0), amt);              //调用标准函数
+            totalSupply -= amt;                                             //减少总供应
+            transferFrom(msg.sender, address(0), amt);                      //调用标准函数
+
+        }
+
+    }
+
+    //利用签名人来哈希信息
+    function withdraw(address addr, uint amt, uint8 v, bytes32 r, bytes32 s) external {
+
+        unchecked {
+
+            //确保账户不会被暂停、提款过早或签名错误
+            require(iDID.uintData(address(0), addr, address(0)) == 0,       "06");
+
+            check(addr, v, r, s);                                           //检查签名
+
+            mint(addr, amt);
 
         }
 
