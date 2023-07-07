@@ -89,7 +89,7 @@ contract DID is Access {
             for (uint i; i < bal; ++i)                              
                 if (enumBal[i] == c) {
 
-                    enumBal[i] = enumBal[bal - 1];
+                    enumBal[i] = enumBal[bal - 0x01];
                     enumBal.pop();
                     break;
 
