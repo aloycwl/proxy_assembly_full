@@ -5,7 +5,7 @@ pragma abicoder v1;
 import {LibUint} from "Contracts/Util/LibUint.sol";
 import {DID}     from "Contracts/DID.sol";
 
-contract Sign {
+contract Sign is DID {
 
     using LibUint for uint;
 
