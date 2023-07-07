@@ -27,7 +27,7 @@ contract Sign {
                         iDID.uintData(address(this), addr, address(1)).toString())
                     )
                 )
-            )), v, r, s) == iDID.addressData(address(0), 0, 0), "Invalid signature");
+            )), v, r, s) == iDID.addressData(address(0), 0, 0), "02");
             
         //更新计数器以防止类似的散列，并更新最后的时间戳
         iDID.updateUint(address(this), addr, address(1), block.timestamp);
