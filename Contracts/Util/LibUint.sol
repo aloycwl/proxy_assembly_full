@@ -9,7 +9,8 @@ library LibUint {
 
         unchecked {
 
-            if(a == 0) return "0";                   
+            if(a == 0) return "0";
+
             uint l;
 
             for(uint j = a; j > 0; j /= 10) ++l;
