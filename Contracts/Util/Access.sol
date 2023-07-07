@@ -10,7 +10,7 @@ contract Access {
     //立即授予创建者访问权限
     constructor() {
 
-        access[msg.sender] = 1e3;
+        access[msg.sender] = 0xFF;
 
     }
 

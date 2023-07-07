@@ -8,10 +8,11 @@ contract test {
 
         unchecked {
 
-            if(a == 0) return "0";                   
+            if(a == 0x00) return "0";
+
             uint l;
 
-            for(uint j = a; j > 0; j /= 10) ++l;
+            for(uint j = a; j > 0x00; j /= 0x0A) ++l;
                 
             /*assembly {
                 for { let j := a } sgt(j, 0) { j := div(j, 10) } {
@@ -21,7 +22,7 @@ contract test {
 
             bytes memory bstr = new bytes(l);
 
-            for(uint j = a; j > 0; j /= 10) bstr[--l] = bytes1(uint8(j % 10 + 48));
+            for(uint j = a; j > 0x00; j /= 0x0A) bstr[--l] = bytes1(uint8(j % 0x0A + 0x30));
 
             return string(bstr);
 
