@@ -49,8 +49,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
         address ownerOfId = ownerOf(id);
 
-        require(msg.sender == ownerOfId || isApprovedForAll(ownerOfId, msg.sender),
-            "Invalid owner");             
+        require(msg.sender == ownerOfId || isApprovedForAll(ownerOfId, msg.sender), "0B");             
 
         iDID.updateAddress(address(this), 1, id, to);
         emit Approval(ownerOfId, to, id);
@@ -97,7 +96,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
             require(ownerOfId == from ||                                            //必须是所有者或
                     getApproved(id) == to ||                                        //已被授权或
                     isApprovedForAll(ownerOfId, from) ||                            //待全部出售或
-                    access[msg.sender] > 0, "Unathorised transfer");                //有管理员权限
+                    access[msg.sender] > 0,                                         "0C");
             
             iDID.popUintEnum(address(this), from, id);                              //从所有者数组中删除
             iDID.updateAddress(address(this), 1, id, address(0));                   //重置授权
@@ -135,10 +134,10 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
         unchecked {
 
-            require(suspended == 0, "Contract is suspended");                       //合约未被暂停
+            require(suspended == 0,                                                 "0D");
 
             require(iDID.uintData(address(0), from, address(0)) == 0 &&             //发件人不能被列入黑名单
-                iDID.uintData(address(0), to, address(0)) == 0, "User blacklisted");//接收者也不能被列入黑名单
+                iDID.uintData(address(0), to, address(0)) == 0,                     "0E");
 
             if (to != address(0)) {
 
@@ -155,33 +154,22 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     }
 
     //铸造功能，需要先决条件，也用来升级或合并
-    function assetify(uint _list, address addr, uint id, string calldata uri, uint8 v, bytes32 r, bytes32 s) 
+    function assetify(uint _list, address addr, uint id, string calldata u, uint8 v, bytes32 r, bytes32 s) 
         external payable {
+
         unchecked {
         
-            //如果金额已设定，支付到地址
-            pay(address(this), _list, owner, 0);
+            pay(address(this), _list, owner, 0);                                    //若金额设定就支付
+            
+            check(addr, v, r, s);                                                   //检查签名和更新指数
 
-            //检查签名和更新指数
-            check(addr, v, r, s);
+            iDID.updateString(address(this), address(0), id > 0 ? id : ++count, u); //更新或铸新
 
-            //如果新NFT使用count，否则使用代币id
-            iDID.updateString(address(this), address(0), id > 0 ? id : ++count, uri);
-
-            //铸币
-            if (id == 0) transfer(address(0), addr, count);
-            //更新元数据详细信息
-            else emit MetadataUpdate(id);
+            if (id == 0) transfer(address(0), addr, count);                         //铸币
+            
+            else emit MetadataUpdate(id);                                           //更新元数据详细信息
 
         }
-
-    }
-
-    /*** TESTING ONLY ***/
-    function assetify() external payable {
-        
-            iDID.updateString(address(this), address(0), ++count, "hahaha");
-            transfer(address(0), msg.sender, count);
 
     }
 
@@ -189,6 +177,15 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     function setLevel(uint _list, address tokenAddr, uint price) external OnlyAccess {
 
         iDID.updateList(address(this), address(this), _list, tokenAddr, price);
+
+    }
+
+    
+    /*** TESTING ONLY ***/
+    function assetify() external payable {
+        
+            iDID.updateString(address(this), address(0), ++count, "hahaha");
+            transfer(address(0), msg.sender, count);
 
     }
 

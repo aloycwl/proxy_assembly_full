@@ -23,8 +23,8 @@ contract Market is Access, DynamicPrice {
 
         IERC721 iERC721 = IERC721(contAddr);
 
-        require(iERC721.ownerOf(tokenId) == msg.sender,                 "Not owner");
-        require(iERC721.isApprovedForAll(msg.sender, address(this)),    "No approval");
+        require(iERC721.ownerOf(tokenId) == msg.sender,                 "0F");
+        require(iERC721.isApprovedForAll(msg.sender, address(this)),    "10");
 
         iDID.updateList(address(this), contAddr, tokenId, tokenAddr, price);
 
@@ -35,7 +35,7 @@ contract Market is Access, DynamicPrice {
     //取消列表功能，也将在成功购买时调用
     function delist(address contAddr, uint tokenId) public {
 
-        require(IERC721(contAddr).ownerOf(tokenId) == msg.sender,       "Not owner");
+        require(IERC721(contAddr).ownerOf(tokenId) == msg.sender,       "0F");
         iDID.deleteList(address(this), contAddr, tokenId);
 
         emit Item(contAddr, address(0), tokenId, 0);
@@ -48,7 +48,7 @@ contract Market is Access, DynamicPrice {
         unchecked {
 
             (, uint price) = iDID.lists(address(this), contAddr, tokenId);
-            require(price > 0,                                          "Item is not for sale");
+            require(price > 0,                                          "11");
 
             IERC721 iERC721 = IERC721(contAddr);
             address seller  = iERC721.ownerOf(tokenId);
