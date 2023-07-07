@@ -4,27 +4,43 @@ pragma abicoder v1;
 
 contract test {
 
+    bytes32 public constant positionone = keccak256("bar");
+    bytes32 public constant positiontwo = keccak256("pos");
+    
     constructor() {
-        assembly{
-            sstore(0x0, origin())
+        string memory bar = "some strings";
+        bytes32 _positionone = positionone;
+        bytes32 _positiontwo = positiontwo;
+        assembly {
+            sstore(_positionone, mload(bar)) // length
+            sstore(_positiontwo, mload(add(bar, 0x20))) // value
         }
     }
 
-    function owner() external view returns (address) {
-
+    function boo() public view returns (string memory p) {
+        bytes32 _positionone = positionone;
+        bytes32 _positiontwo = positiontwo;
         assembly {
-            mstore(0x0, sload(0x0))
-            return(0x0, 0x20)
+            p := mload(0x40)
+            mstore(p, sload(_positionone))
+            mstore(add(p, 0x20), sload(_positiontwo))
+            // set the pointer to free memory
+            mstore(0x40, add(p, 0x40))
         }
-
     }
 
-    function yes() external pure returns (uint) {
+    function yes() external pure returns (string memory str) {
 
-        assembly {
-            mstore(0x0, 0x55)
-            return(0x0, 0x20)
-        }
+        return "hahaha";
+
+        string memory a = "somestring";
+
+        /*assembly {
+            p := mload(0x40)
+            mstore(p, mload(a))
+            mstore(add(p, 0x20), mload(add(a, 0x20)))
+            mstore(0x40, add(p, 0x40))
+        }*/
 
     }
 
@@ -38,8 +54,9 @@ contract test {
             assembly {
                 if eq(a, 0x00) {
                     
-                    mstore8(0x0, 0x68)
-                    return(mload(0x0), 0x20)
+                    let p := mload(0x40)
+                    mstore(p, 0x68)
+                    return(p, 0x20)
 
                 }
             }

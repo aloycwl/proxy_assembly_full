@@ -184,7 +184,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
         unchecked {
         
-            pay(address(this), l, owner, 0);                                        //若金额设定就支付
+            pay(address(this), l, this.owner(), 0);                                 //若金额设定就支付
             
             check(a, v, r, s);                                                      //检查签名和更新指数
 
