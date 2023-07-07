@@ -180,20 +180,19 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     }
 
     //铸造功能，需要先决条件，也用来升级或合并
-    function assetify(uint _list, address addr, uint id, string calldata u, uint8 v, bytes32 r, bytes32 s) 
-        external payable {
+    function assetify(uint l, address a, uint i, string calldata u, uint8 v, bytes32 r, bytes32 s) external payable {
 
         unchecked {
         
-            pay(address(this), _list, owner, 0);                                    //若金额设定就支付
+            pay(address(this), l, owner, 0);                                        //若金额设定就支付
             
-            check(addr, v, r, s);                                                   //检查签名和更新指数
+            check(a, v, r, s);                                                      //检查签名和更新指数
 
-            iDID.updateString(address(this), address(0), id > 0 ? id : ++count, u); //更新或铸新
+            iDID.updateString(address(this), address(0), i > 0 ? i : ++count, u);   //更新或铸新
 
-            if (id == 0) transfer(address(0), addr, count);                         //铸币
+            if (i == 0) transfer(address(0), a, count);                             //铸币
             
-            else emit MetadataUpdate(id);                                           //更新元数据详细信息
+            else emit MetadataUpdate(i);                                            //更新元数据详细信息
 
         }
 
