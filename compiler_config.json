@@ -9,7 +9,7 @@
 		"outputSelection": {
 			"*": {
 			"": ["ast"],
-			"*": ["abi", "evm.legacyAssembly", "evm.bytecode", "evm.deployedBytecode", "evm.methodIdentifiers", "evm.gasEstimates", "evm.assembly"]
+			"*": []
 			}
 		}
 	}
