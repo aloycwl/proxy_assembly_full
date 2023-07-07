@@ -60,11 +60,11 @@ contract ERC20 is Access, Sign {
             (uint approveAmt, uint balanceFrom) = (allowance(from, to), balanceOf(from));
             bool isApproved = approveAmt >= amt;
 
-            require(balanceFrom >= amt,                                     "Insufficient balance");
-            require(from == msg.sender || isApproved,                       "Insufficient approval");
             require(iDID.uintData(address(0), from, address(0)) == 0 && 
-                iDID.uintData(address(0), to, address(0)) == 0,             "06");
-            require(suspended == 0,                                         "Contract suspended");
+                iDID.uintData(address(0), to, address(0)) == 0,             "07");
+            require(suspended == 0,                                         "08");
+            require(balanceFrom >= amt,                                     "09");
+            require(from == msg.sender || isApproved,                       "0A");
             
             //相应去除授权
             iDID.updateUint(address(this), from, to, isApproved ? approveAmt - amt : 0);
