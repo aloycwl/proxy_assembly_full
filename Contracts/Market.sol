@@ -21,10 +21,10 @@ contract Market is Access, DynamicPrice {
     //卖功能，需要先设置NFT合约的认可
     function list(address contAddr, uint tokenId, uint price, address tokenAddr) external {
 
-        IERC721 iERC721 = IERC721(contAddr);
+        IERC721 i721 = IERC721(contAddr);
 
-        require(iERC721.ownerOf(tokenId) == msg.sender,                 "0F");
-        require(iERC721.isApprovedForAll(msg.sender, address(this)),    "10");
+        require(i721.ownerOf(tokenId) == msg.sender,                "0F");
+        require(i721.isApprovedForAll(msg.sender, address(this)),   "10");
 
         iDID.updateList(address(this), contAddr, tokenId, tokenAddr, price);
 
@@ -35,7 +35,7 @@ contract Market is Access, DynamicPrice {
     //取消列表功能，也将在成功购买时调用
     function delist(address contAddr, uint tokenId) public {
 
-        require(IERC721(contAddr).ownerOf(tokenId) == msg.sender,       "0F");
+        require(IERC721(contAddr).ownerOf(tokenId) == msg.sender,   "0F");
         iDID.deleteList(address(this), contAddr, tokenId);
 
         emit Item(contAddr, address(0), tokenId, 0);
@@ -45,22 +45,16 @@ contract Market is Access, DynamicPrice {
     //用户必须发送大于或等于所列价格的以太币
     function buy(address contAddr, uint tokenId) external payable {
 
-        unchecked {
+        (, uint price) = iDID.lists(address(this), contAddr, tokenId);
+        IERC721 iERC721 = IERC721(contAddr);
+        address seller  = iERC721.ownerOf(tokenId);
 
-            (, uint price) = iDID.lists(address(this), contAddr, tokenId);
-            require(price > 0,                                          "11");
+        require(price > 0,                                          "11");
 
-            IERC721 iERC721 = IERC721(contAddr);
-            address seller  = iERC721.ownerOf(tokenId);
-
-            iERC721.approve(msg.sender, tokenId);                       //手动授权给新所有者
-            iERC721.transferFrom(seller, msg.sender, tokenId);
-
-            pay(contAddr, tokenId, seller, fee);                        //转币给卖家减费用
-            
-            delist(contAddr, tokenId);                                  //把币下市
-
-        }
+        pay(contAddr, tokenId, seller, fee);                        //转币给卖家减费用
+        iERC721.approve(msg.sender, tokenId);                       //手动授权给新所有者
+        iERC721.transferFrom(seller, msg.sender, tokenId);
+        delist(contAddr, tokenId);                                  //把币下市
 
     }
 
