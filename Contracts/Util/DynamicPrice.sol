@@ -23,13 +23,13 @@ contract DynamicPrice {
 
             if(price > 0) {
 
-                if(fee > 0) price *= (1e4 - fee) / 1e4;
+                if(fee > 0) //price *= (1e4 - fee) / 1e4;
 
-                /*assembly {
-                        
-                    price := div(mul(price, sub(10000, fee)), 10000)
+                    assembly {
+                            
+                        price := div(mul(price, sub(0x2710, fee)), 0x2710)
 
-                }*/
+                    }
                 
                 //如果不指定地址，则转入主币，否则从合约地址转入
                 if(tokenAddr == address(0)) {
