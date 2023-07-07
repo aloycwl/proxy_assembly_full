@@ -95,6 +95,12 @@ contract ERC20 is Access, Sign {
     //铸币代币，只允许有访问权限的地址
     function mint(address addr, uint amt) public OnlyAccess {
 
+        _mint(addr, amt);
+
+    }
+
+    function _mint(address addr, uint amt) private {
+
         unchecked {
 
             totalSupply += amt;                                             //将数量添加到用户和总供应量
@@ -123,10 +129,8 @@ contract ERC20 is Access, Sign {
 
             //确保账户不会被暂停、提款过早或签名错误
             require(iDID.uintData(address(0), addr, address(0)) == 0,       "06");
-
-            check(addr, v, r, s);                                           //检查签名
-
-            mint(addr, amt);
+            check(addr, v, r, s);
+            _mint(addr, amt);
 
         }
 
