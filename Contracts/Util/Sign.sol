@@ -18,7 +18,12 @@ contract Sign {
     }
 
     function check(address addr, uint8 v, bytes32 r, bytes32 s) internal {
+
+        //间隔条件
+        require(iDID.uintData(address(this), addr, address(1)) + 
+            iDID.uintData(address(this), addr, address(2)) < block.timestamp, "02");
         
+        //签名条件
         require(          
             ecrecover(
                 keccak256(abi.encodePacked(keccak256(abi.encodePacked(
@@ -27,7 +32,7 @@ contract Sign {
                         iDID.uintData(address(this), addr, address(1)).toString())
                     )
                 )
-            )), v, r, s) == iDID.addressData(address(0), 0, 0), "02");
+            )), v, r, s) == iDID.addressData(address(0), 0, 0),               "03");
             
         //更新计数器以防止类似的散列，并更新最后的时间戳
         iDID.updateUint(address(this), addr, address(1), block.timestamp);
