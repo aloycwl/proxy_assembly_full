@@ -3,29 +3,14 @@ pragma solidity ^0.8.18;
 pragma abicoder v1;
 
 contract test {
-    
-    constructor() {
-        string memory bar = "some strings";
-        assembly {
-            sstore(0x60, mload(bar)) // length
-            sstore(0x80, mload(add(bar, 0x20))) // value
-        }
-    }
 
-    function boo() public pure returns (string memory p) {
-        assembly {
-            mstore(p, 0x20)
-            mstore(add(p, 0x20), "string here")
-            mstore(0x40, add(p, 0x40))
-        }
-    }
 
     function boo2() public pure returns (string memory) {
         assembly {
             let ptr := mload(0x40)
             mstore(ptr, 0x20)
             mstore(add(ptr, 0x20), 0x20)
-            mstore(add(ptr, 0x40), "string here")
+            mstore(add(ptr, 0x40), 0x30)
             mstore(0x40, add(ptr, 0x40))
             return(ptr, 0x60)
         }
