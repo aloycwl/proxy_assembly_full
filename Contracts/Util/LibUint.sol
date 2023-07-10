@@ -7,19 +7,27 @@ library LibUint {
     //整数转移字符
     function toString(uint a) internal pure returns (string memory) {
 
-        unchecked {
+        assembly {
+                
+            let l
 
-            if(a == 0) return "0";
+            mstore(0x40, 0x20)
+            mstore(0x60, 0x20)
 
-            uint l;
+            if iszero(a) {
+                mstore8(0x80, 0x30)
+            }
 
-            for(uint j = a; j > 0; j /= 10) ++l;
+            for { let j := a } gt(j, 0) { j := div(j, 10) } {
+                l := add(l, 1)
+            }
 
-            bytes memory bstr = new bytes(l);
+            for { } gt(a, 0) { a := div(a, 0xA) } {
+                l := sub(l, 0x1)
+                mstore8(add(0x80, l), add(mod(a, 0xA), 0x30))
+            }
 
-            for(uint j = a; j > 0; j /= 10) bstr[--l] = bytes1(uint8(j % 10 + 48));
-
-            return string(bstr);
+            return(0x40, 0x60)
 
         }
         
