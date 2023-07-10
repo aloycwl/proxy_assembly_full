@@ -3,45 +3,32 @@ pragma solidity ^0.8.18;
 pragma abicoder v1;
 
 contract test {
-
-    bytes32 public constant positionone = keccak256("bar");
-    bytes32 public constant positiontwo = keccak256("pos");
     
     constructor() {
         string memory bar = "some strings";
-        bytes32 _positionone = positionone;
-        bytes32 _positiontwo = positiontwo;
         assembly {
-            sstore(_positionone, mload(bar)) // length
-            sstore(_positiontwo, mload(add(bar, 0x20))) // value
+            sstore(0x60, mload(bar)) // length
+            sstore(0x80, mload(add(bar, 0x20))) // value
         }
     }
 
-    function boo() public view returns (string memory p) {
-        bytes32 _positionone = positionone;
-        bytes32 _positiontwo = positiontwo;
+    function boo() public pure returns (string memory p) {
         assembly {
-            p := mload(0x40)
-            mstore(p, sload(_positionone))
-            mstore(add(p, 0x20), sload(_positiontwo))
-            // set the pointer to free memory
+            mstore(p, 0x20)
+            mstore(add(p, 0x20), "string here")
             mstore(0x40, add(p, 0x40))
         }
     }
 
-    function yes() external pure returns (string memory str) {
-
-        return "hahaha";
-
-        string memory a = "somestring";
-
-        /*assembly {
-            p := mload(0x40)
-            mstore(p, mload(a))
-            mstore(add(p, 0x20), mload(add(a, 0x20)))
-            mstore(0x40, add(p, 0x40))
-        }*/
-
+    function boo2() public pure returns (string memory) {
+        assembly {
+            let ptr := mload(0x40)
+            mstore(ptr, 0x20)
+            mstore(add(ptr, 0x20), 0x20)
+            mstore(add(ptr, 0x40), "string here")
+            mstore(0x40, add(ptr, 0x40))
+            return(ptr, 0x60)
+        }
     }
 
 
