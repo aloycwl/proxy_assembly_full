@@ -9,20 +9,20 @@ contract ERC20AC{
 
     mapping(address => mapping(address => uint)) public allowance;
     mapping(address => uint)                     public balanceOf;
-    uint constant                                public decimals    = 0x12;
-    //uint                                         public totalSupply = 0xD3C21BCECCEDA1000000;
-    //string constant                              public name        = "Name";
-    //string constant                              public symbol      = "SYM";
 
-    function name() external pure returns(string memory){
+    function name() external pure returns(string memory) {
         return "Name";
     }
 
-    function symbol() external pure returns(string memory){
+    function symbol() external pure returns(string memory) {
         return "SYM";
     }
 
-    function totalSupply() external pure returns(uint){
+    function decimals() external pure returns(uint) {
+        return 0x12;
+    }
+
+    function totalSupply() external pure returns(uint) {
         return 0xD3C21BCECCEDA1000000;
     }
 

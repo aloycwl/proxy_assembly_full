@@ -7,10 +7,11 @@ import {DID, ERC20, Access} from "Contracts/ERC20.sol";
 contract DynamicPrice {
 
     DID     private iDID;
+    address public owner;
 
     constructor(address did) {
 
-        iDID = DID(did);
+        (iDID, owner) = (DID(did), msg.sender);
 
         assembly {
             sstore(0x20, origin())
@@ -18,13 +19,13 @@ contract DynamicPrice {
 
     }
 
-    function owner() public view returns (address a) {
+    /*function owner() public view returns (address a) {
 
         assembly {
             a := sload(0x20)
         }
 
-    }
+    }*/
 
     function pay(address contAddr, uint _list, address to, uint fee) internal {
 
