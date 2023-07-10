@@ -122,7 +122,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
             require(ownerOfId == from ||                                            //必须是所有者或
                     getApproved(id) == to ||                                        //已被授权或
                     isApprovedForAll(ownerOfId, from) ||                            //待全部出售或
-                    access[msg.sender] > 0,                                         "0C");
+                    this.access(msg.sender) > 0,                                         "0C");
             
             iDID.popUintEnum(address(this), from, id);                              //从所有者数组中删除
             iDID.updateAddress(address(this), 1, id, address(0));                   //重置授权
