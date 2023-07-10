@@ -5,7 +5,7 @@ pragma abicoder v1;
 contract test {
 
 
-    function boo2() public pure returns (string memory) {
+    function boo2() external pure returns (string memory) {
         assembly {
             let ptr := mload(0x40)
             mstore(ptr, 0x20)
@@ -15,7 +15,6 @@ contract test {
             return(ptr, 0x60)
         }
     }
-
 
     function toString(uint a) external pure returns (string memory) {
 

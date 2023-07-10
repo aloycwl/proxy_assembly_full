@@ -26,20 +26,20 @@ contract ERC20AC{
         return 0xD3C21BCECCEDA1000000;
     }
 
-    function approve (address to, uint amt) external returns(bool) {
+    function approve(address to, uint amt) external returns(bool) {
         
         emit Approval(msg.sender, to, allowance[msg.sender][to] = amt);
         return true;
 
     }
 
-    function transfer (address to, uint amt) external returns(bool) {
+    function transfer(address to, uint amt) external returns(bool) {
 
         return transferFrom(msg.sender, to, amt);
 
     }
     
-    function transferFrom (address a, address b, uint c) public returns (bool) {
+    function transferFrom(address a, address b, uint c) public returns (bool) {
 
         unchecked {
 
