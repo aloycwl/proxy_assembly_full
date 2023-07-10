@@ -22,7 +22,6 @@ contract DID is Access {
     }
 
     //DID需要变量和其它储存变量
-    mapping(string  => address)                                             public did;
     mapping(address => mapping(address  => mapping(address  => uint)))      public uintData;
     mapping(address => mapping(uint     => mapping(uint     => address)))   public addressData;
     mapping(address => mapping(address  => mapping(uint     => string)))    public stringData;
@@ -35,12 +34,20 @@ contract DID is Access {
         return uintEnum[a][b];
     }
 
-    //持有权限者才能更新数据
-    function updateDid(string calldata a, address b)                        external OnlyAccess {
-
-        did[a]                  = b;
-
+    //DID
+    function did(string memory a) external view returns(address addr){
+        assembly{
+            addr := sload(keccak256(a, 0x20))
+        }
     }
+
+    function updateDid(string memory a, address b) external OnlyAccess {
+        assembly {
+            sstore(keccak256(a, 0x20), b)
+        }
+    }
+
+    
 
     function updateString(address a, address b, uint c, string calldata d)  external OnlyAccess {
 
