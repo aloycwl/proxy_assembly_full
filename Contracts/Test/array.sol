@@ -7,8 +7,8 @@ contract arraywy {
     function secondTest() public pure returns (uint32[] memory res) {                                                                    
         assembly {                                                                                      
             res := mload(0x40)
-            mstore(0x40, add(add(res, 0x20), mul(10, 0x20)))
-            mstore(res, 10)                                                                          
+            mstore(0x40, add(add(res, 0x20), 640))
+            mstore(res, 20) 
         }                                                                         
     }    
 }
