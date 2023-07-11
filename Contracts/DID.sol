@@ -164,13 +164,13 @@ contract DID is Access {
         return _uintEnum[a][b];
     }
 
-    function pushUintEnum(address a, address b, uint c)                     external OnlyAccess {
+    function UintEnumPush(address a, address b, uint c)                     external OnlyAccess {
 
         _uintEnum[a][b].push(c);
 
     }
 
-    function popUintEnum(address a, address b, uint c)                      external OnlyAccess {
+    function uintEnumPop(address a, address b, uint c)                      external OnlyAccess {
 
         uint[] storage enumBal = _uintEnum[a][b];
         uint bal               = enumBal.length;
