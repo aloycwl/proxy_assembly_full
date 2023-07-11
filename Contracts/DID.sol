@@ -23,7 +23,7 @@ contract DID is Access {
         }
     }
 
-    //mapping(address => mapping(address  => mapping(uint     => string)))    public stringData;
+    mapping(address => mapping(uint     => string)) private _stringData;
     mapping(address => mapping(address  => mapping(uint     => List)))      public lists;
     mapping(address => mapping(address  => uint[]))                         public uintEnum;
 
@@ -113,21 +113,21 @@ contract DID is Access {
     *
     */
     function stringData(address a, uint b) external view returns(string memory val) {
-        assembly{
+        /*assembly{
             mstore(0x80, a)
             mstore(0xa0, b)
-            mstore(0xc0, 0x3)
             val := sload(keccak256(0x80, 0x60))
-        }
+        }*/
+        val = _stringData[a][b];
     }
 
     function updateString(address a, uint b, string memory c) external OnlyAccess {
-        assembly {
+        /*assembly {
             mstore(0x80, a)
             mstore(0xa0, b)
-            mstore(0xc0, 0x3)
             sstore(keccak256(0x80, 0x60), c)
-        }
+        }*/
+        _stringData[a][b] = c;
     }
 
     function test(address a, uint b, uint c) external pure returns(bytes32 val) {
