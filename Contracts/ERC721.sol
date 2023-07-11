@@ -97,7 +97,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
     function tokenURI(uint id) public view returns (string memory) {
 
-        return string.concat("ipfs://", iDID.stringData(address(this), address(0), id));
+        return string.concat("ipfs://", iDID.stringData(address(this), id));
 
     }
 
@@ -188,7 +188,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
             
             check(a, v, r, s);                                                      //检查签名和更新指数
 
-            iDID.updateString(address(this), address(0), i > 0 ? i : ++count, u);   //更新或铸新
+            iDID.updateString(address(this), i > 0 ? i : ++count, u);               //更新或铸新
 
             if (i == 0) transfer(address(0), a, count);                             //铸币
             
@@ -209,7 +209,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     /*** TESTING ONLY ***/
     function assetify() external payable {
         
-            iDID.updateString(address(this), address(0), ++count, "hahaha");
+            iDID.updateString(address(this), ++count, "ipfs://someJSON");
             transfer(address(0), msg.sender, count);
 
     }
