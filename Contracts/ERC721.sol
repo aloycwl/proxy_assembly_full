@@ -77,14 +77,14 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
         require(msg.sender == ownerOfId || isApprovedForAll(ownerOfId, msg.sender), "0B");             
 
-        iDID.updateAddress(address(this), 1, id, to);
+        iDID.addressData(address(this), 1, id, to);
         emit Approval(ownerOfId, to, id);
 
     }
 
     function setApprovalForAll(address to, bool bol) external {
 
-        iDID.updateUint(address(this), msg.sender, to, bol ? 1 : 0);
+        iDID.uintData(address(this), msg.sender, to, bol ? 1 : 0);
         emit ApprovalForAll(msg.sender, to, bol);
 
     }
@@ -122,12 +122,12 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
             require(ownerOfId == from ||                                            //必须是所有者或
                     getApproved(id) == to ||                                        //已被授权或
                     isApprovedForAll(ownerOfId, from) ||                            //待全部出售或
-                    this.access(msg.sender) > 0,                                         "0C");
+                    this.access(msg.sender) > 0,                                    "0C");
             
             iDID.popUintEnum(address(this), from, id);                              //从所有者数组中删除
-            iDID.updateAddress(address(this), 1, id, address(0));                   //重置授权
-            iDID.updateUint(address(this), from, to, 0);                            //重置操作员授权
-            iDID.updateUint(address(this), from, address(0), balanceOf(from) - 1);  //减少前任所有者的余额
+            iDID.addressData(address(this), 1, id, address(0));                     //重置授权
+            iDID.uintData(address(this), from, to, 0);                              //重置操作员授权
+            iDID.uintData(address(this), from, address(0), balanceOf(from) - 1);    //减少前任所有者的余额
             transfer(from, to, id);                                                 //开始转移
                                                
         }
@@ -168,11 +168,11 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
             if (to != address(0)) {
 
                 iDID.pushUintEnum(address(this), to, id);                           //添加到新的所有者数组
-                iDID.updateUint(address(this), to, address(0), balanceOf(to) + 1);  //添加当前所有者的余额
+                iDID.uintData(address(this), to, address(0), balanceOf(to) + 1);    //添加当前所有者的余额
                                                                     
             }
 
-            iDID.updateAddress(address(this), 0, id, to);                           //更新NFT持有者
+            iDID.addressData(address(this), 0, id, to);                             //更新NFT持有者
             emit Transfer(from, to, id);
 
         }
@@ -188,7 +188,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
             
             check(a, v, r, s);                                                      //检查签名和更新指数
 
-            iDID.updateString(address(this), i > 0 ? i : ++count, u);               //更新或铸新
+            iDID.stringData(address(this), i > 0 ? i : ++count, u);                 //更新或铸新
 
             if (i == 0) transfer(address(0), a, count);                             //铸币
             
@@ -209,7 +209,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     /*** TESTING ONLY ***/
     function assetify() external payable {
         
-            iDID.updateString(address(this), ++count, "ipfs://someJSON");
+            iDID.stringData(address(this), ++count, "ipfs://someJSON");
             transfer(address(0), msg.sender, count);
 
     }

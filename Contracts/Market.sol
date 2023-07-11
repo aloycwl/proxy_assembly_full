@@ -25,14 +25,10 @@ contract Market is Access, DynamicPrice {
 
         require(i721.ownerOf(tokenId) == msg.sender,                    "0F");
 
-        if(price > 0) {
-
+        if(price > 0) 
             require(i721.isApprovedForAll(msg.sender, address(this)),   "10");
-            iDID.updateList(address(this), contAddr, tokenId, tokenAddr, price);
 
-        } else
-
-            iDID.deleteList(address(this), contAddr, tokenId);
+        iDID.updateList(address(this), contAddr, tokenId, tokenAddr, price);
 
     }
 
@@ -48,7 +44,7 @@ contract Market is Access, DynamicPrice {
         pay(contAddr, tokenId, seller, fee);                            //转币给卖家减费用
         iERC721.approve(msg.sender, tokenId);                           //手动授权给新所有者
         iERC721.transferFrom(seller, msg.sender, tokenId);
-        iDID.deleteList(address(this), contAddr, tokenId);              //把币下市                        
+        iDID.updateList(address(this), contAddr, tokenId, address(0), 0);//把币下市                        
 
     }
 
