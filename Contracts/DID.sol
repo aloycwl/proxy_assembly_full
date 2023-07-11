@@ -5,39 +5,43 @@ pragma abicoder v1;
 import {Access} from "Contracts/Util/Access.sol";
 
 struct List {
-
     address tokenAddr;
     uint    price;
-
 }
 
 //储存和去中心化身份合约
 contract DID is Access {
 
+    //设置签名人
     constructor() {
-
-        //设置签名人
-        addressData[address(0)][0][0] = msg.sender;
-
+        assembly {
+            mstore(0x80, 0x0)
+            mstore(0xa0, 0x0)
+            mstore(0xc0, 0x0)
+            mstore(0xe0, 0x2)
+            sstore(keccak256(0x80, 0x80), origin())
+        }
     }
 
-    //DID需要变量和其它储存变量
-    mapping(address => mapping(address  => mapping(address  => uint)))      public uintData;
-    mapping(address => mapping(uint     => mapping(uint     => address)))   public addressData;
-    mapping(address => mapping(address  => mapping(uint     => string)))    public stringData;
+    //mapping(address => mapping(address  => mapping(uint     => string)))    public stringData;
     mapping(address => mapping(address  => mapping(uint     => List)))      public lists;
     mapping(address => mapping(address  => uint[]))                         public uintEnum;
 
     //数组只可以通过函数来调动
     function uintEnumData(address a, address b) public view returns(uint[] memory) {
-    
         return uintEnum[a][b];
     }
 
-    //DID
-    function did(string memory a) external view returns(address addr){
+    /*
+    *
+    *
+    did[a] = b
+    *
+    *
+    */
+    function did(string memory a) external view returns(address val) {
         assembly{
-            addr := sload(keccak256(a, 0x20))
+            val := sload(keccak256(a, 0x20))
         }
     }
 
@@ -47,25 +51,105 @@ contract DID is Access {
         }
     }
 
+    /*
+    *
+    *
+    uintData[a][b][c] = d //0x1
+    *
+    *
+    */
+    function uintData(address a, address b, address c) external view returns(uint val) {
+        assembly{
+            mstore(0x80, a)
+            mstore(0xa0, b)
+            mstore(0xc0, c)
+            mstore(0xe0, 0x1)
+            val := sload(keccak256(0x80, 0x80))
+        }
+    }
+
+    function updateUint(address a, address b, address c, uint d) external OnlyAccess {
+        assembly {
+            mstore(0x80, a)
+            mstore(0xa0, b)
+            mstore(0xc0, c)
+            mstore(0xe0, 0x1)
+            sstore(keccak256(0x80, 0x80), d)
+        }
+    }
+
+    /*
+    *
+    *
+    addressData[a][b][c] = d //0x2
+    *
+    *
+    */
+    function addressData(address a, uint b, uint c) external view returns(address val) {
+        assembly{
+            mstore(0x80, a)
+            mstore(0xa0, b)
+            mstore(0xc0, c)
+            mstore(0xe0, 0x2)
+            val := sload(keccak256(0x80, 0x80))
+        }
+    }
+
+    function updateAddress(address a, uint b, uint c, address d) external OnlyAccess {
+        assembly {
+            mstore(0x80, a)
+            mstore(0xa0, b)
+            mstore(0xc0, c)
+            mstore(0xe0, 0x2)
+            sstore(keccak256(0x80, 0x80), d)
+        }
+    }
+
+    /*
+    *
+    *
+    stringData[a][b][c] = d //0x3
+    *
+    *
+    */
+    function stringData(address a, address b, uint c) external view returns(string memory val) {
+        assembly{
+            mstore(0x80, a)
+            mstore(0xa0, b)
+            mstore(0xc0, c)
+            mstore(0xe0, 0x3)
+            val := sload(keccak256(0x80, 0x80))
+        }
+    }
+
+    function updateString(address a, address b, uint c, string memory d) external OnlyAccess {
+        assembly {
+            mstore(0x80, a)
+            mstore(0xa0, b)
+            mstore(0xc0, c)
+            mstore(0xe0, 0x3)
+            sstore(keccak256(0x80, 0x80), d)
+        }
+    }
+
+    function test(address a, uint b, uint c) external pure returns(bytes32 val) {
+        assembly {
+            mstore(0x80, a)
+            mstore(0xa0, b)
+            mstore(0xc0, c)
+            mstore(0xe0, 0x2)
+            val := keccak256(0x80, 0x80)
+            //0x0000000000000000000000000000000000000000
+            //0x246ab83ea3b026af046bc19abf7ac0980e6ee81bae691f59be6bdf565d16192c
+            //0xff496e08a30e0406970dcb66bf9f6ada8a180c31ceba28262332b01aa1921c70
+        }
+    }
+
     
 
-    function updateString(address a, address b, uint c, string calldata d)  external OnlyAccess {
+    
 
-        stringData[a][b][c]     = d;
-
-    }
-
-    function updateAddress(address a, uint b, uint c, address d)            external OnlyAccess {
-
-        addressData[a][b][c]    = d;
-
-    }
-
-    function updateUint(address a, address b, address c, uint d)            external OnlyAccess {
-
-        uintData[a][b][c]       = d;
-
-    }
+    
 
     //特别用于NFTMarket和ERC721的储存
     function updateList(address a, address b, uint c, address d, uint e)    external OnlyAccess {
