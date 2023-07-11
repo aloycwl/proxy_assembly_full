@@ -145,7 +145,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     //获取地址拥有的所有代币的数组
     function tokensOwned(address addr) public view returns(uint[] memory) {
 
-        return iDID.uintEnumData(address(this), addr);
+        return iDID.uintEnum(address(this), addr);
 
     }
 
