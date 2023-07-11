@@ -63,27 +63,5 @@ contract Sign is DID {
         }
         
     }
-
-    function test() external pure returns(address) {
-
-        uint8 v = 27;
-        bytes32 r = 0x4F73A0D69B8D9E5837B24328FD79D50B6499F8F7E43A3AA42C5F3B61D704AD1D;
-        bytes32 s = 0x32C8F0B29306BCD4026A3CCAF63DF06B4E3B8DF0D56C29966D5B6153E28D485D;
-        
-        address addr = 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4;
-
-        return          
-            ecrecover(
-                /*keccak256(abi.encodePacked(keccak256(abi.encodePacked(
-                    string.concat(
-                        toString(uint(uint160(addr))), 
-                        toString(999))
-                    )
-                )))*/
-                keccak256(abi.encodePacked("hahaha"))
-            , v, r, s);
-        
-
-    }
     
 }
