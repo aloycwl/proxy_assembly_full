@@ -1,4 +1,5 @@
-//SPDX-License-Identifier:None
+//SPDX-License-Identifier: None
+//solhint-disable-next-line compiler-version
 pragma solidity ^0.8.18;
 pragma abicoder v1;
 
@@ -156,34 +157,22 @@ contract DID is Access {
 
     }
 
-    function test(string memory a) external pure returns(bytes32 val) {
-        assembly {
-            //mstore(0x0, a)
-            //mstore(0x20, b)
-            mstore(0x0, mload(add(a, 0x20)))
-            val := keccak256(a, 0x40)
-            //0x0000000000000000000000000000000000000000
-            //0x246ab83ea3b026af046bc19abf7ac0980e6ee81bae691f59be6bdf565d16192c
-            //0xff496e08a30e0406970dcb66bf9f6ada8a180c31ceba28262332b01aa1921c70
-        }
-    }
-
-    mapping(address => mapping(address  => uint[]))                         public uintEnum;
+    mapping(address => mapping(address  => uint[]))                         private _uintEnum;
 
     //数组只可以通过函数来调动
-    function uintEnumData(address a, address b) public view returns(uint[] memory) {
-        return uintEnum[a][b];
+    function uintEnum(address a, address b) public view returns(uint[] memory) {
+        return _uintEnum[a][b];
     }
 
     function pushUintEnum(address a, address b, uint c)                     external OnlyAccess {
 
-        uintEnum[a][b].push(c);
+        _uintEnum[a][b].push(c);
 
     }
 
     function popUintEnum(address a, address b, uint c)                      external OnlyAccess {
 
-        uint[] storage enumBal = uintEnum[a][b];
+        uint[] storage enumBal = _uintEnum[a][b];
         uint bal               = enumBal.length;
 
         unchecked {
