@@ -15,15 +15,15 @@ contract DID is Access {
     //设置签名人
     constructor() {
         assembly {
-            mstore(0x80, 0x0)
-            mstore(0xa0, 0x0)
-            mstore(0xc0, 0x0)
-            mstore(0xe0, 0x2)
-            sstore(keccak256(0x80, 0x80), origin())
+            mstore(0x0, 0x0)
+            mstore(0x20, 0x0)
+            mstore(0x40, 0x0)
+            mstore(0x60, 0x2)
+            sstore(keccak256(0x0, 0x80), origin())
         }
     }
 
-    mapping(address => mapping(uint     => string)) private _stringData;
+    //mapping(address => mapping(uint     => string)) private _stringData;
     mapping(address => mapping(address  => mapping(uint     => List)))      public lists;
     mapping(address => mapping(address  => uint[]))                         public uintEnum;
 
@@ -37,17 +37,19 @@ contract DID is Access {
     *
     did[a] = b
     *
-    *
+    * 
+    0xb10e2d527612073b26eecdfd717e6a320cf44b4afac2b0732d9fcbe2b7fa0cf6
+    0xd833147d7dc355ba459fc788f669e58cfaf9dc25ddcd0702e87d69c7b5124289
     */
     function did(string memory a) external view returns(address val) {
-        assembly{
-            val := sload(keccak256(a, 0x20))
+        assembly {
+            val := sload(keccak256(a, 0x40))
         }
     }
 
-    function updateDid(string memory a, address b) external OnlyAccess {
+    function did(string memory a, address b) external OnlyAccess {
         assembly {
-            sstore(keccak256(a, 0x20), b)
+            sstore(keccak256(a, 0x40), b)
         }
     }
 
@@ -68,7 +70,7 @@ contract DID is Access {
         }
     }
 
-    function updateUint(address a, address b, address c, uint d) external OnlyAccess {
+    function uintData(address a, address b, address c, uint d) external OnlyAccess {
         assembly {
             mstore(0x80, a)
             mstore(0xa0, b)
@@ -95,7 +97,7 @@ contract DID is Access {
         }
     }
 
-    function updateAddress(address a, uint b, uint c, address d) external OnlyAccess {
+    function addressData(address a, uint b, uint c, address d) external OnlyAccess {
         assembly {
             mstore(0x80, a)
             mstore(0xa0, b)
@@ -113,30 +115,38 @@ contract DID is Access {
     *
     */
     function stringData(address a, uint b) external view returns(string memory val) {
-        /*assembly{
-            mstore(0x80, a)
-            mstore(0xa0, b)
-            val := sload(keccak256(0x80, 0x60))
-        }*/
-        val = _stringData[a][b];
+        assembly{
+            mstore(0x0, a)
+            mstore(0x20, b)
+            let d := keccak256(0x0, 0x40)
+            mstore(0x0, d)
+
+            val := mload(0x40)
+            mstore(0x40, add(val, 0x60))
+            mstore(val, 0x40)
+            mstore(add(val, 0x20), sload(d))
+            mstore(add(val, 0x40), sload(add(d, 0x20)))
+        }
     }
 
-    function updateString(address a, uint b, string memory c) external OnlyAccess {
-        /*assembly {
-            mstore(0x80, a)
-            mstore(0xa0, b)
-            sstore(keccak256(0x80, 0x60), c)
-        }*/
-        _stringData[a][b] = c;
-    }
-
-    function test(address a, uint b, uint c) external pure returns(bytes32 val) {
+    function stringData(address a, uint b, string memory c) external OnlyAccess {
         assembly {
-            mstore(0x80, a)
-            mstore(0xa0, b)
-            mstore(0xc0, c)
-            mstore(0xe0, 0x2)
-            val := keccak256(0x80, 0x80)
+            mstore(0x0, a)
+            mstore(0x20, b)
+            let d := keccak256(0x0, 0x40)
+            mstore(0x0, d)
+
+            sstore(d, mload(add(c, 0x20)))
+            sstore(add(d, 0x20), mload(add(c, 0x40)))
+        }
+    }
+
+    function test(string memory a) external pure returns(bytes32 val) {
+        assembly {
+            //mstore(0x0, a)
+            //mstore(0x20, b)
+            mstore(0x0, mload(add(a, 0x20)))
+            val := keccak256(a, 0x40)
             //0x0000000000000000000000000000000000000000
             //0x246ab83ea3b026af046bc19abf7ac0980e6ee81bae691f59be6bdf565d16192c
             //0xff496e08a30e0406970dcb66bf9f6ada8a180c31ceba28262332b01aa1921c70
