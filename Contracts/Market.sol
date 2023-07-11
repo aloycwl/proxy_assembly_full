@@ -28,14 +28,14 @@ contract Market is Access, DynamicPrice {
         if(price > 0) 
             require(i721.isApprovedForAll(msg.sender, address(this)),   "10");
 
-        iDID.updateList(address(this), contAddr, tokenId, tokenAddr, price);
+        iDID.listData(address(this), contAddr, tokenId, tokenAddr, price);
 
     }
 
     //用户必须发送大于或等于所列价格的以太币
     function buy(address contAddr, uint tokenId) external payable {
 
-        (, uint price) = iDID.lists(address(this), contAddr, tokenId);
+        (, uint price) = iDID.listData(address(this), contAddr, tokenId);
         IERC721 iERC721 = IERC721(contAddr);
         address seller  = iERC721.ownerOf(tokenId);
 
@@ -44,7 +44,7 @@ contract Market is Access, DynamicPrice {
         pay(contAddr, tokenId, seller, fee);                            //转币给卖家减费用
         iERC721.approve(msg.sender, tokenId);                           //手动授权给新所有者
         iERC721.transferFrom(seller, msg.sender, tokenId);
-        iDID.updateList(address(this), contAddr, tokenId, address(0), 0);//把币下市                        
+        iDID.listData(address(this), contAddr, tokenId, address(0), 0); //把币下市                        
 
     }
 

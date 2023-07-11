@@ -29,7 +29,7 @@ contract DynamicPrice {
 
     function pay(address contAddr, uint _list, address to, uint fee) internal {
 
-        (address tokenAddr, uint price) = iDID.lists(address(this), contAddr, _list);
+        (address tokenAddr, uint price) = iDID.listData(address(this), contAddr, _list);
 
         unchecked {
 
