@@ -125,7 +125,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
                     isApprovedForAll(ownerOfId, from) ||                            //待全部出售或
                     this.access(msg.sender) > 0,                                    "0C");
             
-            iDID.popUintEnum(address(this), from, id);                              //从所有者数组中删除
+            iDID.uintEnumPop(address(this), from, id);                              //从所有者数组中删除
             iDID.addressData(address(this), 1, id, address(0));                     //重置授权
             iDID.uintData(address(this), from, to, 0);                              //重置操作员授权
             iDID.uintData(address(this), from, address(0), balanceOf(from) - 1);    //减少前任所有者的余额
@@ -168,7 +168,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
             if (to != address(0)) {
 
-                iDID.pushUintEnum(address(this), to, id);                           //添加到新的所有者数组
+                iDID.uintEnumPush(address(this), to, id);                           //添加到新的所有者数组
                 iDID.uintData(address(this), to, address(0), balanceOf(to) + 1);    //添加当前所有者的余额
                                                                     
             }

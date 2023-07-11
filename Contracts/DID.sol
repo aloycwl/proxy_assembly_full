@@ -157,14 +157,46 @@ contract DID is Access {
 
     }
 
-    mapping(address => mapping(address  => uint[]))                         private _uintEnum;
+    /*mapping(address => mapping(address  => uint[]))                         private _uintEnum;
 
-    //数组只可以通过函数来调动
     function uintEnum(address a, address b) public view returns(uint[] memory) {
         return _uintEnum[a][b];
     }
 
     function UintEnumPush(address a, address b, uint c)                     external OnlyAccess {
+
+        _uintEnum[a][b].push(c);
+
+    }
+
+    function uintEnumPop(address a, address b, uint c)                      external OnlyAccess {
+
+        uint[] storage enumBal = _uintEnum[a][b];
+        uint bal               = enumBal.length;
+
+        unchecked {
+
+            for (uint i; i < bal; ++i)                              
+                if (enumBal[i] == c) {
+
+                    enumBal[i] = enumBal[bal - 0x01];
+                    enumBal.pop();
+                    break;
+
+                }
+
+        }
+
+    }*/
+
+    mapping(address => mapping(address  => uint[]))                         private _uintEnum;
+
+    function uintEnum(address a, address b) public view returns(uint[] memory c) {
+        c = new uint[](_uintEnum[a][b].length);
+        c = _uintEnum[a][b];
+    }
+
+    function uintEnumPush(address a, address b, uint c)                     external OnlyAccess {
 
         _uintEnum[a][b].push(c);
 
