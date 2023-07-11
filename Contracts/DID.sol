@@ -18,18 +18,8 @@ contract DID is Access {
             mstore(0x0, 0x0)
             mstore(0x20, 0x0)
             mstore(0x40, 0x0)
-            mstore(0x60, 0x2)
-            sstore(keccak256(0x0, 0x80), origin())
+            sstore(keccak256(0x0, 0x60), origin())
         }
-    }
-
-    //mapping(address => mapping(uint     => string)) private _stringData;
-    mapping(address => mapping(address  => mapping(uint     => List)))      public lists;
-    mapping(address => mapping(address  => uint[]))                         public uintEnum;
-
-    //数组只可以通过函数来调动
-    function uintEnumData(address a, address b) public view returns(uint[] memory) {
-        return uintEnum[a][b];
     }
 
     /*
@@ -65,18 +55,16 @@ contract DID is Access {
             mstore(0x80, a)
             mstore(0xa0, b)
             mstore(0xc0, c)
-            mstore(0xe0, 0x1)
-            val := sload(keccak256(0x80, 0x80))
+            val := sload(keccak256(0x80, 0x60))
         }
     }
 
     function uintData(address a, address b, address c, uint d) external OnlyAccess {
         assembly {
-            mstore(0x80, a)
-            mstore(0xa0, b)
-            mstore(0xc0, c)
-            mstore(0xe0, 0x1)
-            sstore(keccak256(0x80, 0x80), d)
+            mstore(0x0, a)
+            mstore(0x20, b)
+            mstore(0x40, c)
+            sstore(keccak256(0x0, 0x60), d)
         }
     }
 
@@ -89,28 +77,26 @@ contract DID is Access {
     */
     function addressData(address a, uint b, uint c) external view returns(address val) {
         assembly{
-            mstore(0x80, a)
-            mstore(0xa0, b)
-            mstore(0xc0, c)
-            mstore(0xe0, 0x2)
-            val := sload(keccak256(0x80, 0x80))
+            mstore(0x0, a)
+            mstore(0x20, b)
+            mstore(0x40, c)
+            val := sload(keccak256(0x0, 0x60))
         }
     }
 
     function addressData(address a, uint b, uint c, address d) external OnlyAccess {
         assembly {
-            mstore(0x80, a)
-            mstore(0xa0, b)
-            mstore(0xc0, c)
-            mstore(0xe0, 0x2)
-            sstore(keccak256(0x80, 0x80), d)
+            mstore(0x0, a)
+            mstore(0x20, b)
+            mstore(0x40, c)
+            sstore(keccak256(0x0, 0x60), d)
         }
     }
 
     /*
     *
     *
-    stringData[a][b][c] = d //0x3
+    stringData[a][b][c] = d
     *
     *
     */
@@ -119,7 +105,6 @@ contract DID is Access {
             mstore(0x0, a)
             mstore(0x20, b)
             let d := keccak256(0x0, 0x40)
-            mstore(0x0, d)
 
             val := mload(0x40)
             mstore(0x40, add(val, 0x60))
@@ -134,11 +119,41 @@ contract DID is Access {
             mstore(0x0, a)
             mstore(0x20, b)
             let d := keccak256(0x0, 0x40)
-            mstore(0x0, d)
 
             sstore(d, mload(add(c, 0x20)))
             sstore(add(d, 0x20), mload(add(c, 0x40)))
         }
+    }
+
+    /*
+    *
+    *
+    lists[a][b][c] = List(d, e);
+    *
+    *
+    */
+    function listData(address a, address b, uint c) external view returns(address d, uint e) {
+        assembly{
+            mstore(0x80, a)
+            mstore(0xa0, b)
+            mstore(0xc0, c)
+            let f := keccak256(0x80, 0x60)
+            d := sload(f)
+            e := sload(add(f, 0x20))
+            
+        }
+    }
+
+    function listData(address a, address b, uint c, address d, uint e) external OnlyAccess {
+        assembly {
+            mstore(0x0, a)
+            mstore(0x20, b)
+            mstore(0x40, c)
+            let f := keccak256(0x0, 0x60)
+            sstore(f, d)
+            sstore(add(f, 0x20), e)
+        }
+
     }
 
     function test(string memory a) external pure returns(bytes32 val) {
@@ -153,18 +168,11 @@ contract DID is Access {
         }
     }
 
-    
+    mapping(address => mapping(address  => uint[]))                         public uintEnum;
 
-    
-
-    
-
-    //特别用于NFTMarket和ERC721的储存
-    function updateList(address a, address b, uint c, address d, uint e)    external OnlyAccess {
-
-        if(d == address(0) && e ==0) delete lists[a][b][c];
-        else lists[a][b][c]          = List(d, e);
-
+    //数组只可以通过函数来调动
+    function uintEnumData(address a, address b) public view returns(uint[] memory) {
+        return uintEnum[a][b];
     }
 
     function pushUintEnum(address a, address b, uint c)                     external OnlyAccess {
