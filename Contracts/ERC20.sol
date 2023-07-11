@@ -41,7 +41,7 @@ contract ERC20 is Access, Sign {
 
     function approve(address to, uint amt) public returns(bool) {
 
-        iDID.updateUint(address(this), msg.sender, to, amt);
+        iDID.uintData(address(this), msg.sender, to, amt);
         emit Approval(msg.sender, to, amt);
         return true;
 
@@ -67,8 +67,8 @@ contract ERC20 is Access, Sign {
             require(from == msg.sender || isApproved,                       "0A");
             
             //相应去除授权
-            iDID.updateUint(address(this), from, to, isApproved ? approveAmt - amt : 0);
-            iDID.updateUint(address(this), from, address(0), balanceFrom - amt);
+            iDID.uintData(address(this), from, to, isApproved ? approveAmt - amt : 0);
+            iDID.uintData(address(this), from, address(0), balanceFrom - amt);
 
             _transfer(from, to, amt);
             return true;
@@ -80,7 +80,7 @@ contract ERC20 is Access, Sign {
     //方便转移和铸币
     function _transfer(address from, address to, uint amt) private {
 
-        iDID.updateUint(address(this), to, address(0), balanceOf(to) + amt);         
+        iDID.uintData(address(this), to, address(0), balanceOf(to) + amt);         
         emit Transfer(from, to, amt);
 
     }
