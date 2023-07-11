@@ -112,23 +112,21 @@ contract DID is Access {
     *
     *
     */
-    function stringData(address a, address b, uint c) external view returns(string memory val) {
+    function stringData(address a, uint b) external view returns(string memory val) {
         assembly{
             mstore(0x80, a)
             mstore(0xa0, b)
-            mstore(0xc0, c)
-            mstore(0xe0, 0x3)
-            val := sload(keccak256(0x80, 0x80))
+            mstore(0xc0, 0x3)
+            val := sload(keccak256(0x80, 0x60))
         }
     }
 
-    function updateString(address a, address b, uint c, string memory d) external OnlyAccess {
+    function updateString(address a, uint b, string memory c) external OnlyAccess {
         assembly {
             mstore(0x80, a)
             mstore(0xa0, b)
-            mstore(0xc0, c)
-            mstore(0xe0, 0x3)
-            sstore(keccak256(0x80, 0x80), d)
+            mstore(0xc0, 0x3)
+            sstore(keccak256(0x80, 0x60), c)
         }
     }
 
