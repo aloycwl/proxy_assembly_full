@@ -46,7 +46,7 @@ contract DID is Access {
     /*
     *
     *
-    uintData[a][b][c] = d //0x1
+    uintData[a][b][c] = d
     *
     *
     */
@@ -71,7 +71,7 @@ contract DID is Access {
     /*
     *
     *
-    addressData[a][b][c] = d //0x2
+    addressData[a][b][c] = d
     *
     *
     */
