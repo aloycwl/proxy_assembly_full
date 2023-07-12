@@ -6,7 +6,7 @@ contract Sign {
 
     function test() external pure returns(address) {
 
-        uint8 v = 28;
+        uint8 v = 0x1B;
         bytes32 r = 0x520c3ab3717abce7439b675837f11a8fc5a29949d4de0296d69a5b3d2b6a67c3;
         bytes32 s = 0x12516f02fb9fc134651d19e976c375c1d498a20588ee9d8313a30b2646ba590b;
 
@@ -22,7 +22,7 @@ contract Sign {
         }
 
         return ecrecover(hash, v, r, s);
-        
 
     }
+
 }
