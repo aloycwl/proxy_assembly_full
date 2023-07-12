@@ -192,7 +192,7 @@ contract DID is Access {
     mapping(address => mapping(address => uint[])) private _uintEnum;
 
     function uintEnum(address a, address b) public view returns(uint[] memory c) {
-        return _uintEnum[a][b];
+        return _uintEnum[a][b]; 
     }
 
     function uintEnumPush(address a, address b, uint c) external OnlyAccess {
