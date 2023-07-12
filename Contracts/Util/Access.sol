@@ -42,13 +42,12 @@ contract Access {
         
     }
 
-    function access(address addr) external view returns(uint) {
+    function access(address addr) external view returns(uint val) {
 
         //mapping(address => uint) public access;
         assembly {
             mstore(0x00, addr)
-            mstore(0x20, sload(keccak256(0x00, 0x20)))
-            return(0x20, 0x20)
+            val := sload(keccak256(0x00, 0x20))
         }
 
     }
