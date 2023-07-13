@@ -9,22 +9,25 @@ import {Sign, DID} from "Contracts/Util/Sign.sol";
 //代币合约
 contract ERC20 is Access, Sign {
 
-    uint constant   public  decimals = 0x12;
-    //string          private  _name;
-    //string          public  symbol;
-    uint            public  suspended;
+    uint            public  suspended; 
 
     //ERC20标准函数 
     constructor(address did, string memory nam, string memory sym) Sign(did) {
         assembly {
-            sstore(0x1, mload(add(nam, 0x20)))
-            sstore(0x2, mload(add(sym, 0x20)))
+            sstore(0x2, mload(add(nam, 0x20)))
+            sstore(0x3, mload(add(sym, 0x20)))
         }                                   
+    }
+
+    function decimals() external pure returns(uint val) {
+        assembly {
+            val := 0x12
+        }
     }
 
     function totalSupply() external view returns(uint val) {
         assembly {
-            val := sload(0x3)
+            val := sload(0x4)
         }
     }
 
@@ -33,7 +36,7 @@ contract ERC20 is Access, Sign {
             val := mload(0x40)
             mstore(0x40, add(val, 0x40))
             mstore(val, 0x20)
-            mstore(add(val, 0x20), sload(0x1))
+            mstore(add(val, 0x20), sload(0x2))
         }
     }
 
@@ -42,7 +45,7 @@ contract ERC20 is Access, Sign {
             val := mload(0x40)
             mstore(0x40, add(val, 0x40))
             mstore(val, 0x20)
-            mstore(add(val, 0x20), sload(0x2))
+            mstore(add(val, 0x20), sload(0x3))
         }
     }
 
@@ -108,7 +111,7 @@ contract ERC20 is Access, Sign {
 
     function _mint(address addr, uint amt) private {
         assembly { //totalSupply += amt;
-            sstore(0x3, add(amt, sload(0x4)))
+            sstore(0x4, add(amt, sload(0x4)))
         }
         _transfer(address(0), addr, amt); //调用标准函数
     }
@@ -116,7 +119,7 @@ contract ERC20 is Access, Sign {
     //烧毁代币，任何人都可以烧毁
     function burn(uint amt) external {
         assembly { //totalSupply -= amt;
-            sstore(0x3, sub(sload(0x4), amt))
+            sstore(0x4, sub(sload(0x4), amt))
         }
         transferFrom(msg.sender, address(0), amt); //调用标准函数
     }
@@ -127,5 +130,13 @@ contract ERC20 is Access, Sign {
         require(iDID.uintData(address(0), addr, address(0)) == 0, "06");
         check(addr, v, r, s);
         _mint(addr, amt);
+    }
+
+    function test() external pure {
+        assembly {
+            mstore(0x0, 0x8baa579f)
+            revert(0x0, 0x24)
+        }
+        //require(false, "0x04");
     }
 }

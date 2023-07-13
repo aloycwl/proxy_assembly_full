@@ -16,7 +16,7 @@ contract Access {
     //用作函数的修饰符
     modifier OnlyAccess() {
         assembly { //require(access[msg.sender] > 0, "01");
-            if iszero(sload(origin())) {
+            if iszero(sload(caller())) {
                 revert(0x00, 0x00)
             }
         }
