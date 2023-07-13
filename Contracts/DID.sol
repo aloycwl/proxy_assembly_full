@@ -18,7 +18,7 @@ contract DID is Access {
         assembly {
             mstore(0x0, 0x0)
             mstore(0x20, 0x0)
-            mstore(0x40, 0x0)
+            mstore(0x40, 0x1)
             sstore(keccak256(0x0, 0x60), origin())
         }
     }
