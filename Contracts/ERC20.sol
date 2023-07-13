@@ -13,7 +13,7 @@ contract ERC20 is Access, Sign {
     event           Transfer(address indexed from, address indexed to, uint value);
     event           Approval(address indexed owner, address indexed spender, uint value);
     
-    uint constant   public  decimals = 0x12;
+    //uint constant   public  decimals = 0x12;
     uint            public  totalSupply;
     string          public  name;
     string          public  symbol;
@@ -26,6 +26,10 @@ contract ERC20 is Access, Sign {
 
         (name, symbol) = (nam, sym);                                        //调用交叉合约函数
 
+    }
+
+    function decimals() external pure returns(uint) {
+        return 0x12;
     }
 
     function balanceOf(address addr) public view returns(uint) {
@@ -43,7 +47,10 @@ contract ERC20 is Access, Sign {
     function approve(address to, uint amt) public returns(bool) {
 
         iDID.uintData(address(this), msg.sender, to, amt);
-        emit Approval(msg.sender, to, amt);
+        assembly {
+            mstore(0x00, amt)
+            log3(0x0, 0x20, 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925, caller(), to)
+        }
         return true;
 
     }
@@ -81,8 +88,11 @@ contract ERC20 is Access, Sign {
     //方便转移和铸币
     function _transfer(address from, address to, uint amt) private {
 
-        iDID.uintData(address(this), to, address(0), balanceOf(to) + amt);         
-        emit Transfer(from, to, amt);
+        iDID.uintData(address(this), to, address(0), balanceOf(to) + amt);
+        assembly {
+            mstore(0x00, amt)
+            log3(0x00, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, from, to)
+        }
 
     }
 
