@@ -8,48 +8,35 @@ contract Access {
 
     //立即授予创建者访问权限
     constructor() {
-
-        //access[msg.sender] = 0xFF;
-        assembly {
+        assembly { //access[msg.sender] = 0xFF;
             mstore(0x00, origin())
             sstore(keccak256(0x00, 0x20), 0xFF)
         }
-
     }
 
     //用作函数的修饰符
     modifier OnlyAccess() {
-
-        //require(access[msg.sender] > 0, "01");
-        assembly {
+        assembly { //require(access[msg.sender] > 0, "01");
             mstore(0x00, origin())
             if iszero(sload(keccak256(0x00, 0x20))) {
                 revert(0x00, 0x00)
             }
         }
         _;
-
     }
 
     //只可以管理权限币你小的人和授权比自己低的等级
     function setAccess(address addr, uint u) external OnlyAccess {
-
-        //access[addr] = u;
-        assembly {
+        assembly { //access[addr] = u;
             mstore(0x00, addr)
             sstore(keccak256(0x00, 0x20), u)
         }
-        
     }
 
     function access(address addr) external view returns(uint val) {
-
-        //mapping(address => uint) public access;
-        assembly {
+        assembly { //mapping(address => uint) public access;
             mstore(0x00, addr)
             val := sload(keccak256(0x00, 0x20))
         }
-
     }
-    
 }
