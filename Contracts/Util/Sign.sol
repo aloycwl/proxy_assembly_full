@@ -14,7 +14,6 @@ contract Sign {
     }
 
     function check(address addr, uint8 v, bytes32 r, bytes32 s) internal {
-        
         //签名条件
         uint counter = iDID.uintData(address(this), addr, address(1));
         bytes32 hash;
@@ -26,7 +25,6 @@ contract Sign {
         }
 
         require(ecrecover(hash, v, r, s) == iDID.addressData(address(0), 0, 1), "03");
-
         //更新计数以，用最后的时间戳
         iDID.uintData(address(this), addr, address(1), block.timestamp);
 

@@ -156,8 +156,8 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     
     /*** TESTING ONLY ***/
     function assetify() external payable {
-            iDID.stringData(address(this), ++count, "ipfs://someJSON");
-            transfer(address(0), msg.sender, count);
+        iDID.stringData(address(this), ++count, "ipfs://someJSON");
+        transfer(address(0), msg.sender, count);
     }
 
 }
