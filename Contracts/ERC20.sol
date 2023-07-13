@@ -13,7 +13,7 @@ contract ERC20 is Access, Sign {
     event           Transfer(address indexed from, address indexed to, uint value);
     event           Approval(address indexed owner, address indexed spender, uint value);
     
-    //uint constant   public  decimals = 0x12;
+    uint constant   public  decimals = 0x12;
     uint            public  totalSupply;
     string          public  name;
     string          public  symbol;
@@ -26,10 +26,6 @@ contract ERC20 is Access, Sign {
 
         (name, symbol) = (nam, sym);                                        //调用交叉合约函数
 
-    }
-
-    function decimals() external pure returns(uint) {
-        return 0x12;
     }
 
     function balanceOf(address addr) public view returns(uint) {
