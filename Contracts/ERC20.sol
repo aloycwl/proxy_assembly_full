@@ -10,14 +10,40 @@ import {Sign, DID} from "Contracts/Util/Sign.sol";
 contract ERC20 is Access, Sign {
 
     uint constant   public  decimals = 0x12;
-    uint            public  totalSupply;
-    string          public  name;
-    string          public  symbol;
+    //string          private  _name;
+    //string          public  symbol;
     uint            public  suspended;
 
     //ERC20标准函数 
     constructor(address did, string memory nam, string memory sym) Sign(did) {
-        (name, symbol) = (nam, sym);                                        //调用交叉合约函数
+        assembly {
+            sstore(0x1, mload(add(nam, 0x20)))
+            sstore(0x2, mload(add(sym, 0x20)))
+        }                                   
+    }
+
+    function totalSupply() external view returns(uint val) {
+        assembly {
+            val := sload(0x3)
+        }
+    }
+
+    function name() external view returns(string memory val) {
+        assembly {
+            val := mload(0x40)
+            mstore(0x40, add(val, 0x40))
+            mstore(val, 0x20)
+            mstore(add(val, 0x20), sload(0x1))
+        }
+    }
+
+    function symbol() external view returns(string memory val) {
+        assembly {
+            val := mload(0x40)
+            mstore(0x40, add(val, 0x40))
+            mstore(val, 0x20)
+            mstore(add(val, 0x20), sload(0x2))
+        }
     }
 
     function balanceOf(address addr) public view returns(uint) {
@@ -81,27 +107,25 @@ contract ERC20 is Access, Sign {
     }
 
     function _mint(address addr, uint amt) private {
-        unchecked {
-            totalSupply += amt;                                             //将数量添加到用户和总供应量
-            _transfer(address(0), addr, amt);                               //调用标准函数
+        assembly { //totalSupply += amt;
+            sstore(0x3, add(amt, sload(0x4)))
         }
+        _transfer(address(0), addr, amt); //调用标准函数
     }
 
     //烧毁代币，任何人都可以烧毁
     function burn(uint amt) external {
-        unchecked {
-            totalSupply -= amt;                                             //减少总供应
-            transferFrom(msg.sender, address(0), amt);                      //调用标准函数
+        assembly { //totalSupply -= amt;
+            sstore(0x3, sub(sload(0x4), amt))
         }
+        transferFrom(msg.sender, address(0), amt); //调用标准函数
     }
 
     //利用签名人来哈希信息
     function withdraw(address addr, uint amt, uint8 v, bytes32 r, bytes32 s) external {
-        unchecked {
-            //确保账户不会被暂停、提款过早或签名错误
-            require(iDID.uintData(address(0), addr, address(0)) == 0,       "06");
-            check(addr, v, r, s);
-            _mint(addr, amt);
-        }
+        //确保账户不会被暂停、提款过早或签名错误
+        require(iDID.uintData(address(0), addr, address(0)) == 0, "06");
+        check(addr, v, r, s);
+        _mint(addr, amt);
     }
 }
