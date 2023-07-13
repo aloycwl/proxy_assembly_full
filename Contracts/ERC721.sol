@@ -62,8 +62,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
         require(msg.sender == ownerOfId || isApprovedForAll(ownerOfId, msg.sender), "0B");             
         iDID.addressData(address(this), 1, id, to);
         assembly {
-            mstore(0x0, id)
-            log4(0x0, 0x20, 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925, caller(), to, id)
+            log4(0x0, 0x0, 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925, caller(), to, id)
         }
     }
 
@@ -133,8 +132,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
             }
             iDID.addressData(address(this), 0, id, to);                             //更新NFT持有者
             assembly {
-                mstore(0x0, id)
-                log4(0x0, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, from, to, id)
+                log4(0x0, 0x0, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, from, to, id)
             }
         }
     }
