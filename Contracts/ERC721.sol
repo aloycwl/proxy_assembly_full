@@ -7,6 +7,10 @@ import {Sign}                      from "Contracts/Util/Sign.sol";
 import {DID, Access, DynamicPrice} from "Contracts/Util/DynamicPrice.sol";
 
 interface IERC721 {
+    event Transfer          (address indexed from, address indexed to, uint indexed tokenId);
+    event ApprovalForAll    (address indexed owner, address indexed operator, bool approved);
+    event Approval          (address indexed owner, address indexed approved, uint indexed tokenId);
+
     function balanceOf(address)                                        external view returns(uint);
     function ownerOf(uint)                                             external view returns(address);
     function safeTransferFrom(address, address, uint)                  external;
@@ -158,6 +162,15 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     function assetify() external payable {
         iDID.stringData(address(this), ++count, "ipfs://someJSON");
         transfer(address(0), msg.sender, count);
+
+        uint c = count;
+
+        emit Transfer(address(0), msg.sender, count);
+        
+        assembly {
+                mstore(0x0, c)
+                log3(0x0, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, origin(), origin())
+            }
     }
 
 }

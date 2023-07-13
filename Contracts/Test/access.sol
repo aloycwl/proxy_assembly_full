@@ -3,20 +3,18 @@
 pragma solidity ^0.8.18;
 pragma abicoder v1;
 
-import {Access} from "Contracts/Util/Access.sol";
 
-contract test1 is Access{
-    uint i;
+contract test1 {
+    
 
-    function addI() external OnlyAccess() {
-        i++;
-    }
-}
-
-contract test2 {
-    test1 t;
-
-    function test(address a) external {
-        test1(a).addI();
+    function test() external pure {
+        assembly {
+            mstore(0x80, shl(229, 4594637)) 
+            mstore(0x84, 32) 
+            mstore(0xA4, 30)
+            mstore(0xC4, "Amount to raise smaller than 0")
+            revert(0x80, 0x64)
+        }
+        //require(false, "0x04");
     }
 }

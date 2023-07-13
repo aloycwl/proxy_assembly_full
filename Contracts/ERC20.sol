@@ -131,12 +131,4 @@ contract ERC20 is Access, Sign {
         check(addr, v, r, s);
         _mint(addr, amt);
     }
-
-    function test() external pure {
-        assembly {
-            mstore(0x0, 0x8baa579f)
-            revert(0x0, 0x24)
-        }
-        //require(false, "0x04");
-    }
 }
