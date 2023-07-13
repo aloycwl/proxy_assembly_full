@@ -29,8 +29,6 @@ contract DID is Access {
     did[a] = b
     *
     * 
-    0xb10e2d527612073b26eecdfd717e6a320cf44b4afac2b0732d9fcbe2b7fa0cf6
-    0xd833147d7dc355ba459fc788f669e58cfaf9dc25ddcd0702e87d69c7b5124289
     */
     function did(string memory a) external view returns(address val) {
         assembly {
