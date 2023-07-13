@@ -58,7 +58,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
         iDID.addressData(address(this), 1, id, to);
         assembly {
             mstore(0x0, id)
-            log3(0x0, 0x20, 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925, origin(), to)
+            log3(0x0, 0x20, 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925, caller(), to)
         }
     }
 
