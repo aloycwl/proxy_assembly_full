@@ -26,41 +26,10 @@ contract Sign {
         }
 
         require(ecrecover(hash, v, r, s) == iDID.addressData(address(0), 0, 0), "03");
-                /*keccak256(abi.encodePacked(keccak256(abi.encodePacked(
-                    string.concat(
-                        toString(uint(uint160(addr))), 
-                        toString(iDID.uintData(address(this), addr, address(1))))
-                    )
-                )))*/
 
         //更新计数以，用最后的时间戳
         iDID.uintData(address(this), addr, address(1), block.timestamp);
 
     }
-
-    /*function toString(uint a) private pure returns (string memory val) {
-
-        assembly {
-            let l
-
-            val := mload(0x40)
-            mstore(0x40, 0x20)
-            mstore(0x80, 0x20)
-
-            if iszero(a) {
-                mstore(0xa0, 0x30)
-            }
-
-            for { let j := a } gt(j, 0x0) { j := div(j, 0xa) } {
-                l := add(l, 0x1)
-            }
-
-            for { } gt(a, 0x0) { a := div(a, 0xa) } {
-                l := sub(l, 0x1)
-                mstore8(add(l, 0xa0), add(mod(a, 0xa), 0x30))
-            }
-        }
-        
-    }*/
     
 }

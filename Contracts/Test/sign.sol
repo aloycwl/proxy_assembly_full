@@ -6,19 +6,19 @@ contract Sign {
 
     function test() external pure returns(address) {
 
-        uint8 v = 0x1B;
-        bytes32 r = 0x520c3ab3717abce7439b675837f11a8fc5a29949d4de0296d69a5b3d2b6a67c3;
-        bytes32 s = 0x12516f02fb9fc134651d19e976c375c1d498a20588ee9d8313a30b2646ba590b;
+        uint8 v = 28;
+        bytes32 r = 0x95451769cc5fbf8c02cd3b08f3336b3c56a742b9871d16e68be51a73cd246677;
+        bytes32 s = 0x76ef0859dca3627f1d73a5bae195d8c088e2b03243a4fa5bd2b0b9c93a1def88;
 
         address addr = 0xA34357486224151dDfDB291E13194995c22Df505;
-        uint counter = 0x64ACAB68;
+        uint counter = 1688453994;
 
         bytes32 hash;
 
         assembly {
-            mstore(0x0, add(addr, counter))
-            mstore(0x0, keccak256(0x0, 0x20))
-            hash := keccak256(0x0, 0x20)
+            mstore(0x00, add(addr, counter))
+            mstore(0x00, keccak256(0x00, 0x20))
+            hash := keccak256(0x00, 0x20)
         }
 
         return ecrecover(hash, v, r, s);
