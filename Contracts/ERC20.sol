@@ -9,7 +9,9 @@ import {Sign, DID} from "Contracts/Util/Sign.sol";
 //代币合约
 contract ERC20 is Access, Sign {
 
-    uint            public  suspended; 
+    //event Transfer (address indexed from, address indexed to, uint amt);
+    //event Approval (address indexed from, address indexed to, uint amt);
+    uint public suspended; 
 
     //ERC20标准函数 
     constructor(address did, string memory nam, string memory sym) Sign(did) {
