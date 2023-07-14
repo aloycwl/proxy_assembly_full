@@ -187,7 +187,7 @@ contract DID is Access {
             mstore(0x20, b)
             let ptr := keccak256(0x0, 0x40)
             let len := sload(ptr)
-            sstore(ptr, add(len, 1))
+            sstore(ptr, add(len, 0x1))
             mstore(0x0, ptr)
             sstore(add(keccak256(0x0, 0x20), mul(len, 0x1)), c)
         }
@@ -202,10 +202,10 @@ contract DID is Access {
             if iszero(gt(len, c)) {
                 revert(0x0, 0x0)
             }
-            sstore(ptr, sub(len, 1))
+            sstore(ptr, sub(len, 0x1))
             mstore(0x0, ptr)
             ptr := keccak256(0x0, 0x20)
-            sstore(add(ptr, c), sload(add(ptr, sub(len, 1))))
+            sstore(add(ptr, c), sload(add(ptr, sub(len, 0x1))))
         }
     }
     
