@@ -17,7 +17,11 @@ contract Access {
     modifier OnlyAccess() {
         assembly { //require(access[msg.sender] > 0, "01");
             if iszero(sload(caller())) {
-                revert(0x00, 0x00)
+                mstore(0x80, shl(229, 4594637)) 
+                mstore(0x84, 0x20) 
+                mstore(0xA4, 0x2)
+                mstore(0xC4, "01")
+                revert(0x80, 0x64)
             }
         }
         _;
