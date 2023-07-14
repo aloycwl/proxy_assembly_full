@@ -9,8 +9,8 @@ import {Sign, DID} from "Contracts/Util/Sign.sol";
 //代币合约
 contract ERC20 is Access, Sign {
 
-    //event Transfer (address indexed from, address indexed to, uint amt);
-    //event Approval (address indexed from, address indexed to, uint amt);
+    event Transfer (address indexed from, address indexed to, uint amt);
+    event Approval (address indexed from, address indexed to, uint amt);
     uint public suspended; 
 
     //ERC20标准函数 
@@ -79,9 +79,48 @@ contract ERC20 is Access, Sign {
 
             require(iDID.uintData(address(0), from, address(0)) == 0 && 
                 iDID.uintData(address(0), to, address(0)) == 0,             "07");
-            require(suspended == 0,                                         "08");
-            require(balanceFrom >= amt,                                     "09");
-            require(from == msg.sender || isApproved,                       "0A");
+            
+
+            assembly {
+                function x(con, str) {
+                    if gt(con, 1) {
+                        mstore(0x80, shl(229, 4594637)) 
+                        mstore(0x84, 0x20) 
+                        mstore(0xA4, 0x2)
+                        mstore(0xC4, str)
+                        revert(0x80, 0x64)
+                    }
+                }
+                //require(suspended == 0, "08");
+                x(gt(sload(0x1), 0), "08")
+                //require(balanceFrom >= amt, "09");
+                x(gt(amt, balanceFrom), "09")
+                //require(from == msg.sender || isApproved, "0A");
+                x(and(iszero(eq(from, caller())), iszero(isApproved)), "0A")
+                /*function x(con, str) {
+                    mstore(0x80, shl(229, 4594637)) 
+                    mstore(0x84, 0x20) 
+                    mstore(0xA4, 0x2)
+                }
+                //require(suspended == 0, "08");
+                if gt(sload(0x1), 0) {
+                    x()
+                    mstore(0xC4, "08")
+                    revert(0x80, 0x64)
+                }
+                //require(balanceFrom >= amt, "09");
+                if gt(amt, balanceFrom) {
+                    x()
+                    mstore(0xC4, "09")
+                    revert(0x80, 0x64)
+                }
+                //require(from == msg.sender || isApproved, "0A");
+                if and(iszero(eq(from, caller())), iszero(isApproved)) {
+                    x()
+                    mstore(0xC4, "0A")
+                    revert(0x80, 0x64)
+                }*/
+            }
             
             //相应去除授权
             iDID.uintData(address(this), from, to, isApproved ? approveAmt - amt : 0);
@@ -103,8 +142,18 @@ contract ERC20 is Access, Sign {
 
     //切换暂停
     function toggleSuspend() external OnlyAccess {
-        suspended = suspended == 0 ? 1 : 0;
+        assembly {  //suspended = suspended == 0 ? 1 : 0;
+            switch sload(0x1)
+            case 1 {
+                sstore(0x1, 0)
+            }
+            default {
+                sstore(0x1, 1)
+            }
+        }
     }
+
+    
 
     //铸币代币，只允许有访问权限的地址
     function mint(address addr, uint amt) public OnlyAccess {

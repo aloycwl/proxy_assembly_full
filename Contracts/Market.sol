@@ -9,7 +9,8 @@ contract Market is Access, DynamicPrice {
 
     DID private iDID;
 
-    event Item(address contAddr, address tokenAddr, uint tokenId, uint price);
+    //event Item(address contAddr, address tokenAddr, uint tokenId, uint price);
+    event Item();
 
     constructor(address did) DynamicPrice(did) {
         iDID = DID(did);
@@ -25,6 +26,7 @@ contract Market is Access, DynamicPrice {
             require(i721.isApprovedForAll(msg.sender, address(this)),   "10");
 
         iDID.listData(address(this), contAddr, tokenId, tokenAddr, price);
+        emit Item();
     }
 
     //用户必须发送大于或等于所列价格的以太币
@@ -37,7 +39,8 @@ contract Market is Access, DynamicPrice {
         pay(contAddr, tokenId, seller, fee);                            //转币给卖家减费用
         iERC721.approve(msg.sender, tokenId);                           //手动授权给新所有者
         iERC721.transferFrom(seller, msg.sender, tokenId);
-        iDID.listData(address(this), contAddr, tokenId, address(0), 0); //把币下市                        
+        iDID.listData(address(this), contAddr, tokenId, address(0), 0); //把币下市     
+        emit Item();                   
 
     }
 
