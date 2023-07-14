@@ -4,7 +4,7 @@ pragma abicoder v1;
 
 contract arraywy {
 
-    function secondTest() public pure returns (uint[] memory res) {                                                                    
+    /*function secondTest() public pure returns (uint[] memory res) {                                                                    
         assembly {                                                                                      
             res := mload(0x40)
             mstore(0x40, add(add(res, 0x20), 0x140))
@@ -51,6 +51,34 @@ contract arraywy {
 
             // Load the value at the calculated position
             value := sload(position)
+        }
+    }*/
+
+    uint256[] public myArray;
+
+    function pushar(uint val) external {
+        myArray.push(val);
+    }
+
+    function getArray() external view returns (uint256[] memory result) {
+        uint256 length = myArray.length;
+
+        result = new uint256[](length);
+
+        assembly {
+            // Load the pointer to myArray data
+            let dataPointer := sload(myArray.slot)
+            mstore(0x0, dataPointer)
+
+            // Set the result length
+            mstore(result, length)
+
+            // Copy each element of myArray to result
+            for { let i := 0 } lt(i, length) { i := add(i, 1) } {
+                let elementPointer := add(dataPointer, mul(i, 0x20))
+                let element := sload(elementPointer)
+                mstore(add(result, add(0x20, mul(i, 0x20))), element)
+            }
         }
     }
 }
