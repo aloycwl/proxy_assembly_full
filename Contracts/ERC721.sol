@@ -59,10 +59,10 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
     function approve(address to, uint id) external {
         address ownerOfId = ownerOf(id);
-        require(msg.sender == ownerOfId || isApprovedForAll(ownerOfId, msg.sender), "0B");             
+        require(msg.sender == ownerOfId || isApprovedForAll(ownerOfId, msg.sender), "0B");
         iDID.addressData(address(this), 1, id, to);
         assembly {
-            log4(0x0, 0x0, 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925, caller(), to, id)
+            log4(0x0, 0x0, 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925, ownerOfId, to, id)
         }
     }
 

@@ -10,11 +10,11 @@ contract test1 {
     function test() external pure {
         assembly {
             mstore(0x80, shl(229, 4594637)) 
-            mstore(0x84, 32) 
-            mstore(0xA4, 30)
-            mstore(0xC4, "Amount to raise smaller than 0")
-            revert(0x80, 0x64)
+            mstore(0x84, 0x1) 
+            //mstore(0xA4, 2)
+            //mstore(0xC4, "05")
+            revert(0x80, 0x5)
         }
-        //require(false, "0x04");
+        //require(false, "Amount to raise smaller than 0");
     }
 }
