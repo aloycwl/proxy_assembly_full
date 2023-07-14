@@ -83,7 +83,7 @@ contract ERC20 is Access, Sign {
 
             assembly {
                 function x(con, str) {
-                    if gt(con, 1) {
+                    if gt(con, 0) {
                         mstore(0x80, shl(229, 4594637)) 
                         mstore(0x84, 0x20) 
                         mstore(0xA4, 0x2)
