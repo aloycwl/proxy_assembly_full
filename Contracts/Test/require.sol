@@ -20,16 +20,10 @@ contract test1 {
         }
     }
 
-    function test2(address from) external view returns (uint val) {
+    function test2(uint approveAmt, uint amt) external pure returns (uint val) {
+        //bool isApproved = approveAmt >= amt;
         assembly {
-            val := xor(eq(from, caller()), 0)
-            /*if eq(from, caller()) {
-                mstore(0x80, shl(229, 4594637)) 
-                mstore(0x84, 0x20) 
-                mstore(0xA4, 0x2)
-                mstore(0xC4, "0A")
-                revert(0x80, 0x64)
-            }*/
+            val := iszero(gt(amt, approveAmt))
         }
     }
 

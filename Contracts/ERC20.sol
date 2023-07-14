@@ -74,14 +74,12 @@ contract ERC20 is Access, Sign {
 
     function transferFrom(address from, address to, uint amt) public returns(bool) {
         unchecked {
-            (uint approveAmt, uint balanceFrom) = (allowance(from, to), balanceOf(from));
-            bool isApproved = approveAmt >= amt;
-
-            require(iDID.uintData(address(0), from, address(0)) == 0 && 
-                iDID.uintData(address(0), to, address(0)) == 0,             "07");
-            
+            (uint approveAmt, uint balanceFrom, uint u1, uint u2) = (allowance(from, to), balanceOf(from), 
+                iDID.uintData(address(0), from, address(0)), iDID.uintData(address(0), to, address(0)));
+            bool isApproved;
 
             assembly {
+                isApproved := iszero(gt(amt, approveAmt))
                 function x(con, str) {
                     if gt(con, 0) {
                         mstore(0x80, shl(229, 4594637)) 
@@ -91,35 +89,10 @@ contract ERC20 is Access, Sign {
                         revert(0x80, 0x64)
                     }
                 }
-                //require(suspended == 0, "08");
-                x(gt(sload(0x1), 0), "08")
-                //require(balanceFrom >= amt, "09");
-                x(gt(amt, balanceFrom), "09")
-                //require(from == msg.sender || isApproved, "0A");
-                x(and(iszero(eq(from, caller())), iszero(isApproved)), "0A")
-                /*function x(con, str) {
-                    mstore(0x80, shl(229, 4594637)) 
-                    mstore(0x84, 0x20) 
-                    mstore(0xA4, 0x2)
-                }
-                //require(suspended == 0, "08");
-                if gt(sload(0x1), 0) {
-                    x()
-                    mstore(0xC4, "08")
-                    revert(0x80, 0x64)
-                }
-                //require(balanceFrom >= amt, "09");
-                if gt(amt, balanceFrom) {
-                    x()
-                    mstore(0xC4, "09")
-                    revert(0x80, 0x64)
-                }
-                //require(from == msg.sender || isApproved, "0A");
-                if and(iszero(eq(from, caller())), iszero(isApproved)) {
-                    x()
-                    mstore(0xC4, "0A")
-                    revert(0x80, 0x64)
-                }*/
+                x(or(gt(u1, 0), gt(u2, 0)), "07") //u1 == 0 && u2 == 0
+                x(gt(sload(0x1), 0), "08") //suspended == 0
+                x(gt(amt, balanceFrom), "09") //balanceFrom >= amt
+                x(and(iszero(eq(from, caller())), iszero(isApproved)), "0A") //from == msg.sender || isApproved
             }
             
             //相应去除授权
