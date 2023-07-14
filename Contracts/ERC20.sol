@@ -11,13 +11,12 @@ contract ERC20 is Access, Sign {
 
     event Transfer (address indexed from, address indexed to, uint amt);
     event Approval (address indexed from, address indexed to, uint amt);
-    uint public suspended; 
 
     //ERC20标准函数 
-    constructor(address did, string memory nam, string memory sym) Sign(did) {
+    constructor(address did, string memory _name, string memory _symbol) Sign(did) {
         assembly {
-            sstore(0x2, mload(add(nam, 0x20)))
-            sstore(0x3, mload(add(sym, 0x20)))
+            sstore(0x1, mload(add(_name, 0x20)))
+            sstore(0x2, mload(add(_symbol, 0x20)))
         }                                   
     }
 
@@ -38,7 +37,7 @@ contract ERC20 is Access, Sign {
             val := mload(0x40)
             mstore(0x40, add(val, 0x40))
             mstore(val, 0x20)
-            mstore(add(val, 0x20), sload(0x2))
+            mstore(add(val, 0x20), sload(0x1))
         }
     }
 
@@ -47,7 +46,7 @@ contract ERC20 is Access, Sign {
             val := mload(0x40)
             mstore(0x40, add(val, 0x40))
             mstore(val, 0x20)
-            mstore(add(val, 0x20), sload(0x3))
+            mstore(add(val, 0x20), sload(0x2))
         }
     }
 
@@ -74,8 +73,7 @@ contract ERC20 is Access, Sign {
 
     function transferFrom(address from, address to, uint amt) public returns(bool) {
         unchecked {
-            (uint approveAmt, uint balanceFrom, uint u1, uint u2) = (allowance(from, to), balanceOf(from), 
-                iDID.uintData(address(0), from, address(0)), iDID.uintData(address(0), to, address(0)));
+            (uint approveAmt, uint balanceFrom) = (allowance(from, to), balanceOf(from));
             bool isApproved;
 
             assembly {
@@ -89,9 +87,7 @@ contract ERC20 is Access, Sign {
                         revert(0x80, 0x64)
                     }
                 }
-                x(or(gt(u1, 0), gt(u2, 0)), "07") //u1 == 0 && u2 == 0
-                x(gt(sload(0x1), 0), "08") //suspended == 0
-                x(gt(amt, balanceFrom), "09") //balanceFrom >= amt
+                x(gt(amt, balanceFrom), "09")                                //balanceFrom >= amt
                 x(and(iszero(eq(from, caller())), iszero(isApproved)), "0A") //from == msg.sender || isApproved
             }
             
@@ -105,28 +101,25 @@ contract ERC20 is Access, Sign {
 
     //方便转移和铸币
     function _transfer(address from, address to, uint amt) private {
-        iDID.uintData(address(this), to, address(0), balanceOf(to) + amt);
-        assembly {
+        (uint u1, uint u2, uint u3) = (
+            iDID.uintData(address(0), from, address(0)), 
+            iDID.uintData(address(0), to, address(0)),
+            iDID.uintData(address(0), address(this), address(0)));
+ 
+        assembly { //用户，收信人，或合约被暂停
+            if gt(or(or(gt(u1, 0), gt(u2, 0)), gt(u3, 0)), 0) {
+                mstore(0x80, shl(229, 4594637)) 
+                mstore(0x84, 0x20) 
+                mstore(0xA4, 0x2)
+                mstore(0xC4, "07")
+                revert(0x80, 0x64)
+            }
             mstore(0x0, amt)
             log3(0x00, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, from, to)
         }
 
+        iDID.uintData(address(this), to, address(0), balanceOf(to) + amt);
     }
-
-    //切换暂停
-    function toggleSuspend() external OnlyAccess {
-        assembly {  //suspended = suspended == 0 ? 1 : 0;
-            switch sload(0x1)
-            case 1 {
-                sstore(0x1, 0)
-            }
-            default {
-                sstore(0x1, 1)
-            }
-        }
-    }
-
-    
 
     //铸币代币，只允许有访问权限的地址
     function mint(address addr, uint amt) public OnlyAccess {
@@ -150,8 +143,6 @@ contract ERC20 is Access, Sign {
 
     //利用签名人来哈希信息
     function withdraw(address addr, uint amt, uint8 v, bytes32 r, bytes32 s) external {
-        //确保账户不会被暂停、提款过早或签名错误
-        require(iDID.uintData(address(0), addr, address(0)) == 0, "06");
         check(addr, v, r, s);
         _mint(addr, amt);
     }
