@@ -168,7 +168,6 @@ contract DID is Access {
             let ptr := keccak256(0x0, 0x40)
             mstore(0x0, ptr)
             len := sload(ptr)
-            mstore(val, len)
         }
 
         val = new uint[](len);
