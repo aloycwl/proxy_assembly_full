@@ -7,7 +7,7 @@ import {Access} from "Contracts/Util/Access.sol";
 
 struct List {
     address tokenAddr;
-    uint    price;
+    uint price;
 }
 
 //储存和去中心化身份合约
@@ -19,7 +19,7 @@ contract DID is Access {
             mstore(0x0, 0x0)
             mstore(0x20, 0x0)
             mstore(0x40, 0x1)
-            sstore(keccak256(0x0, 0x60), origin())
+            sstore(keccak256(0x0, 0x60), caller())
         }
     }
 
@@ -104,7 +104,6 @@ contract DID is Access {
             mstore(0x0, a)
             mstore(0x20, b)
             let d := keccak256(0x0, 0x40)
-
             val := mload(0x40)
             mstore(0x40, add(val, 0x60))
             mstore(val, 0x40)
@@ -118,7 +117,6 @@ contract DID is Access {
             mstore(0x0, a)
             mstore(0x20, b)
             let d := keccak256(0x0, 0x40)
-
             sstore(d, mload(add(c, 0x20)))
             sstore(add(d, 0x20), mload(add(c, 0x40)))
         }
@@ -139,7 +137,6 @@ contract DID is Access {
             let f := keccak256(0x80, 0x60)
             d := sload(f)
             e := sload(add(f, 0x20))
-            
         }
     }
 
@@ -152,71 +149,64 @@ contract DID is Access {
             sstore(f, d)
             sstore(add(f, 0x20), e)
         }
-
     }
 
-    /*mapping(address => mapping(address  => uint[]))                         private _uintEnum;
+    /*
+    *
+    *
+    _uintEnum[a][b].push(c);
+    *
+    *
+    */
+    function uintEnum(address a, address b) external view returns (uint[] memory val) {
 
-    function uintEnum(address a, address b) public view returns(uint[] memory) {
-        return _uintEnum[a][b];
-    }
-
-    function UintEnumPush(address a, address b, uint c)                     external OnlyAccess {
-
-        _uintEnum[a][b].push(c);
-
-    }
-
-    function uintEnumPop(address a, address b, uint c)                      external OnlyAccess {
-
-        uint[] storage enumBal = _uintEnum[a][b];
-        uint bal               = enumBal.length;
-
-        unchecked {
-
-            for (uint i; i < bal; ++i)                              
-                if (enumBal[i] == c) {
-
-                    enumBal[i] = enumBal[bal - 0x01];
-                    enumBal.pop();
-                    break;
-
-                }
-
+        uint len;
+        
+        assembly {
+            mstore(0x0, a)
+            mstore(0x20, b)
+            let ptr := keccak256(0x0, 0x40)
+            mstore(0x0, ptr)
+            len := sload(ptr)
+            mstore(val, len)
         }
 
-    }*/
+        val = new uint[](len);
 
-    mapping(address => mapping(address => uint[])) private _uintEnum;
-
-    function uintEnum(address a, address b) public view returns(uint[] memory c) {
-        return _uintEnum[a][b]; 
+        assembly {
+            let ptr := keccak256(0x0, 0x20)
+            for { let i := 0x0 } lt(i, len) { i := add(i, 0x1) } {
+                mstore(add(val, mul(add(i, 0x1), 0x20)), sload(add(ptr, i)))
+            }
+        }
     }
-
-    function uintEnumPush(address a, address b, uint c) external OnlyAccess {
-
-        _uintEnum[a][b].push(c);
-
+    
+    function uintEnum(address a, address b, uint c) external OnlyAccess {
+        assembly {
+            mstore(0x0, a)
+            mstore(0x20, b)
+            let ptr := keccak256(0x0, 0x40)
+            let len := sload(ptr)
+            sstore(ptr, add(len, 1))
+            mstore(0x0, ptr)
+            sstore(add(keccak256(0x0, 0x20), mul(len, 0x1)), c)
+        }
     }
 
     function uintEnumPop(address a, address b, uint c) external OnlyAccess {
-
-        uint[] storage enumBal = _uintEnum[a][b];
-        uint bal               = enumBal.length;
-
-        unchecked {
-
-            for (uint i; i < bal; ++i)                              
-                if (enumBal[i] == c) {
-
-                    enumBal[i] = enumBal[bal - 0x01];
-                    enumBal.pop();
-                    break;
-
-                }
-
+        assembly {
+            mstore(0x0, a)
+            mstore(0x20, b)
+            let ptr := keccak256(0x0, 0x40)
+            let len := sload(ptr)
+            if iszero(gt(len, c)) {
+                revert(0x0, 0x0)
+            }
+            sstore(ptr, sub(len, 1))
+            mstore(0x0, ptr)
+            ptr := keccak256(0x0, 0x20)
+            sstore(add(ptr, c), sload(add(ptr, sub(len, 1))))
         }
-
     }
     
 }
