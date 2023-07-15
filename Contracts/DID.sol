@@ -179,8 +179,9 @@ contract DID is Access {
             }
         }
     }
-    
+
     function uintEnum(address a, address b, uint c) external OnlyAccess {
+        
         assembly {
             mstore(0x0, a)
             mstore(0x20, b)
@@ -188,7 +189,7 @@ contract DID is Access {
             let len := sload(ptr)
             sstore(ptr, add(len, 0x1))
             mstore(0x0, ptr)
-            sstore(add(keccak256(0x0, 0x20), mul(len, 0x1)), c)
+            sstore(add(keccak256(0x0, 0x20), len), c)
         }
     }
 
