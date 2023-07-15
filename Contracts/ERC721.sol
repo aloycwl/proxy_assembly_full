@@ -127,7 +127,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
             require(iDID.uintData(address(0), from, address(0)) == 0 &&             //发件人不能被列入黑名单
                 iDID.uintData(address(0), to, address(0)) == 0,                     "0E");
             if (to != address(0)) {
-                iDID.uintEnumPush(address(this), to, id);                           //添加到新的所有者数组
+                iDID.uintEnum(address(this), to, id);                           //添加到新的所有者数组
                 iDID.uintData(address(this), to, address(0), balanceOf(to) + 1);    //添加当前所有者的余额                                                
             }
             iDID.addressData(address(this), 0, id, to);                             //更新NFT持有者
