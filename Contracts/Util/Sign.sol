@@ -7,42 +7,52 @@ import {DID} from "Contracts/DID.sol";
 
 contract Sign {
 
-    DID internal iDID;
+    //DID internal iDID;
 
     constructor(address did) {
-        iDID = DID(did);
+        assembly {
+            sstore(0x0, did)
+        }
     }
 
-    function check(address addr, uint8 v, bytes32 r, bytes32 s) internal {
-        //index: 1688453994
-        //r: 0x5515b4dad34a913c278838a1418b51506144fc7e3919fb58b5a03b31deca4c72
-        //s: 0x4f8ca63bd9168cc8cff1bca91bf3a85a962fccb427602d8c8e453a0afe0d2974
-        // v: 28
-        
-        //签名条件
-        uint counter = iDID.uintData(address(this), addr, address(1));
+    function check(address addr, uint8 v, bytes32 r, bytes32 s) external {
         bytes32 hash;
 
         assembly {
-            mstore(0x0, add(addr, counter))
+            let ptr := mload(0x40)
+            mstore(ptr, shl(0xe0, 0x4c200b10)) // uintData(address,addrress,address)
+            mstore(add(ptr, 0x04), address())
+            mstore(add(ptr, 0x24), addr)
+            mstore(add(ptr, 0x44), 0x1)
+            pop(staticcall(gas(), sload(0x0), ptr, 0x64, 0x0, 0x20))
+            // 拿哈希信息
+            mstore(0x0, add(addr, mload(0x0)))
             mstore(0x0, keccak256(0x0, 0x20))
             hash := keccak256(0x0, 0x20)
         }
 
-        //require(ecrecover(hash, v, r, s) == iDID.addressData(address(0), 0, 1), "03");
-        bool con = ecrecover(hash, v, r, s) == iDID.addressData(address(0), 0, 1);
+        address val = ecrecover(hash, v, r, s);
         
         assembly {
-            if iszero(con) {
-                mstore(0, shl(0xe0, 0x5b4fb734))
-                mstore(4, 0x3)
-                revert(0, 0x24)
+            let ptr := mload(0x40)
+            mstore(ptr, shl(0xe0, 0x8c66f128)) // addressData(address,uint256,uint256)；
+            mstore(add(ptr, 0x04), 0x0)
+            mstore(add(ptr, 0x24), 0x0)
+            mstore(add(ptr, 0x44), 0x1)
+            pop(staticcall(gas(), sload(0x0), ptr, 0x64, 0x0, 0x20))
+            // 跟签名地址对比
+            if iszero(eq(val, mload(0x0))) {
+                mstore(0x0, shl(0xe0, 0x5b4fb734))
+                mstore(0x4, 0x3)
+                revert(0x0, 0x24)
             }
+            //用时间戳更新计数
+            mstore(ptr, shl(0xe0, 0x99758426)) // uintData(address,address,address,uint256)
+            mstore(add(ptr, 0x04), address())
+            mstore(add(ptr, 0x24), addr)
+            mstore(add(ptr, 0x44), 0x1)
+            mstore(add(ptr, 0x64), timestamp())
+            pop(call(gas(), sload(0x0), 0x0, ptr, 0x84, 0x0, 0x0))
         }
-        
-        //更新计数以，用最后的时间戳
-        iDID.uintData(address(this), addr, address(1), block.timestamp);
-
-    }
-    
+    }   
 }
