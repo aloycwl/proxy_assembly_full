@@ -33,7 +33,7 @@ contract DynamicPrice {
                 pop(staticcall(gas(), sload(0x0), ptr, 0x64, 0x0, 0x40))
                 let tokenAddr := mload(0x0)
                 let price := mload(0x20)
-                
+                // 有价格才执行
                 if gt(price, 0x0) {
                     fee := div(mul(price, sub(0x2710, fee)), 0x2710)
                     function x(cod) {
