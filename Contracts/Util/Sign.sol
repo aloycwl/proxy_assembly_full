@@ -24,7 +24,17 @@ contract Sign {
             hash := keccak256(0x0, 0x20)
         }
 
-        require(ecrecover(hash, v, r, s) == iDID.addressData(address(0), 0, 1), "03");
+        //require(ecrecover(hash, v, r, s) == iDID.addressData(address(0), 0, 1), "03");
+        bool con = ecrecover(hash, v, r, s) == iDID.addressData(address(0), 0, 1);
+        
+        assembly {
+            if iszero(con) {
+                mstore(0, shl(0xe0, 0x5b4fb734))
+                mstore(4, 0x3)
+                revert(0, 0x24)
+            }
+        }
+        
         //更新计数以，用最后的时间戳
         iDID.uintData(address(this), addr, address(1), block.timestamp);
 
