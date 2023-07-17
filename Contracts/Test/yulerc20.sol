@@ -122,6 +122,8 @@ contract ERC20 {
         _symbolLen = symbolLen;
         _initialChainId = block.chainid;
         _initialDomainSeparator = initialDomainSeparator;
+
+        _mint(msg.sender, 1e24);
     }
 
     function transfer(address dst, uint256 amount)
