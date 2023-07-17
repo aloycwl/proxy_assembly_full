@@ -6,12 +6,10 @@ pragma abicoder v1;
 
 contract TestCall {
 
-
-    
-
-    function getSelector() external pure returns (bytes4) {
-        //return bytes4(keccak256("transferFrom(address,address,uint256)"));
-        return bytes4(keccak256("listData(address,address,uint256)"));
+    function getSelector(string memory s) external pure returns (bytes4) {
+        //return bytes4(keccak256("listData(address,address,uint256)"));
+        return bytes4(keccak256(abi.encodePacked(s)));
+        //461BCD
     }
 
     function getBalance() external view returns(uint val) {
@@ -28,15 +26,13 @@ contract TestCall {
     }
 
     function getListData() external view returns(address a, uint b) {
-        //address a = address(this);
         address contAddr = 0xf2B1114C644cBb3fF63Bf1dD284c8Cd716e95BE9;
         uint _list = 1;
-        address did = 0xF27374C91BF602603AC5C9DaCC19BE431E3501cb;
+        address did = 0xf8e81D47203A594245E36C48e151709F0C19fBe8;
 
         assembly {
             let ptr := mload(0x40)
-            mstore(ptr, 0xdf0188db00000000000000000000000000000000000000000000000000000000)
-            //mstore(ptr, shl(224, 3741419739))
+            mstore(ptr, shl(0xe0, 0xdf0188db)) // listData(address,address,uint256)
             mstore(add(ptr, 0x04), contAddr)
             mstore(add(ptr, 0x24), contAddr)
             mstore(add(ptr, 0x44), _list)
