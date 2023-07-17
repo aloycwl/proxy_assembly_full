@@ -50,21 +50,45 @@ contract ERC20 is Access, Sign {
         }
     }
 
-    function balanceOf(address addr) public view returns(uint) {
-        return iDID.uintData(address(this), addr, address(0));
-    }
-
-    function allowance(address from, address to) public view returns(uint) {
-        return iDID.uintData(address(this), from, to);
-    }
-
-    function approve(address to, uint amt) public returns(bool) {
-        iDID.uintData(address(this), msg.sender, to, amt);
+    function balanceOf(address addr) public view returns(uint val) {
         assembly {
+            let ptr := mload(0x40)
+            mstore(ptr, shl(0xe0, 0x4c200b10)) // uintData(address,address,address)
+            mstore(add(ptr, 0x04), address())
+            mstore(add(ptr, 0x24), addr)
+            mstore(add(ptr, 0x44), 0x0)
+            pop(staticcall(gas(), sload(0x0), ptr, 0x64, 0x0, 0x20))
+            val := mload(0x0)
+        }
+        //return iDID.uintData(address(this), addr, address(0));
+    }
+
+    function allowance(address from, address to) public view returns(uint val) {
+        assembly {
+            let ptr := mload(0x40)
+            mstore(ptr, shl(0xe0, 0x4c200b10)) // uintData(address,address,address)
+            mstore(add(ptr, 0x04), address())
+            mstore(add(ptr, 0x24), from)
+            mstore(add(ptr, 0x44), to)
+            pop(staticcall(gas(), sload(0x0), ptr, 0x64, 0x0, 0x20))
+            val := mload(0x0)
+        }
+        //return iDID.uintData(address(this), from, to);
+    }
+
+    function approve(address to, uint amt) public returns(bool val) {
+        //iDID.uintData(address(this), msg.sender, to, amt);
+        assembly {
+            mstore(ptr, shl(0xe0, 0x99758426)) // uintData(address,address,address,uint256)
+            mstore(add(ptr, 0x04), address())
+            mstore(add(ptr, 0x24), caller())
+            mstore(add(ptr, 0x44), amt)
+            if gt(call(gas(), tokenAddr, 0x0, ptr, 0x64, 0x0, 0x0), 0) {
+                val := 1
+            }
             mstore(0x0, amt)
             log3(0x0, 0x20, 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925, caller(), to)
         }
-        return true;
     }
 
     function transfer(address to, uint amt) external returns(bool) {
