@@ -22,7 +22,7 @@ contract DynamicPrice {
         }
     }
 
-    function pay(address contAddr, uint _list, address to, uint fee) external payable { /*internal*/
+    function pay(address contAddr, uint _list, address to, uint fee) internal {
         unchecked {
             assembly {
                 let ptr := mload(0x40)
