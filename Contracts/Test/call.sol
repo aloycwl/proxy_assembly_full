@@ -14,11 +14,12 @@ contract TestCall {
 
     function getBalance() external view returns(uint val) {
         address from = 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4;
-        address tokenAddr = 0x9D7f74d0C41E726EC95884E0e97Fa6129e3b5E99;
+        address tokenAddr = 0x38cB7800C3Fddb8dda074C1c650A155154924C73;
 
         assembly {
             let ptr := mload(0x40)
-            mstore(ptr, 0x70a0823100000000000000000000000000000000000000000000000000000000)
+            //mstore(ptr, 0x70a0823100000000000000000000000000000000000000000000000000000000)
+            mstore(ptr, shl(0xe0, 0x70a08231))
             mstore(add(ptr, 0x04), from)
             pop(staticcall(gas(), tokenAddr, ptr, 0x24, 0x0, 0x20))
             val := mload(0x0)
