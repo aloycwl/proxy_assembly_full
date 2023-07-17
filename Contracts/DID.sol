@@ -25,18 +25,16 @@ contract DID is Access {
 
     /*
     *
-    *
     did[a] = b
-    *
     * 
     */
-    function did(string memory a) external view returns(address val) {
+    function did(string memory a) external view returns(address val) { // 0x31b35552
         assembly {
             val := sload(keccak256(a, 0x40))
         }
     }
 
-    function did(string memory a, address b) external OnlyAccess {
+    function did(string memory a, address b) external OnlyAccess { // 0x7148bc72
         assembly {
             sstore(keccak256(a, 0x40), b)
         }
@@ -44,12 +42,10 @@ contract DID is Access {
 
     /*
     *
-    *
     uintData[a][b][c] = d
     *
-    *
     */
-    function uintData(address a, address b, address c) external view returns(uint val) {
+    function uintData(address a, address b, address c) external view returns(uint val) { // 0x4c200b10
         assembly{
             mstore(0x80, a)
             mstore(0xa0, b)
@@ -58,7 +54,7 @@ contract DID is Access {
         }
     }
 
-    function uintData(address a, address b, address c, uint d) external OnlyAccess {
+    function uintData(address a, address b, address c, uint d) external OnlyAccess { // 0x99758426
         assembly {
             mstore(0x0, a)
             mstore(0x20, b)
@@ -69,12 +65,10 @@ contract DID is Access {
 
     /*
     *
-    *
     addressData[a][b][c] = d
     *
-    *
     */
-    function addressData(address a, uint b, uint c) external view returns(address val) {
+    function addressData(address a, uint b, uint c) external view returns(address val) { // 0x8c66f128
         assembly{
             mstore(0x0, a)
             mstore(0x20, b)
@@ -83,7 +77,7 @@ contract DID is Access {
         }
     }
 
-    function addressData(address a, uint b, uint c, address d) external OnlyAccess {
+    function addressData(address a, uint b, uint c, address d) external OnlyAccess { // 0xed3dae2b
         assembly {
             mstore(0x0, a)
             mstore(0x20, b)
@@ -94,12 +88,10 @@ contract DID is Access {
 
     /*
     *
-    *
     stringData[a][b][c] = d
     *
-    *
     */
-    function stringData(address a, uint b) external view returns(string memory val) {
+    function stringData(address a, uint b) external view returns(string memory val) { // 0x99eec064
         assembly{
             mstore(0x0, a)
             mstore(0x20, b)
@@ -112,7 +104,7 @@ contract DID is Access {
         }
     }
 
-    function stringData(address a, uint b, string memory c) external OnlyAccess {
+    function stringData(address a, uint b, string memory c) external OnlyAccess { // 0xea502ecf
         assembly {
             mstore(0x0, a)
             mstore(0x20, b)
@@ -124,12 +116,10 @@ contract DID is Access {
 
     /*
     *
-    *
     lists[a][b][c] = List(d, e);
     *
-    *
     */
-    function listData(address a, address b, uint c) external view returns(address d, uint e) {
+    function listData(address a, address b, uint c) external view returns(address d, uint e) { // 0xdf0188db
         assembly{
             mstore(0x80, a)
             mstore(0xa0, b)
@@ -140,7 +130,7 @@ contract DID is Access {
         }
     }
 
-    function listData(address a, address b, uint c, address d, uint e) external OnlyAccess {
+    function listData(address a, address b, uint c, address d, uint e) external OnlyAccess { // 0x41aa4436
         assembly {
             mstore(0x0, a)
             mstore(0x20, b)
@@ -153,12 +143,10 @@ contract DID is Access {
 
     /*
     *
-    *
     _uintEnum[a][b].push(c);
     *
-    *
     */
-    function uintEnum(address a, address b) external view returns (uint[] memory val) {
+    function uintEnum(address a, address b) external view returns (uint[] memory val) { // 0x82ff9d6f
 
         uint len;
         
@@ -180,7 +168,7 @@ contract DID is Access {
         }
     }
 
-    function uintEnum(address a, address b, uint c) external OnlyAccess {
+    function uintEnum(address a, address b, uint c) external OnlyAccess { // 0xc2a1bbdd
         
         assembly {
             mstore(0x0, a)
@@ -193,7 +181,7 @@ contract DID is Access {
         }
     }
 
-    function uintEnumPop(address a, address b, uint c) external OnlyAccess {
+    function uintEnumPop(address a, address b, uint c) external OnlyAccess { // 0xa4fd2f33
         assembly {
             mstore(0x0, a)
             mstore(0x20, b)
