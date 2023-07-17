@@ -36,44 +36,33 @@ contract DynamicPrice {
                 
                 if gt(price, 0x0) {
                     fee := div(mul(price, sub(0x2710, fee)), 0x2710)
-
-                    // 如果不指定地址，则转入主币，否则从合约地址转入
-                    if iszero(tokenAddr) { // if(tokenAddr == address(0))
-                        if lt(price, callvalue()) { // require(msg.value >= price, "04")
-                            mstore(0, shl(0xe0, 0x5b4fb734))
-                            mstore(4, 0x4)
-                            revert(0, 0x24)
+                    function x(cod) {
+                        mstore(0x0, shl(0xe0, 0x5b4fb734))
+                        mstore(0x4, cod)
+                        revert(0x0, 0x24)
+                    }
+                    // 这是转加密货币
+                    if iszero(tokenAddr) {
+                        if gt(price, callvalue()) { 
+                            x(0x4)
                         }
-                        // payable(to).transfer(price)
                         pop(call(gas(), to, fee, 0x0, 0x0, 0x0, 0x0))
-                        // payable(this.owner()).transfer(address(this).balance)
                         pop(call(gas(), sload(0x1), selfbalance(), 0x0, 0x0, 0x0, 0x0))
                     }
-
+                    // 这是转ERC20代币
                     if gt(tokenAddr, 0) {
-                        ptr := mload(0x40)
-                        mstore(ptr, shl(0xe2, 0x23b872dd)) //transferFrom(address,address,uint256)
+                        mstore(ptr, shl(0xe0, 0x23b872dd)) // transferFrom(address,address,uint256)
                         mstore(add(ptr, 0x04), origin())
-                        mstore(add(ptr, 0x24), address())
-                        mstore(add(ptr, 0x44), price)
-
-                        // require(iERC20.transferFrom(msg.sender, address(this), price), "05")
-                        if iszero(call(gas(), tokenAddr, 0x0, ptr, 0x64, 0x0, 0x0)) {
-                            mstore(0, shl(0xe0, 0x5b4fb734))
-                            mstore(4, 0x5)
-                            revert(0, 0x24)
-                        }
-
-                        // iERC20.transferFrom(address(this), to, price)
-                        mstore(add(ptr, 0x04), address())
                         mstore(add(ptr, 0x24), to)
                         mstore(add(ptr, 0x44), fee)
-                        pop(call(gas(), tokenAddr, 0x0, ptr, 0x64, 0x0, 0x0))
-                        
-                        // iERC20.transferFrom(address(this), this.owner(), price - deducted)
+                        if iszero(call(gas(), tokenAddr, 0x0, ptr, 0x64, 0x0, 0x0)) {
+                            x(0x5)
+                        }
                         mstore(add(ptr, 0x24), sload(0x1))
                         mstore(add(ptr, 0x44), sub(price, fee))
-                        pop(call(gas(), tokenAddr, 0x0, ptr, 0x64, 0x0, 0x0))
+                        if iszero(call(gas(), tokenAddr, 0x0, ptr, 0x64, 0x0, 0x0)) {
+                            x(0x5)
+                        }
                     }
                 }
             }

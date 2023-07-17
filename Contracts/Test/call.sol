@@ -6,10 +6,11 @@ pragma abicoder v1;
 
 contract TestCall {
 
+    error Err(bytes32);
+
     function getSelector(string memory s) external pure returns (bytes4) {
         //return bytes4(keccak256("listData(address,address,uint256)"));
         return bytes4(keccak256(abi.encodePacked(s)));
-        //461BCD
     }
 
     function getBalance() external view returns(uint val) {
@@ -18,7 +19,6 @@ contract TestCall {
 
         assembly {
             let ptr := mload(0x40)
-            //mstore(ptr, 0x70a0823100000000000000000000000000000000000000000000000000000000)
             mstore(ptr, shl(0xe0, 0x70a08231))
             mstore(add(ptr, 0x04), from)
             pop(staticcall(gas(), tokenAddr, ptr, 0x24, 0x0, 0x20))
@@ -43,4 +43,36 @@ contract TestCall {
         }
     }
 
+    function TTF() external {
+        address tokenAddr = 0x1911b1a3ed36d3593BB7d0ca68A3bE5a59BE49dC;
+        address to = 0x4B20993Bc481177ec7E8f571ceCaE8A9e22C02db;
+        uint price = 1000;
+        uint fee = 400;
+
+        assembly {
+            sstore(0x1, 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2)
+            function x(cod) {
+                mstore(0x0, shl(0xe0, 0x5b4fb734))
+                mstore(0x4, cod)
+                revert(0x0, 0x24)
+            }
+
+            let ptr := mload(0x40)
+            
+            mstore(ptr, shl(0xe0, 0x23b872dd))
+            mstore(add(ptr, 0x04), origin())
+            mstore(add(ptr, 0x24), to)
+            mstore(add(ptr, 0x44), fee)
+
+            if iszero(call(gas(), tokenAddr, 0x0, ptr, 0x64, 0x0, 0x0)) {
+                x(0x5)
+            }
+            
+            mstore(add(ptr, 0x24), sload(0x1))
+            mstore(add(ptr, 0x44), sub(price, fee))
+            if iszero(call(gas(), tokenAddr, 0x0, ptr, 0x64, 0x0, 0x0)) {
+                x(0x5)
+            }
+        }
+    }
 }
