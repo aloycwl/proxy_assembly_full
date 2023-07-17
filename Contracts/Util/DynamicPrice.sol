@@ -40,11 +40,6 @@ contract DynamicPrice {
                     // 如果不指定地址，则转入主币，否则从合约地址转入
                     if iszero(tokenAddr) { // if(tokenAddr == address(0))
                         if lt(price, callvalue()) { // require(msg.value >= price, "04")
-                            /*mstore(0x80, shl(0xe5, 0x461bcd)) 
-                            mstore(0x84, 0x20) 
-                            mstore(0xA4, 0x2)
-                            mstore(0xC4, "04")
-                            revert(0x80, 0x64)*/
                             mstore(0, shl(0xe0, 0x5b4fb734))
                             mstore(4, 0x4)
                             revert(0, 0x24)
@@ -64,11 +59,6 @@ contract DynamicPrice {
 
                         // require(iERC20.transferFrom(msg.sender, address(this), price), "05")
                         if iszero(call(gas(), tokenAddr, 0x0, ptr, 0x64, 0x0, 0x0)) {
-                            /*mstore(0x80, shl(0xe5, 0x461bcd)) 
-                            mstore(0x84, 0x20) 
-                            mstore(0xA4, 0x2)
-                            mstore(0xC4, "05")
-                            revert(0x80, 0x64)*/
                             mstore(0, shl(0xe0, 0x5b4fb734))
                             mstore(4, 0x5)
                             revert(0, 0x24)

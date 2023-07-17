@@ -78,17 +78,15 @@ contract ERC20 is Access, Sign {
 
             assembly {
                 isApproved := iszero(gt(amt, approveAmt))
-                function x(con, str) {
+                function x(con, cod) {
                     if gt(con, 0) {
-                        mstore(0x80, shl(229, 4594637)) 
-                        mstore(0x84, 0x20) 
-                        mstore(0xA4, 0x2)
-                        mstore(0xC4, str)
-                        revert(0x80, 0x64)
+                        mstore(0, shl(0xe0, 0x5b4fb734))
+                        mstore(4, cod)
+                        revert(0, 0x24)
                     }
                 }
-                x(gt(amt, balanceFrom), "09")                                //balanceFrom >= amt
-                x(and(iszero(eq(from, caller())), iszero(isApproved)), "0A") //from == msg.sender || isApproved
+                x(gt(amt, balanceFrom), 0x9)                                //balanceFrom >= amt
+                x(and(iszero(eq(from, caller())), iszero(isApproved)), 0xa) //from == msg.sender || isApproved
             }
             
             //相应去除授权
@@ -108,11 +106,9 @@ contract ERC20 is Access, Sign {
  
         assembly { //用户，收信人，或合约被暂停
             if gt(or(or(gt(u1, 0), gt(u2, 0)), gt(u3, 0)), 0) {
-                mstore(0x80, shl(229, 4594637)) 
-                mstore(0x84, 0x20) 
-                mstore(0xA4, 0x2)
-                mstore(0xC4, "07")
-                revert(0x80, 0x64)
+                mstore(0, shl(0xe0, 0x5b4fb734))
+                mstore(4, 0x7)
+                revert(0, 0x24)
             }
             mstore(0x0, amt)
             log3(0x00, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, from, to)
