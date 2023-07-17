@@ -14,6 +14,11 @@ contract Sign {
     }
 
     function check(address addr, uint8 v, bytes32 r, bytes32 s) internal {
+        //index: 1688453994
+        //r: 0x5515b4dad34a913c278838a1418b51506144fc7e3919fb58b5a03b31deca4c72
+        //s: 0x4f8ca63bd9168cc8cff1bca91bf3a85a962fccb427602d8c8e453a0afe0d2974
+        // v: 28
+        
         //签名条件
         uint counter = iDID.uintData(address(this), addr, address(1));
         bytes32 hash;
