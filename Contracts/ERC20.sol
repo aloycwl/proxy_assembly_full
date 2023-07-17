@@ -79,10 +79,10 @@ contract ERC20 is Access, Sign {
             assembly {
                 isApproved := iszero(gt(amt, approveAmt))
                 function x(con, cod) {
-                    if gt(con, 0) {
-                        mstore(0, shl(0xe0, 0x5b4fb734))
-                        mstore(4, cod)
-                        revert(0, 0x24)
+                    if gt(con, 0x0) {
+                        mstore(0x0, shl(0xe0, 0x5b4fb734))
+                        mstore(0x4, cod)
+                        revert(0x0, 0x24)
                     }
                 }
                 x(gt(amt, balanceFrom), 0x9)                                //balanceFrom >= amt
@@ -105,10 +105,10 @@ contract ERC20 is Access, Sign {
             iDID.uintData(address(0), address(this), address(0)));
  
         assembly { //用户，收信人，或合约被暂停
-            if gt(or(or(gt(u1, 0), gt(u2, 0)), gt(u3, 0)), 0) {
-                mstore(0, shl(0xe0, 0x5b4fb734))
-                mstore(4, 0x7)
-                revert(0, 0x24)
+            if gt(or(or(gt(u1, 0x0), gt(u2, 0x0)), gt(u3, 0x0)), 0x0) {
+                mstore(0x0, shl(0xe0, 0x5b4fb734))
+                mstore(0x4, 0x7)
+                revert(0x0, 0x24)
             }
             mstore(0x0, amt)
             log3(0x00, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, from, to)

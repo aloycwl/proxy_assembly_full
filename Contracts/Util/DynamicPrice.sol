@@ -27,14 +27,14 @@ contract DynamicPrice {
             assembly {
                 let ptr := mload(0x40)
                 mstore(ptr, shl(0xe0, 0xdf0188db)) // listData(address,address,uint256)
-                mstore(add(ptr, 0x04), contAddr)
+                mstore(add(ptr, 0x04), address())
                 mstore(add(ptr, 0x24), contAddr)
                 mstore(add(ptr, 0x44), _list)
                 pop(staticcall(gas(), sload(0x0), ptr, 0x64, 0x0, 0x40))
                 let tokenAddr := mload(0x0)
                 let price := mload(0x20)
                 
-                if gt(price, 0) {
+                if gt(price, 0x0) {
                     fee := div(mul(price, sub(0x2710, fee)), 0x2710)
 
                     // 如果不指定地址，则转入主币，否则从合约地址转入
