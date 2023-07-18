@@ -11,17 +11,15 @@ struct List {
 }
 
 contract DID is Access {
-
-    //设置签名人
+    
     constructor() {
-        assembly {
+        assembly { //设置签名人
             mstore(0x0, 0x0)
             mstore(0x20, 0x0)
             mstore(0x40, 0x1)
             sstore(keccak256(0x0, 0x60), caller())
         }
     }
-
     /*
     did[a] = b
     */
@@ -30,13 +28,11 @@ contract DID is Access {
             val := sload(keccak256(a, 0x40))
         }
     }
-
     function did(string memory a, address b) external OnlyAccess { // 0x7148bc72
         assembly {
             sstore(keccak256(a, 0x40), b)
         }
     }
-
     /*
     uintData[a][b][c] = d
     */
@@ -48,7 +44,6 @@ contract DID is Access {
             val := sload(keccak256(0x80, 0x60))
         }
     }
-
     function uintData(address a, address b, address c, uint d) external OnlyAccess { // 0x99758426
         assembly {
             mstore(0x0, a)
@@ -57,7 +52,6 @@ contract DID is Access {
             sstore(keccak256(0x0, 0x60), d)
         }
     }
-
     /*
     addressData[a][b][c] = d
     */
@@ -69,7 +63,6 @@ contract DID is Access {
             val := sload(keccak256(0x0, 0x60))
         }
     }
-
     function addressData(address a, uint b, uint c, address d) external OnlyAccess { // 0xed3dae2b
         assembly {
             mstore(0x0, a)
@@ -78,7 +71,6 @@ contract DID is Access {
             sstore(keccak256(0x0, 0x60), d)
         }
     }
-
     /*
     stringData[a][b][c] = d
     */
@@ -89,22 +81,21 @@ contract DID is Access {
             let d := keccak256(0x0, 0x40)
             val := mload(0x40)
             mstore(0x40, add(val, 0x60))
-            mstore(val, 0x40)
-            mstore(add(val, 0x20), sload(d))
-            mstore(add(val, 0x40), sload(add(d, 0x20)))
+            mstore(val, sload(d))
+            mstore(add(val, 0x20), sload(add(d, 0x20)))
+            mstore(add(val, 0x40), sload(add(d, 0x40)))
         }
     }
-
     function stringData(address a, uint b, string memory c) external OnlyAccess { // 0xea502ecf
         assembly {
             mstore(0x0, a)
             mstore(0x20, b)
             let d := keccak256(0x0, 0x40)
-            sstore(d, mload(add(c, 0x20)))
-            sstore(add(d, 0x20), mload(add(c, 0x40)))
+            sstore(d, mload(c))
+            sstore(add(d, 0x20), mload(add(c, 0x20)))
+            sstore(add(d, 0x40), mload(add(c, 0x40)))
         }
     }
-
     /*
     lists[a][b][c] = List(d, e);
     */
@@ -118,7 +109,6 @@ contract DID is Access {
             e := sload(add(f, 0x20))
         }
     }
-
     function listData(address a, address b, uint c, address d, uint e) external OnlyAccess { // 0x41aa4436
         assembly {
             mstore(0x0, a)
@@ -129,7 +119,6 @@ contract DID is Access {
             sstore(add(f, 0x20), e)
         }
     }
-
     /*
     _uintEnum[a][b].push(a, b, c, 0) & pop(a, b, c, 1)
     */
@@ -154,7 +143,6 @@ contract DID is Access {
             }
         }
     }
-
     function uintEnum(address a, address b, uint c, uint d) external OnlyAccess { // 0x6795d526
         assembly {
             mstore(0x0, a)
