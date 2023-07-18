@@ -86,6 +86,7 @@ contract ERC20 is Access, Sign {
             mstore(add(ptr, 0x64), amt)
             pop(call(gas(), sload(0x0), 0x0, ptr, 0x84, 0x0, 0x0))
             val := 1
+            // emit Approval(address,address,uint256)
             mstore(0x0, amt)
             log3(0x0, 0x20, 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925, caller(), to)
         }
@@ -178,9 +179,9 @@ contract ERC20 is Access, Sign {
             mstore(add(ptr, 0x04), address())
             mstore(add(ptr, 0x64), amt)
             pop(call(gas(), sload(0x0), 0x0, ptr, 0x84, 0x0, 0x0)) 
-            // emit Transfer()
+            // emit Transfer(address,address,uint256)
             mstore(0x0, amt)
-            log3(0x00, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, from, to)
+            log3(0x0, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, from, to)
         }
     }
 

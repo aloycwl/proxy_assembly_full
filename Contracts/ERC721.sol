@@ -4,7 +4,8 @@ pragma solidity ^0.8.18;
 pragma abicoder v1;
 
 import {Sign}                      from "Contracts/Util/Sign.sol";
-import {DID, Access, DynamicPrice} from "Contracts/Util/DynamicPrice.sol";
+import {Access, DynamicPrice} from "Contracts/Util/DynamicPrice.sol";
+import {DID} from "Contracts/DID.sol";
 
 interface IERC721 {
     event Transfer          (address indexed from, address indexed to, uint indexed id);
