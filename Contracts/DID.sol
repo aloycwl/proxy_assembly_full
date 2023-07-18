@@ -131,7 +131,7 @@ contract DID is Access {
     }
 
     /*
-    _uintEnum[a][b].push(c);
+    _uintEnum[a][b].push(a, b, c, 0) & pop(a, b, c, 1)
     */
     function uintEnum(address a, address b) external view returns (uint[] memory val) { // 0x82ff9d6f
 
@@ -155,38 +155,32 @@ contract DID is Access {
         }
     }
 
-    function uintEnum(address a, address b, uint c) external OnlyAccess { // 0xc2a1bbdd
-        
-        assembly {
-            mstore(0x0, a)
-            mstore(0x20, b)
-            let ptr := keccak256(0x0, 0x40)
-            let len := sload(ptr)
-            sstore(ptr, add(len, 0x1))
-            mstore(0x0, ptr)
-            sstore(add(keccak256(0x0, 0x20), len), c)
-        }
-    }
-
-    function uintEnumPop(address a, address b, uint c) external OnlyAccess { // 0xa4fd2f33
+    function uintEnum(address a, address b, uint c, uint d) external OnlyAccess { // 0x6795d526
         assembly {
             mstore(0x0, a)
             mstore(0x20, b)
             let ptr := keccak256(0x0, 0x40)
             let len := sload(ptr)
 
-            sstore(ptr, sub(len, 0x1))
-            mstore(0x0, ptr)
-            ptr := keccak256(0x0, 0x20)
-            
-            for { let i := 0x0 } lt(i, len) { i := add(i, 0x1) } {
-                if eq(c, sload(add(ptr, i))){
-                    c := i
+            switch d 
+                case 1 { 
+                    sstore(ptr, sub(len, 0x1)) 
+                    mstore(0x0, ptr)
+                    ptr := keccak256(0x0, 0x20)
+                    d := sload(add(ptr, sub(len, 0x1)))
+                    for { let i := 0x0 } lt(i, len) { i := add(i, 0x1) } {
+                        if eq(c, sload(add(ptr, i))){
+                            len := i
+                        }
+                    }
                 }
-            }
-            
-            sstore(add(ptr, c), sload(add(ptr, sub(len, 0x1))))
+                default {
+                    sstore(ptr, add(len, 0x1))
+                    d := c
+                    mstore(0x0, ptr)
+                    ptr := keccak256(0x0, 0x20)
+                }
+            sstore(add(ptr, len), d)
         }
     }
-    
 }
