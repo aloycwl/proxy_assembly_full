@@ -98,19 +98,8 @@ contract ERC20 is Access, Sign {
     }
 
     function transferFrom(address from, address to, uint amt) public returns(bool val) {
+        (uint approveAmt, uint balanceFrom) = (allowance(from, to), balanceOf(from));
         assembly {
-            // allowance(from, to)
-            let ptr := mload(0x40)
-            mstore(ptr, shl(0xe0, 0x4c200b10)) // uintData(address,address,address)
-            mstore(add(ptr, 0x04), address())
-            mstore(add(ptr, 0x24), from)
-            mstore(add(ptr, 0x44), to)
-            pop(staticcall(gas(), sload(0x0), ptr, 0x64, 0x0, 0x20))
-            let approveAmt := mload(0x0)
-            // balanceOf(from)
-            mstore(add(ptr, 0x44), 0x0)
-            pop(staticcall(gas(), sload(0x0), ptr, 0x64, 0x0, 0x20))
-            let balanceFrom := mload(0x0)
             let isApproved := iszero(gt(amt, approveAmt))
             // require(balanceFrom >= amt && (from == msg.sender || isApproved), "0x9 & 0xa")
             function x(con, cod) {
@@ -123,6 +112,7 @@ contract ERC20 is Access, Sign {
             x(gt(amt, balanceFrom), 0x9)
             x(and(iszero(eq(from, caller())), iszero(isApproved)), 0xa)
             // -balanceOf(from)
+            let ptr := mload(0x40)
             mstore(ptr, shl(0xe0, 0x99758426)) // uintData(address,address,address,uint256)
             mstore(add(ptr, 0x04), address())
             mstore(add(ptr, 0x24), from)

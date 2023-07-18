@@ -111,12 +111,11 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     }
 
     function approve(address to, uint id) external {
-        address ownerOfId = ownerOf(id);
-        bool appro = isApprovedForAll(ownerOfId, msg.sender);
-        //iDID.addressData(address(this), 1, id, to);
+        address oid = ownerOf(id);
+        bool bol = isApprovedForAll(oid, msg.sender);
         assembly {
             // require(msg.sender == ownerOf(id) || isApprovedForAll(ownerOf(id), msg.sender))
-            if and(iszero(eq(caller(), ownerOfId)), iszero(appro)) {
+            if and(iszero(eq(caller(), oid)), iszero(bol)) {
                 mstore(0x0, shl(0xe0, 0x5b4fb734))
                 mstore(0x4, 0xb)
                 revert(0x0, 0x24)
@@ -130,7 +129,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
             mstore(add(ptr, 0x64), to)
             pop(call(gas(), sload(0x0), 0x0, ptr, 0x84, 0x0, 0x0))
             // emit Approval()
-            log4(0x0, 0x0, 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925, ownerOfId, to, id)
+            log4(0x0, 0x0, 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925, oid, to, id)
         }
     }
 
@@ -169,7 +168,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
             iDID.addressData(address(this), 1, id, address(0));                     //重置授权
             iDID.uintData(address(this), from, to, 0);                              //重置操作员授权
             iDID.uintData(address(this), from, address(0), balanceOf(from) - 1);    //减少前任所有者的余额
-            //transfer(from, to, id);                                 
+            transfer(from, to, id);                                 
         }
     }
 
