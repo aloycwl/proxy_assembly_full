@@ -6,6 +6,22 @@ pragma abicoder v1;
 
 contract TestCall {
 
+    function aaString(string memory _name) external {
+        assembly {
+            sstore(0x0, mload(add(_name, 0x20)))
+            sstore(0x1, mload(_name))
+        }
+    }
+
+    function aString() external view returns(string memory val) {
+        assembly {
+            val := mload(0x40)
+            mstore(0x40, add(val, 0x40))
+            mstore(val, sload(0x1))
+            mstore(add(val, 0x20), sload(0x0))
+        }
+    }
+
     error Err(bytes32);
 
     function getSelector(string memory s) external pure returns (bytes4) {

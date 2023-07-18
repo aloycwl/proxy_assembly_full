@@ -127,6 +127,9 @@ contract ERC20 is Access, Sign {
                 x(and(iszero(eq(from, caller())), iszero(isApproved)), 0xa)
                 // -balanceOf(from)
                 mstore(ptr, shl(0xe0, 0x99758426)) // uintData(address,address,address,uint256)
+                mstore(add(ptr, 0x04), address())
+                mstore(add(ptr, 0x24), from)
+                mstore(add(ptr, 0x44), to)
                 mstore(add(ptr, 0x64), sub(balanceFrom, amt))
                 pop(call(gas(), sload(0x0), 0x0, ptr, 0x84, 0x0, 0x0))
                 // 扣除授权数额
