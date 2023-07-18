@@ -3,10 +3,10 @@
 pragma solidity ^0.8.18;
 pragma abicoder v1;
 
-import {Sign} from "Contracts/Util/Sign.sol";
-import {DynamicPrice} from "Contracts/Util/DynamicPrice.sol";
 import {DID} from "Contracts/DID.sol";
+import {Sign} from "Contracts/Util/Sign.sol";
 import {Access} from "Contracts/Util/Access.sol";
+import {DynamicPrice} from "Contracts/Util/DynamicPrice.sol";
 
 interface IERC721 {
     event Transfer          (address indexed from, address indexed to, uint indexed id);
@@ -74,23 +74,62 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
         }
     }
 
-    function ownerOf(uint id) public view returns(address) {
-        return iDID.addressData(address(this), 0, id);
+    function ownerOf(uint id) public view returns(address val) {
+        assembly {
+            let ptr := mload(0x40)
+            mstore(ptr, shl(0xe0, 0x8c66f128)) // addressData(address,uint,uint)
+            mstore(add(ptr, 0x04), address())
+            mstore(add(ptr, 0x24), 0x0)
+            mstore(add(ptr, 0x44), id)
+            pop(staticcall(gas(), sload(0x0), ptr, 0x64, 0x0, 0x20))
+            val := mload(0x0)
+        }
     }
 
-    function getApproved(uint id) public view returns(address) {
-        return iDID.addressData(address(this), 1, id);
+    function getApproved(uint id) public view returns(address val) {
+        assembly {
+            let ptr := mload(0x40)
+            mstore(ptr, shl(0xe0, 0x8c66f128)) // addressData(address,uint,uint)
+            mstore(add(ptr, 0x04), address())
+            mstore(add(ptr, 0x24), 0x1)
+            mstore(add(ptr, 0x44), id)
+            pop(staticcall(gas(), sload(0x0), ptr, 0x64, 0x0, 0x20))
+            val := mload(0x0)
+        }
     }
 
-    function isApprovedForAll(address from, address to) public view returns(bool) {
-        return iDID.uintData(address(this), from, to) > 0 ? true : false;
+    function isApprovedForAll(address from, address to) public view returns(bool val) {
+        assembly {
+            let ptr := mload(0x40)
+            mstore(ptr, shl(0xe0, 0x4c200b10)) // uintData(address,address,address)
+            mstore(add(ptr, 0x04), address())
+            mstore(add(ptr, 0x24), from)
+            mstore(add(ptr, 0x44), to)
+            pop(staticcall(gas(), sload(0x0), ptr, 0x64, 0x0, 0x20))
+            val := mload(0x0)
+        }
     }
 
     function approve(address to, uint id) external {
         address ownerOfId = ownerOf(id);
-        require(msg.sender == ownerOfId || isApprovedForAll(ownerOfId, msg.sender), "0B");
-        iDID.addressData(address(this), 1, id, to);
+        bool appro = isApprovedForAll(ownerOfId, msg.sender);
+        //iDID.addressData(address(this), 1, id, to);
         assembly {
+            // require(msg.sender == ownerOf(id) || isApprovedForAll(ownerOf(id), msg.sender))
+            if and(iszero(eq(caller(), ownerOfId)), iszero(appro)) {
+                mstore(0x0, shl(0xe0, 0x5b4fb734))
+                mstore(0x4, 0xb)
+                revert(0x0, 0x24)
+            }
+            // 更新记录
+            let ptr := mload(0x40)
+            mstore(ptr, shl(0xe0, 0xed3dae2b)) // addressData(address,uint256,uint256,address)
+            mstore(add(ptr, 0x04), address())
+            mstore(add(ptr, 0x24), 0x1)
+            mstore(add(ptr, 0x44), id)
+            mstore(add(ptr, 0x64), to)
+            pop(call(gas(), sload(0x0), 0x0, ptr, 0x84, 0x0, 0x0))
+            // emit Approval()
             log4(0x0, 0x0, 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925, ownerOfId, to, id)
         }
     }
@@ -130,7 +169,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
             iDID.addressData(address(this), 1, id, address(0));                     //重置授权
             iDID.uintData(address(this), from, to, 0);                              //重置操作员授权
             iDID.uintData(address(this), from, address(0), balanceOf(from) - 1);    //减少前任所有者的余额
-            transfer(from, to, id);                                 
+            //transfer(from, to, id);                                 
         }
     }
 
