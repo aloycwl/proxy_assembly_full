@@ -13,8 +13,9 @@ contract ERC20 is Access, Sign {
     event Approval(address indexed from, address indexed to, uint amt);
 
     //ERC20标准函数 
-    constructor(address did, string memory name_, string memory symbol_) Sign(did) {
+    constructor(address did, string memory name_, string memory symbol_) {
         assembly {
+            sstore(0x0, did)
             sstore(0x1, mload(name_))
             sstore(0x2, mload(add(name_, 0x20)))
             sstore(0x3, mload(symbol_))

@@ -5,12 +5,6 @@ pragma abicoder v1;
 
 contract Sign {
 
-    constructor(address did) {
-        assembly {
-            sstore(0x0, did)
-        }
-    }
-
     function check(address addr, uint8 v, bytes32 r, bytes32 s) internal {
         bytes32 hash;
 

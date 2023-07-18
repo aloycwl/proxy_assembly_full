@@ -3,9 +3,10 @@
 pragma solidity ^0.8.18;
 pragma abicoder v1;
 
-import {Sign}                      from "Contracts/Util/Sign.sol";
-import {Access, DynamicPrice} from "Contracts/Util/DynamicPrice.sol";
+import {Sign} from "Contracts/Util/Sign.sol";
+import {DynamicPrice} from "Contracts/Util/DynamicPrice.sol";
 import {DID} from "Contracts/DID.sol";
+import {Access} from "Contracts/Util/Access.sol";
 
 interface IERC721 {
     event Transfer          (address indexed from, address indexed to, uint indexed id);
@@ -32,18 +33,45 @@ interface IERC721Metadata {
 
 contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     
-    string public  name;
-    string public  symbol;
+    DID iDID;
     uint   public  suspended;
     uint   public  count;
 
     //ERC20标准函数 
-    constructor(address did, string memory _name, string memory _sym) DynamicPrice(did) Sign(did) {
-        (name, symbol) = (_name, _sym);
+    constructor(address did, string memory name_, string memory symbol_) {
+        assembly {
+            sstore(0x0, did)
+            sstore(0xa, caller())
+            sstore(0x11, mload(name_))
+            sstore(0x12, mload(add(name_, 0x20)))
+            sstore(0x13, mload(symbol_))
+            sstore(0x14, mload(add(symbol_, 0x20))) /*** TO RESLOT BACK ***/
+        }
+        iDID = DID(did);
     }
 
-    function supportsInterface(bytes4 a) external pure returns(bool) {
-        return a == type(IERC721).interfaceId || a == type(IERC721Metadata).interfaceId;
+    function supportsInterface(bytes4 a) external pure returns(bool val) {
+        assembly {
+            val := or(eq(a, shl(0xe0, 0x80ac58cd)), eq(a, shl(0xe0, 0x5b5e139f))) 
+        }
+    }
+
+    function name() external view returns(string memory val) {
+        assembly {
+            val := mload(0x40)
+            mstore(0x40, add(val, 0x40))
+            mstore(val, sload(0x11))
+            mstore(add(val, 0x20), sload(0x12))
+        }
+    }
+
+    function symbol() external view returns(string memory val) {
+        assembly {
+            val := mload(0x40)
+            mstore(0x40, add(val, 0x40))
+            mstore(val, sload(0x13))
+            mstore(add(val, 0x20), sload(0x14))
+        }
     }
 
     function ownerOf(uint id) public view returns(address) {

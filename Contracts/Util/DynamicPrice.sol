@@ -5,18 +5,9 @@ pragma abicoder v1;
 
 contract DynamicPrice {
 
-    error Err(bytes32);
-
-    constructor(address did) {
+    function owner() external view returns (address a) {
         assembly {
-            sstore(0x0, did)
-            sstore(0x1, origin())
-        }
-    }
-
-    function owner() public view returns (address a) {
-        assembly {
-            a := sload(0x1)
+            a := sload(0xa)
         }
     }
 
