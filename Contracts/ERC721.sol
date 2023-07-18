@@ -39,6 +39,10 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
 
     //ERC20标准函数 
     constructor(address did, string memory name_, string memory symbol_) {
+    /*constructor() {
+        address did = 0xB57ee0797C3fc0205714a577c02F7205bB89dF30;
+        string memory name_ = "";
+        string memory symbol_ = "";*/
         assembly {
             sstore(0x0, did)
             sstore(0xa, caller())
@@ -161,58 +165,18 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     }
 
     function tokenURI(uint id) public view returns (string memory) {
-        //return string.concat("ipfs://", iDID.stringData(address(this), id));
         assembly {
             let ptr := mload(0x40)
             mstore(ptr, shl(0xe0, 0x99eec064)) // stringData(address,uint)
             mstore(add(ptr, 0x4), address())
             mstore(add(ptr, 0x24), id)
-            pop(staticcall(gas(), sload(0x0), ptr, 0x44, 0x80, 0x60))
-
-            /*val := mload(0x40)
-            mstore(0x40, add(val, 0x60))
-            mstore(val, 0x40)
-            mstore(add(val, 0x20), "ipfs://")
-            mstore(add(val, 0x27), mload(0xa0))
-            mstore(add(val, 0x47), mload(0xc0))*/
-            mstore(0x0, 0x20)
-            mstore(0x20, 0x60)
-            mstore(0x40, "ipfs://")
-            mstore(0x60, mload(0xa0))
-            mstore(0x80, mload(0x140))//add(mload(0xa0), 0x20))
-            
-            
-            return(0x0, 0xa0)
+            pop(staticcall(gas(), sload(0x0), ptr, 0x44, 0xa0, 0x80))
+            // string.concat()
+            mstore(0x80, 0x20)
+            mstore(0xa0, add(mload(0xc0), 0x20))
+            mstore(0xc0, "ipfs://")
+            return(0x80, 0xa0)
         }
-        //val = "1";
-    }
-
-    function tokenURI2(uint id) public view returns (bytes32 val) {
-        //return string.concat("ipfs://", iDID.stringData(address(this), id));
-        assembly {
-            let ptr := mload(0x40)
-            mstore(ptr, shl(0xe0, 0x99eec064)) // stringData(address,uint)
-            mstore(add(ptr, 0x4), address())
-            mstore(add(ptr, 0x24), id)
-            pop(staticcall(gas(), sload(0x0), ptr, 0x44, 0x80, 0x60))
-            val := mload(0xa0)
-
-            /*val := mload(0x40)
-            mstore(0x40, add(val, 0x60))
-            mstore(val, 0x40)
-            mstore(add(val, 0x20), "ipfs://")
-            mstore(add(val, 0x27), mload(0xa0))
-            mstore(add(val, 0x47), mload(0xc0))*/
-            /*mstore(0x0, 0x20)
-            mstore(0x20, 0x60)
-            mstore(0x40, "ipfs://")
-            mstore(0x60, mload(0xa0))
-            mstore(0x80, mload(0x140))//add(mload(0xa0), 0x20))*/
-            
-            
-            return(0x0, 0xa0)
-        }
-        //val = "1";
     }
 
     function safeTransferFrom(address from, address to, uint id) external {
@@ -291,7 +255,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     }
     
     /*** TESTING ONLY ***/
-    function assetify() external payable {
+    function assetify() public {
         iDID.stringData(address(this), ++count, "QmVegGmha4L4pLPQAj7V46kQVc8EoGnwwKvbKvHbevRYD2");
         transfer(address(0), msg.sender, count);
     }
