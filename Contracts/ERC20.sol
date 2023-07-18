@@ -3,8 +3,8 @@
 pragma solidity ^0.8.18;
 pragma abicoder v1;
 
-import {Access}    from "Contracts/DID.sol";
-import {Sign, DID} from "Contracts/Util/Sign.sol";
+import {Access} from "Contracts/Util/Access.sol";
+import {Sign} from "Contracts/Util/Sign.sol";
 
 //代币合约
 contract ERC20 is Access, Sign {

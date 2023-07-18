@@ -10,7 +10,6 @@ struct List {
     uint price;
 }
 
-//储存和去中心化身份合约
 contract DID is Access {
 
     //设置签名人
@@ -24,9 +23,7 @@ contract DID is Access {
     }
 
     /*
-    *
     did[a] = b
-    * 
     */
     function did(string memory a) external view returns(address val) { // 0x31b35552
         assembly {
@@ -41,9 +38,7 @@ contract DID is Access {
     }
 
     /*
-    *
     uintData[a][b][c] = d
-    *
     */
     function uintData(address a, address b, address c) external view returns(uint val) { // 0x4c200b10
         assembly{
@@ -64,9 +59,7 @@ contract DID is Access {
     }
 
     /*
-    *
     addressData[a][b][c] = d
-    *
     */
     function addressData(address a, uint b, uint c) external view returns(address val) { // 0x8c66f128
         assembly{
@@ -87,9 +80,7 @@ contract DID is Access {
     }
 
     /*
-    *
     stringData[a][b][c] = d
-    *
     */
     function stringData(address a, uint b) external view returns(string memory val) { // 0x99eec064
         assembly{
@@ -115,9 +106,7 @@ contract DID is Access {
     }
 
     /*
-    *
     lists[a][b][c] = List(d, e);
-    *
     */
     function listData(address a, address b, uint c) external view returns(address d, uint e) { // 0xdf0188db
         assembly{
@@ -142,9 +131,7 @@ contract DID is Access {
     }
 
     /*
-    *
     _uintEnum[a][b].push(c);
-    *
     */
     function uintEnum(address a, address b) external view returns (uint[] memory val) { // 0x82ff9d6f
 
