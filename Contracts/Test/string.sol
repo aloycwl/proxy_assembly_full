@@ -9,12 +9,12 @@ contract TestString {
         assembly {
             let ptr := mload(0x40)
             mstore(ptr, shl(0xe0, 0xc7070b58)) // stringData(bytes32,bytes32,bytes32,bytes32,bytes32)
-            mstore(add(ptr, 0x04), 0xA34357486224151dDfDB291E13194995c22Df505)
+            mstore(add(ptr, 0x04), address())
             mstore(add(ptr, 0x24), 0x1)
             mstore(add(ptr, 0x44), mload(u))
             mstore(add(ptr, 0x64), mload(add(u, 0x20)))
             mstore(add(ptr, 0x84), mload(add(u, 0x40)))
-            sstore(0x0, call(gas(), 0xaE036c65C649172b43ef7156b009c6221B596B8b, 0x0, ptr, 0xa4, 0x0, 0x0))
+            sstore(0x0, call(gas(), 0xE3Ca443c9fd7AF40A2B5a95d43207E763e56005F, 0x0, ptr, 0xa4, 0x0, 0x0))
         }
     }
 

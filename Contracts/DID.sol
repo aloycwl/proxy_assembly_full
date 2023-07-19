@@ -132,7 +132,7 @@ contract DID is Access {
     /*
     _uintEnum[a][b].push(a, b, c, 0) & pop(a, b, c, 1)
     */
-    function uintEnum(address a, address b) external view returns (uint[] memory val) { // 0x82ff9d6f
+    function uintEnum(address a, address b) external view returns(uint[] memory val) { // 0x82ff9d6f
 
         uint len;
         

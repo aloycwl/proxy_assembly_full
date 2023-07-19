@@ -137,29 +137,10 @@ contract ERC20 is Access, Sign {
 
     //方便转移和铸币
     function _transfer(address from, address to, uint amt) private {
+        checkSuspend(from, to);
+        
         assembly {
-            // 查合约暂停
             let ptr := mload(0x40)
-            mstore(ptr, shl(0xe0, 0x4c200b10)) // uintData(address,address,address)
-            mstore(add(ptr, 0x04), 0x0)
-            mstore(add(ptr, 0x24), address())
-            mstore(add(ptr, 0x44), 0x0)
-            pop(staticcall(gas(), sload(0x0), ptr, 0x64, 0x0, 0x20))
-            let u1 := mload(0x0)
-            // 查用户暂停
-            mstore(add(ptr, 0x24), from)
-            pop(staticcall(gas(), sload(0x0), ptr, 0x64, 0x0, 0x20))
-            let u2 := mload(0x0)
-            // 查收信人暂停
-            mstore(add(ptr, 0x24), to)
-            pop(staticcall(gas(), sload(0x0), ptr, 0x64, 0x0, 0x20))
-            let u3 := mload(0x0)
-            // require(u1 == 0 && u2 == 0 && u3 == 0, "0x7")
-            if gt(or(or(gt(u1, 0x0), gt(u2, 0x0)), gt(u3, 0x0)), 0x0) {
-                mstore(0x0, shl(0xe0, 0x5b4fb734))
-                mstore(0x4, 0x7)
-                revert(0x0, 0x24)
-            }
             // balanceOf(to)
             mstore(add(ptr, 0x04), address())
             mstore(add(ptr, 0x24), to)

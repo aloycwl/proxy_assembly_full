@@ -34,8 +34,6 @@ interface IERC721Metadata {
 contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     
     DID iDID;
-    uint   public  suspended;
-    //uint   public  count;
 
     //ERC20标准函数 
     constructor(address did, string memory name_, string memory symbol_) {
@@ -88,7 +86,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
         assembly {
             let ptr := mload(0x40)
             mstore(ptr, shl(0xe0, 0x8c66f128)) // addressData(address,uint,uint)
-            mstore(add(ptr, 0x04), address())
+            mstore(add(ptr, 0x4), address())
             mstore(add(ptr, 0x24), 0x0)
             mstore(add(ptr, 0x44), id)
             pop(staticcall(gas(), sload(0x0), ptr, 0x64, 0x0, 0x20))
@@ -100,7 +98,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
         assembly {
             let ptr := mload(0x40)
             mstore(ptr, shl(0xe0, 0x8c66f128)) // addressData(address,uint,uint)
-            mstore(add(ptr, 0x04), address())
+            mstore(add(ptr, 0x4), address())
             mstore(add(ptr, 0x24), 0x1)
             mstore(add(ptr, 0x44), id)
             pop(staticcall(gas(), sload(0x0), ptr, 0x64, 0x0, 0x20))
@@ -112,7 +110,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
         assembly {
             let ptr := mload(0x40)
             mstore(ptr, shl(0xe0, 0x4c200b10)) // uintData(address,address,address)
-            mstore(add(ptr, 0x04), address())
+            mstore(add(ptr, 0x4), address())
             mstore(add(ptr, 0x24), from)
             mstore(add(ptr, 0x44), to)
             pop(staticcall(gas(), sload(0x0), ptr, 0x64, 0x0, 0x20))
@@ -133,7 +131,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
             // 更新记录
             let ptr := mload(0x40)
             mstore(ptr, shl(0xe0, 0xed3dae2b)) // addressData(address,uint256,uint256,address)
-            mstore(add(ptr, 0x04), address())
+            mstore(add(ptr, 0x4), address())
             mstore(add(ptr, 0x24), 0x1)
             mstore(add(ptr, 0x44), id)
             mstore(add(ptr, 0x64), to)
@@ -147,7 +145,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
         assembly {
             let ptr := mload(0x40)
             mstore(ptr, shl(0xe0, 0x99758426)) // uintData(address,address,address,uint256)
-            mstore(add(ptr, 0x04), address())
+            mstore(add(ptr, 0x4), address())
             mstore(add(ptr, 0x24), caller())
             mstore(add(ptr, 0x44), to)
             mstore(add(ptr, 0x64), bol)
@@ -162,7 +160,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
         assembly {
             let ptr := mload(0x40)
             mstore(ptr, shl(0xe0, 0x4c200b10)) // uintData(address,address,address)
-            mstore(add(ptr, 0x04), address())
+            mstore(add(ptr, 0x4), address())
             mstore(add(ptr, 0x24), addr)
             mstore(add(ptr, 0x44), 0x0)
             pop(staticcall(gas(), sload(0x0), ptr, 0x64, 0x0, 0x20))
@@ -198,35 +196,66 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
             address ownerOfId = ownerOf(id);
             require(ownerOfId == from ||                                            //必须是所有者或
                     getApproved(id) == to ||                                        //已被授权或
-                    isApprovedForAll(ownerOfId, from) ||                            //待全部出售或
-                    this.access(msg.sender) > 0,                                    "0C");
+                    isApprovedForAll(ownerOfId, from), "0C");                           //待全部出售或
             iDID.uintEnum(address(this), from, id, 1);                              //从所有者数组中删除
             iDID.addressData(address(this), 1, id, address(0));                     //重置授权
             iDID.uintData(address(this), from, to, 0);                              //重置操作员授权
             iDID.uintData(address(this), from, address(0), balanceOf(from) - 1);    //减少前任所有者的余额
-            transfer(from, to, id);                                 
+                                           
         }
-    }
-
-    //切换暂停
-    function toggleSuspend() external OnlyAccess {
-        suspended = suspended == 0 ? 1 : 0;
+        transfer(from, to, id);
     }
 
     //获取地址拥有的所有代币的数组
-    function tokensOwned(address addr) public view returns(uint[] memory) {
-        return iDID.uintEnum(address(this), addr);
+    function tokensOwned(address addr) external view returns(uint[] memory val) {
+        //return iDID.uintEnum(address(this), addr);
+
+        uint len;
+
+        assembly {
+            let ptr := mload(0x40)
+            mstore(ptr, shl(0xe0, 0x82ff9d6f)) // uintEnum(address,address)
+            mstore(add(ptr, 0x4), address())
+            mstore(add(ptr, 0x24), addr)
+            pop(staticcall(gas(), sload(0x0), ptr, 0x84, 0x0, 0x20))
+            len := mload(0x0)
+        }
+
+        val = new uint[](len);
+
+        assembly {
+            let ptr := mload(0x40)
+            mstore(ptr, shl(0xe0, 0x82ff9d6f)) // uintEnum(address,address)
+            mstore(add(ptr, 0x4), address())
+            mstore(add(ptr, 0x24), addr)
+            pop(staticcall(gas(), sload(0x0), ptr, 0x84, 0x80, mul(len, 0x20)))
+            
+            for { let i := 0x0 } lt(i, len) { i := add(i, 0x1) } {
+                mstore(add(val, mul(i, 0x20)), mload(add(0x80, mul(i, 0x20))))
+            }
+        }
+
     }
 
-    //通过将令牌转移到0x地址来销毁代币
+    //转到0x地址来销毁代币
     function burn(uint id) external {
         transferFrom(ownerOf(id), address(0), id);
     }
 
     //用于转移和铸币
-    function transfer(address from, address to, uint id) private {
+    function transfer(address from, address to, uint id) private { // 0x668695c3
+        checkSuspend(from, to);
+
         unchecked {
-            //require(suspended == 0,                                                 "0D");
+            assembly {
+                let ptr := mload(0x40)
+                mstore(ptr, shl(0xe0, 0x4c200b10)) // uintData(address,address,address)
+                mstore(add(ptr, 0x04), 0x0)
+                mstore(add(ptr, 0x24), address())
+                mstore(add(ptr, 0x44), 0x0)
+                pop(staticcall(gas(), sload(0x0), ptr, 0x64, 0x0, 0x20))
+                let u1 := mload(0x0)
+            }
             require(iDID.uintData(address(0), from, address(0)) == 0 &&             //发件人不能被列入黑名单
                 iDID.uintData(address(0), to, address(0)) == 0,                     "0E");
             if (to != address(0)) {
@@ -241,10 +270,9 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     }
 
     //铸造功能，需要先决条件，也用来升级或合并
-    function assetify(uint l, address a, uint i, string memory u/*, uint8 v, bytes32 r, bytes32 s*/) external payable {
-        //pay(address(this), l, this.owner(), 0); //若金额设定就支付
-        //check(a, v, r, s);  
-        u = "";
+    function assetify(uint l, address a, uint i, string memory u, uint8 v, bytes32 r, bytes32 s) external payable {
+        pay(address(this), l, this.owner(), 0); //若金额设定就支付
+        check(a, v, r, s);
         
         assembly {
             if iszero(i) {
@@ -253,31 +281,18 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
             }
         }
         
-        unchecked {
-            if (i == 0) transfer(address(0), a, l); //铸币
-        }
+        if (i == 0) transfer(address(0), a, l); //铸币
 
         assembly {
             if gt(i, 0) { //更新元数据详细信息
                 mstore(0x0, i)
                 log1(0x0, 0x20, 0xf8e1a15aba9398e019f0b49df1a4fde98ee17ae345cb5f6b5e2c27f5033e8ce7)
                 l := i
-            }
-
-            //iDID.stringData(address(this), i > 0 ? i : ++count, u);                 
-
+            }             
             //更新或铸新
-            /*let ptr := mload(0x40)
-            mstore(ptr, shl(0xe0, 0xea502ecf)) // stringData(address,uint,string)
-            mstore(add(ptr, 0x4), address())
-            mstore(add(ptr, 0x24), l)
-            mstore(add(ptr, 0x44), mload(u))
-            mstore(add(ptr, 0x64), mload(add(u, 0x20)))
-            pop(call(gas(), sload(0x0), 0x0, ptr, 0x84, 0x0, 0x0)) */
-
             let ptr := mload(0x40)
             mstore(ptr, shl(0xe0, 0xc7070b58)) // stringData(bytes32,bytes32,bytes32,bytes32,bytes32)
-            mstore(add(ptr, 0x04), address())
+            mstore(add(ptr, 0x4), address())
             mstore(add(ptr, 0x24), l)
             mstore(add(ptr, 0x44), mload(u))
             mstore(add(ptr, 0x64), mload(add(u, 0x20)))
@@ -291,7 +306,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
         assembly {
             let ptr := mload(0x40)
             mstore(ptr, shl(0xe0, 0x41aa4436)) // listData(address,address,uint256,address,uint256)
-            mstore(add(ptr, 0x04), address())
+            mstore(add(ptr, 0x4), address())
             mstore(add(ptr, 0x24), address())
             mstore(add(ptr, 0x44), _list)
             mstore(add(ptr, 0x64), tokenAddr)
@@ -300,10 +315,26 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
         }
     }
     
-    /*** TESTING ONLY ***/
+    /*** 纯测试，实时部署前得删 ||| 纯测试，实时部署前得删 ||| 纯测试，实时部署前得删 ***/
+    /*** 纯测试，实时部署前得删 ||| 纯测试，实时部署前得删 ||| 纯测试，实时部署前得删 ***/
+    /*** 纯测试，实时部署前得删 ||| 纯测试，实时部署前得删 ||| 纯测试，实时部署前得删 ***/
+    /*** 纯测试，实时部署前得删 ||| 纯测试，实时部署前得删 ||| 纯测试，实时部署前得删 ***/
+    /*** 纯测试，实时部署前得删 ||| 纯测试，实时部署前得删 ||| 纯测试，实时部署前得删 ***/
     function assetify() public {
-        //iDID.stringData(address(this), ++count, "QmVegGmha4L4pLPQAj7V46kQVc8EoGnwwKvbKvHbevRYD2");
-        //transfer(address(0), msg.sender, count);
+        uint l;
+        assembly {         
+            //更新或铸新
+            l := add(sload(0x1), 0x1)
+            sstore(0x1, l)
+            let ptr := mload(0x40)
+            mstore(ptr, shl(0xe0, 0xc7070b58)) // stringData(bytes32,bytes32,bytes32,bytes32,bytes32)
+            mstore(add(ptr, 0x4), address())
+            mstore(add(ptr, 0x24), l)
+            mstore(add(ptr, 0x44), 0x2c)
+            mstore(add(ptr, 0x64), "QmVegGmha4L4pLPQAj7V46kQVc8EoGn")
+            mstore(add(ptr, 0x84), "wwKvbKvHbevRYD2")
+            pop(call(gas(), sload(0x0), 0x0, ptr, 0xa4, 0x0, 0x0))
+        }
+        transfer(address(0), msg.sender, l);
     }
-
 }
