@@ -35,7 +35,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     
     DID iDID;
     uint   public  suspended;
-    uint   public  count;
+    //uint   public  count;
 
     //ERC20标准函数 
     constructor(address did, string memory name_, string memory symbol_) {
@@ -46,10 +46,10 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
         assembly {
             sstore(0x0, did)
             sstore(0xa, caller())
-            sstore(0x11, mload(name_))
-            sstore(0x12, mload(add(name_, 0x20)))
-            sstore(0x13, mload(symbol_))
-            sstore(0x14, mload(add(symbol_, 0x20))) /*** TO RESLOT BACK ***/
+            sstore(0xb, mload(name_))
+            sstore(0xc, mload(add(name_, 0x20)))
+            sstore(0xd, mload(symbol_))
+            sstore(0xe, mload(add(symbol_, 0x20)))  
         }
         iDID = DID(did);
     }
@@ -57,6 +57,12 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     function supportsInterface(bytes4 a) external pure returns(bool val) {
         assembly {
             val := or(eq(a, shl(0xe0, 0x80ac58cd)), eq(a, shl(0xe0, 0x5b5e139f))) 
+        }
+    }
+
+    function count() external view returns(uint val) {
+        assembly {
+            val := sload(0x1)
         }
     }
 
@@ -220,7 +226,7 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     //用于转移和铸币
     function transfer(address from, address to, uint id) private {
         unchecked {
-            require(suspended == 0,                                                 "0D");
+            //require(suspended == 0,                                                 "0D");
             require(iDID.uintData(address(0), from, address(0)) == 0 &&             //发件人不能被列入黑名单
                 iDID.uintData(address(0), to, address(0)) == 0,                     "0E");
             if (to != address(0)) {
@@ -235,29 +241,69 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
     }
 
     //铸造功能，需要先决条件，也用来升级或合并
-    function assetify(uint l, address a, uint i, string calldata u, uint8 v, bytes32 r, bytes32 s) external payable {
+    function assetify(uint l, address a, uint i, string memory u/*, uint8 v, bytes32 r, bytes32 s*/) external payable {
+        //pay(address(this), l, this.owner(), 0); //若金额设定就支付
+        //check(a, v, r, s);  
+        u = "";
+        
+        assembly {
+            if iszero(i) {
+                l := add(sload(0x1), 0x1)
+                sstore(0x1, l)
+            }
+        }
+        
         unchecked {
-            pay(address(this), l, this.owner(), 0);                                 //若金额设定就支付
-            check(a, v, r, s);                                                      //检查签名和更新指数
-            iDID.stringData(address(this), i > 0 ? i : ++count, u);                 //更新或铸新
-            if (i == 0) transfer(address(0), a, count);                             //铸币
-            else                                                                    //更新元数据详细信息
-            assembly {
+            if (i == 0) transfer(address(0), a, l); //铸币
+        }
+
+        assembly {
+            if gt(i, 0) { //更新元数据详细信息
                 mstore(0x0, i)
                 log1(0x0, 0x20, 0xf8e1a15aba9398e019f0b49df1a4fde98ee17ae345cb5f6b5e2c27f5033e8ce7)
+                l := i
             }
+
+            //iDID.stringData(address(this), i > 0 ? i : ++count, u);                 
+
+            //更新或铸新
+            /*let ptr := mload(0x40)
+            mstore(ptr, shl(0xe0, 0xea502ecf)) // stringData(address,uint,string)
+            mstore(add(ptr, 0x4), address())
+            mstore(add(ptr, 0x24), l)
+            mstore(add(ptr, 0x44), mload(u))
+            mstore(add(ptr, 0x64), mload(add(u, 0x20)))
+            pop(call(gas(), sload(0x0), 0x0, ptr, 0x84, 0x0, 0x0)) */
+
+            let ptr := mload(0x40)
+            mstore(ptr, shl(0xe0, 0xc7070b58)) // stringData(bytes32,bytes32,bytes32,bytes32,bytes32)
+            mstore(add(ptr, 0x04), address())
+            mstore(add(ptr, 0x24), l)
+            mstore(add(ptr, 0x44), mload(u))
+            mstore(add(ptr, 0x64), mload(add(u, 0x20)))
+            mstore(add(ptr, 0x84), mload(add(u, 0x40)))
+            pop(call(gas(), sload(0x0), 0x0, ptr, 0xa4, 0x0, 0x0))
         }
     }
 
     //设置等级和价钱
     function setLevel(uint _list, address tokenAddr, uint price) external OnlyAccess {
-        iDID.listData(address(this), address(this), _list, tokenAddr, price);
+        assembly {
+            let ptr := mload(0x40)
+            mstore(ptr, shl(0xe0, 0x41aa4436)) // listData(address,address,uint256,address,uint256)
+            mstore(add(ptr, 0x04), address())
+            mstore(add(ptr, 0x24), address())
+            mstore(add(ptr, 0x44), _list)
+            mstore(add(ptr, 0x64), tokenAddr)
+            mstore(add(ptr, 0x84), price)
+            pop(call(gas(), sload(0x0), 0x0, ptr, 0xa4, 0x0, 0x0))
+        }
     }
     
     /*** TESTING ONLY ***/
     function assetify() public {
-        iDID.stringData(address(this), ++count, "QmVegGmha4L4pLPQAj7V46kQVc8EoGnwwKvbKvHbevRYD2");
-        transfer(address(0), msg.sender, count);
+        //iDID.stringData(address(this), ++count, "QmVegGmha4L4pLPQAj7V46kQVc8EoGnwwKvbKvHbevRYD2");
+        //transfer(address(0), msg.sender, count);
     }
 
 }

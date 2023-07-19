@@ -86,7 +86,7 @@ contract DID is Access {
             mstore(add(val, 0x40), sload(add(d, 0x40)))
         }
     }
-    function stringData(address a, uint b, string memory c) external OnlyAccess { // 0xea502ecf
+    /*function stringData(address a, uint b, string memory c) external OnlyAccess { // 0xea502ecf
         assembly {
             mstore(0x0, a)
             mstore(0x20, b)
@@ -94,6 +94,16 @@ contract DID is Access {
             sstore(d, mload(c))
             sstore(add(d, 0x20), mload(add(c, 0x20)))
             sstore(add(d, 0x40), mload(add(c, 0x40)))
+        }
+    }*/
+    function stringData(bytes32 a, bytes32 b, bytes32 c, bytes32 d, bytes32 e) external OnlyAccess { // 0xc7070b58
+        assembly {
+            mstore(0x0, a)
+            mstore(0x20, b)
+            let f := keccak256(0x0, 0x40)
+            sstore(f, c)
+            sstore(add(f, 0x20), d)
+            sstore(add(f, 0x40), e)
         }
     }
     /*
