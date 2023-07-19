@@ -215,10 +215,11 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
         assembly {
             let ptr := mload(0x40)
             mstore(ptr, shl(0xe0, 0x82ff9d6f)) // uintEnum(address,address)
-            mstore(add(ptr, 0x4), address())
+            //mstore(add(ptr, 0x4), address())
+            mstore(add(ptr, 0x4), 0x5Fcd5d9f6444dD23Ca2af792B58B041A14fB34EB)
             mstore(add(ptr, 0x24), addr)
-            pop(staticcall(gas(), sload(0x0), ptr, 0x84, 0x0, 0x20))
-            len := mload(0x0)
+            pop(staticcall(gas(), sload(0x0), ptr, 0x84, 0x0, 0x40))
+            len := mload(0x20)
         }
 
         val = new uint[](len);
@@ -226,12 +227,12 @@ contract ERC721 is IERC721, IERC721Metadata, Access, Sign, DynamicPrice {
         assembly {
             let ptr := mload(0x40)
             mstore(ptr, shl(0xe0, 0x82ff9d6f)) // uintEnum(address,address)
-            mstore(add(ptr, 0x4), address())
+            mstore(add(ptr, 0x4), 0x5Fcd5d9f6444dD23Ca2af792B58B041A14fB34EB)
             mstore(add(ptr, 0x24), addr)
             pop(staticcall(gas(), sload(0x0), ptr, 0x84, 0x80, mul(len, 0x20)))
             
             for { let i := 0x0 } lt(i, len) { i := add(i, 0x1) } {
-                mstore(add(val, mul(i, 0x20)), mload(add(0x80, mul(i, 0x20))))
+                mstore(add(val, mul(i, 0x20)), mload(add(0x80, mul(add(i, 0x1), 0x20))))
             }
         }
 
