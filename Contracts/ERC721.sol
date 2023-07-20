@@ -76,7 +76,7 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
         }
     }
 
-    function ownerOf(uint id) public view returns(address val) {
+    function ownerOf(uint id) public view returns(address val) { // 0x6352211e
         assembly {
             mstore(0x80, shl(0xe0, 0x8c66f128)) // addressData(address,uint,uint)
             mstore(0x84, address())
@@ -98,7 +98,7 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
         }
     }
 
-    function isApprovedForAll(address from, address to) public view returns(bool val) {
+    function isApprovedForAll(address from, address to) public view returns(bool val) { // 0xe985e9c5
         assembly {
             mstore(0x80, shl(0xe0, 0x4c200b10)) // uintData(address,address,address)
             mstore(0x84, address())
@@ -109,7 +109,7 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
         }
     }
 
-    function approve(address to, uint id) external {
+    function approve(address to, uint id) external { // 0x095ea7b3
         address oid = ownerOf(id);
         bool bol = isApprovedForAll(oid, msg.sender);
         assembly {
@@ -178,7 +178,7 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
         transferFrom(from, to, id); 
     }
 
-    function transferFrom(address, address to, uint id) public {
+    function transferFrom(address, address to, uint id) public { // 0x23b872dd
         (address oid, address app) = (ownerOf(id), getApproved(id));
         uint bal = balanceOf(oid);
         

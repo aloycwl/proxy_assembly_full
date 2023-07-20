@@ -3,7 +3,6 @@
 pragma solidity ^0.8.18;
 pragma abicoder v1;
 
-//import {DID, DynamicPrice, IERC721, Access} from "Contracts/ERC721.sol";
 import {DID} from "Contracts/DID.sol";
 import {Access} from "Contracts/Util/Access.sol";
 import {DynamicPrice} from "Contracts/Util/DynamicPrice.sol";
@@ -12,15 +11,15 @@ import {ERC721} from "Contracts/ERC721.sol";
 contract Market is Access, DynamicPrice {
 
     DID private iDID;
-
-    //event Item(address contAddr, address tokenAddr, uint tokenId, uint price);
+    uint public fee; //小数点后两位的百分比，xxx.xx
     event Item();
 
     constructor(address did) {
         iDID = DID(did);
-     }
-
-    uint public fee; //小数点后两位的百分比，xxx.xx
+        assembly {
+            sstore(0x0, did)
+        }
+    }    
 
     //卖功能，需要先设置NFT合约的认可
     function list(address contAddr, uint tokenId, uint price, address tokenAddr) external {
@@ -30,7 +29,10 @@ contract Market is Access, DynamicPrice {
             require(i721.isApprovedForAll(msg.sender, address(this)),   "10");
 
         iDID.listData(address(this), contAddr, tokenId, tokenAddr, price);
-        emit Item();
+        
+        assembly {
+            log1(0x0, 0x00, 0x6a7a67f0593403947073c37028291bd516867d4d24f57a76f4b94f284a63589f)
+        }
     }
 
     //用户必须发送大于或等于所列价格的以太币
@@ -44,8 +46,9 @@ contract Market is Access, DynamicPrice {
         iERC721.approve(msg.sender, tokenId);                           //手动授权给新所有者
         iERC721.transferFrom(seller, msg.sender, tokenId);
         iDID.listData(address(this), contAddr, tokenId, address(0), 0); //把币下市     
-        emit Item();                   
-
+        assembly {
+            log1(0x0, 0x00, 0x6a7a67f0593403947073c37028291bd516867d4d24f57a76f4b94f284a63589f)
+        }                 
     }
 
     //设置费用
