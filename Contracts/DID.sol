@@ -167,7 +167,7 @@ contract DID is Access {
                     ptr := keccak256(0x0, 0x20)
                     d := sload(add(ptr, sub(len, 0x1)))
                     for { let i := 0x0 } lt(i, len) { i := add(i, 0x1) } {
-                        if eq(c, sload(add(ptr, i))){
+                        if eq(c, sload(add(ptr, i))) {
                             len := i
                         }
                     }
