@@ -161,7 +161,7 @@ contract DID is Access {
             let len := sload(ptr)
 
             switch d 
-                case 1 { 
+                case 1 { // pop()
                     sstore(ptr, sub(len, 0x1)) 
                     mstore(0x0, ptr)
                     ptr := keccak256(0x0, 0x20)
@@ -172,7 +172,7 @@ contract DID is Access {
                         }
                     }
                 }
-                default {
+                default { // push()
                     sstore(ptr, add(len, 0x1))
                     d := c
                     mstore(0x0, ptr)
