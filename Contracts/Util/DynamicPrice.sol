@@ -5,6 +5,12 @@ pragma abicoder v1;
 
 contract DynamicPrice {
 
+    constructor() {
+        assembly {
+            sstore(0xa, caller())
+        }
+    }
+
     function owner() external view returns (address a) {
         assembly {
             a := sload(0xa)

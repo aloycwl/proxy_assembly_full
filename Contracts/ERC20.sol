@@ -55,37 +55,34 @@ contract ERC20 is Access, Sign {
 
     function balanceOf(address addr) public view returns(uint val) {
         assembly {
-            let ptr := mload(0x40)
-            mstore(ptr, shl(0xe0, 0x4c200b10)) // uintData(address,address,address)
-            mstore(add(ptr, 0x04), address())
-            mstore(add(ptr, 0x24), addr)
-            mstore(add(ptr, 0x44), 0x0)
-            pop(staticcall(gas(), sload(0x0), ptr, 0x64, 0x0, 0x20))
+            mstore(0x80, shl(0xe0, 0x4c200b10)) // uintData(address,address,address)
+            mstore(0x84, address())
+            mstore(0xa4, addr)
+            mstore(0xc4, 0x0)
+            pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
             val := mload(0x0)
         }
     }
 
     function allowance(address from, address to) public view returns(uint val) {
         assembly {
-            let ptr := mload(0x40)
-            mstore(ptr, shl(0xe0, 0x4c200b10)) // uintData(address,address,address)
-            mstore(add(ptr, 0x04), address())
-            mstore(add(ptr, 0x24), from)
-            mstore(add(ptr, 0x44), to)
-            pop(staticcall(gas(), sload(0x0), ptr, 0x64, 0x0, 0x20))
+            mstore(0x80, shl(0xe0, 0x4c200b10)) // uintData(address,address,address)
+            mstore(0x84, address())
+            mstore(0xa4, from)
+            mstore(0xc4, to)
+            pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
             val := mload(0x0)
         }
     }
 
     function approve(address to, uint amt) public returns(bool val) {
         assembly {
-            let ptr := mload(0x40)
-            mstore(ptr, shl(0xe0, 0x99758426)) // uintData(address,address,address,uint256)
-            mstore(add(ptr, 0x04), address())
-            mstore(add(ptr, 0x24), caller())
-            mstore(add(ptr, 0x44), to)
-            mstore(add(ptr, 0x64), amt)
-            pop(call(gas(), sload(0x0), 0x0, ptr, 0x84, 0x0, 0x0))
+            mstore(0x80, shl(0xe0, 0x99758426)) // uintData(address,address,address,uint256)
+            mstore(0x84, address())
+            mstore(0xa4, caller())
+            mstore(0xc4, to)
+            mstore(0xe4, amt)
+            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
             val := 1
             // emit Approval(address,address,uint256)
             mstore(0x0, amt)
@@ -111,14 +108,13 @@ contract ERC20 is Access, Sign {
             }
             x(gt(amt, balanceFrom), 0x9)
             x(and(iszero(eq(from, caller())), iszero(isApproved)), 0xa)
-            // -balanceOf(from)
-            let ptr := mload(0x40)
-            mstore(ptr, shl(0xe0, 0x99758426)) // uintData(address,address,address,uint256)
-            mstore(add(ptr, 0x04), address())
-            mstore(add(ptr, 0x24), from)
-            mstore(add(ptr, 0x44), 0x0)
-            mstore(add(ptr, 0x64), sub(balanceFrom, amt))
-            pop(call(gas(), sload(0x0), 0x0, ptr, 0x84, 0x0, 0x0))
+            // -balanceOf()
+            mstore(0x80, shl(0xe0, 0x99758426)) // uintData(address,address,address,uint256)
+            mstore(0x84, address())
+            mstore(0xa4, from)
+            mstore(0xc4, 0x0)
+            mstore(0xe4, sub(balanceFrom, amt))
+            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
             // 扣除授权数额
             if gt(isApproved, 0) {
                 approveAmt := sub(approveAmt, amt)
@@ -126,9 +122,9 @@ contract ERC20 is Access, Sign {
             if iszero(isApproved) {
                 approveAmt := 0x0
             }
-            mstore(add(ptr, 0x44), to)
-            mstore(add(ptr, 0x64), approveAmt)
-            pop(call(gas(), sload(0x0), 0x0, ptr, 0x84, 0x0, 0x0))
+            mstore(0xc4, to)
+            mstore(0xe4, approveAmt)
+            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
             //return true
             val := 1
         }
@@ -138,19 +134,16 @@ contract ERC20 is Access, Sign {
     //方便转移和铸币
     function _transfer(address from, address to, uint amt) private {
         checkSuspend(from, to);
+        uint bal = balanceOf(to);
         
         assembly {
-            let ptr := mload(0x40)
-            // balanceOf(to)
-            mstore(add(ptr, 0x04), address())
-            mstore(add(ptr, 0x24), to)
-            pop(staticcall(gas(), sload(0x0), ptr, 0x64, 0x0, 0x20))
-            amt := add(mload(0x0), amt)
             // +balanceOf(to)
-            mstore(ptr, shl(0xe0, 0x99758426)) // uintData(address,address,address,uint256)
-            mstore(add(ptr, 0x04), address())
-            mstore(add(ptr, 0x64), amt)
-            pop(call(gas(), sload(0x0), 0x0, ptr, 0x84, 0x0, 0x0)) 
+            mstore(0x80, shl(0xe0, 0x99758426)) // uintData(address,address,address,uint256)
+            mstore(0x84, address())
+            mstore(0xa4, to)
+            mstore(0xc4, 0x0)
+            mstore(0xe4, add(amt, bal))
+            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0)) 
             // emit Transfer(address,address,uint256)
             mstore(0x0, amt)
             log3(0x0, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, from, to)

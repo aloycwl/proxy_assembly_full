@@ -3,7 +3,6 @@
 pragma solidity ^0.8.18;
 pragma abicoder v1;
 
-import {DID} from "Contracts/DID.sol";
 import {Sign} from "Contracts/Util/Sign.sol";
 import {Access} from "Contracts/Util/Access.sol";
 import {DynamicPrice} from "Contracts/Util/DynamicPrice.sol";
@@ -28,11 +27,9 @@ interface IERC721Metadata {
 
 contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
     event Transfer          (address indexed from, address indexed to, uint indexed id);
-    event ApprovalForAll    (address indexed from, address indexed to, bool bol);
+    event ApprovalForAll    (address indexed from, address indexed to, bool);
     event Approval          (address indexed from, address indexed to, uint indexed id);
     event MetadataUpdate    (uint id);
-    
-    DID iDID;
 
     //ERC20标准函数 
     constructor(address did, string memory name_, string memory symbol_) {
@@ -42,13 +39,11 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
         string memory symbol_ = "";*/
         assembly {
             sstore(0x0, did)
-            sstore(0xa, caller())
-            sstore(0xb, mload(name_))
-            sstore(0xc, mload(add(name_, 0x20)))
-            sstore(0xd, mload(symbol_))
-            sstore(0xe, mload(add(symbol_, 0x20)))  
+            sstore(0x2, mload(name_))
+            sstore(0x3, mload(add(name_, 0x20)))
+            sstore(0x4, mload(symbol_))
+            sstore(0x5, mload(add(symbol_, 0x20)))
         }
-        iDID = DID(did);
     }
 
     function supportsInterface(bytes4 a) external pure returns(bool val) {
@@ -67,8 +62,8 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
         assembly {
             val := mload(0x40)
             mstore(0x40, add(val, 0x40))
-            mstore(val, sload(0x11))
-            mstore(add(val, 0x20), sload(0x12))
+            mstore(val, sload(0x2))
+            mstore(add(val, 0x20), sload(0x3))
         }
     }
 
@@ -76,8 +71,8 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
         assembly {
             val := mload(0x40)
             mstore(0x40, add(val, 0x40))
-            mstore(val, sload(0x13))
-            mstore(add(val, 0x20), sload(0x14))
+            mstore(val, sload(0x4))
+            mstore(add(val, 0x20), sload(0x5))
         }
     }
 
@@ -155,6 +150,7 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
             mstore(0x80, shl(0xe0, 0x4c200b10)) // uintData(address,address,address)
             mstore(0x84, address())
             mstore(0xa4, addr)
+            mstore(0xc4, 0x0)
             pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
             val := mload(0x0)
         }
@@ -182,16 +178,10 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
         transferFrom(from, to, id); 
     }
 
-    function transferFrom(address from, address to, uint id) public {
+    function transferFrom(address, address to, uint id) public {
         (address oid, address app) = (ownerOf(id), getApproved(id));
-        unchecked {
-            
-            iDID.uintEnum(address(this), oid, id, 1);                              //从所有者数组中删除
-            iDID.addressData(address(this), 1, id, address(0));                     //重置授权
-            iDID.uintData(address(this), oid, to, 0);                              //重置操作员授权
-            iDID.uintData(address(this), oid, address(0), balanceOf(from) - 1);    //减少前任所有者的余额
-                                           
-        }
+        uint bal = balanceOf(oid);
+        
         assembly {
             // require(所有者 || 被授权, "0c")
             if and(iszero(eq(app, to)), iszero(eq(oid, caller()))) {
@@ -199,8 +189,27 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
                 mstore(0x4, 0xc)
                 revert(0x0, 0x24)
             }
-            //从所有者数组中删除
-
+            // --tokensOwned()
+            mstore(0x80, shl(0xe0, 0x6795d526)) // uintEnum(address,address,uint256,uint256)
+            mstore(0x84, address())
+            mstore(0xa4, oid)
+            mstore(0xc4, id)
+            mstore(0xe4, 1)
+            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+            // delete approval
+            mstore(0x80, shl(0xe0, 0xed3dae2b)) // addressData(address,uint256,uint256,address)
+            mstore(0x84, address())
+            mstore(0xa4, 0x1)
+            mstore(0xc4, id)
+            mstore(0xe4, 0x0)
+            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+            // --balanceOf()
+            mstore(0x80, shl(0xe0, 0x99758426)) // uintData(address,address,address,uint256)
+            mstore(0x84, address())
+            mstore(0xa4, oid)
+            mstore(0xc4, 0x0)
+            mstore(0xe4, sub(bal, 0x1))
+            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
         }
         mint(oid, to, id);
     }
@@ -240,14 +249,14 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
 
         assembly {
             if gt(to, 0x0) {
-                // 加进 tokensOwned
-                mstore(0x80, shl(0xe0, 0x6795d526)) // uintEnum(address,address)
+                // ++tokensOwned()
+                mstore(0x80, shl(0xe0, 0x6795d526)) // uintEnum(address,address,uint256,uint256)
                 mstore(0x84, address())
                 mstore(0xa4, to)
                 mstore(0xc4, id)
                 mstore(0xe4, 0x0)
                 pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
-                // 添加 balanceOf
+                // ++balanceOf()
                 mstore(0x80, shl(0xe0, 0x99758426)) // uintData(address,address,address,uint256)
                 mstore(0x84, address())
                 mstore(0xa4, to)

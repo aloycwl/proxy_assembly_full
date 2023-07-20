@@ -3,7 +3,11 @@
 pragma solidity ^0.8.18;
 pragma abicoder v1;
 
-import {DID, DynamicPrice, IERC721, Access} from "Contracts/ERC721.sol";
+//import {DID, DynamicPrice, IERC721, Access} from "Contracts/ERC721.sol";
+import {DID} from "Contracts/DID.sol";
+import {Access} from "Contracts/Util/Access.sol";
+import {DynamicPrice} from "Contracts/Util/DynamicPrice.sol";
+import {ERC721} from "Contracts/ERC721.sol";
 
 contract Market is Access, DynamicPrice {
 
@@ -12,7 +16,7 @@ contract Market is Access, DynamicPrice {
     //event Item(address contAddr, address tokenAddr, uint tokenId, uint price);
     event Item();
 
-    constructor(address did) DynamicPrice(did) {
+    constructor(address did) {
         iDID = DID(did);
      }
 
@@ -20,7 +24,7 @@ contract Market is Access, DynamicPrice {
 
     //卖功能，需要先设置NFT合约的认可
     function list(address contAddr, uint tokenId, uint price, address tokenAddr) external {
-        IERC721 i721 = IERC721(contAddr);
+        ERC721 i721 = ERC721(contAddr);
         require(i721.ownerOf(tokenId) == msg.sender,                    "0F");
         if(price > 0) 
             require(i721.isApprovedForAll(msg.sender, address(this)),   "10");
@@ -32,7 +36,7 @@ contract Market is Access, DynamicPrice {
     //用户必须发送大于或等于所列价格的以太币
     function buy(address contAddr, uint tokenId) external payable {
         (, uint price) = iDID.listData(address(this), contAddr, tokenId);
-        IERC721 iERC721 = IERC721(contAddr);
+        ERC721 iERC721 = ERC721(contAddr);
         address seller  = iERC721.ownerOf(tokenId);
         require(price > 0,                                              "11");
         
