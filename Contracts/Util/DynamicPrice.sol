@@ -9,7 +9,7 @@ contract DynamicPrice {
         assembly {
             sstore(0xa, caller())
 
-            sstore(0x0, 0x838F9b8228a5C95a7c431bcDAb58E289f5D2A4DC)
+            sstore(0x0, 0x9D7f74d0C41E726EC95884E0e97Fa6129e3b5E99)
         }
     }
 
@@ -19,7 +19,7 @@ contract DynamicPrice {
         }
     }
 
-    function pay(address contAddr, uint _list, address to, uint fee) external returns (address val) {
+    function pay(address contAddr, uint _list, address to, uint fee) internal {
         assembly {
             // 索取List
             mstore(0x80, shl(0xe0, 0xdf0188db)) // listData(address,address,uint256)
@@ -52,11 +52,10 @@ contract DynamicPrice {
                     function y(a, b, c) {
                         mstore(0xa4, a)
                         mstore(0xc4, b)
-                        if iszero(call(gas(), c, 0x0, 0x80, 0x64, 0x0, 0x20)) {
-                            //x(0x5)
+                        if iszero(call(gas(), c, 0x0, 0x80, 0x64, 0x0, 0x0)) {
+                            x(0x5)
                         }
                     }
-                    val := mload(0x0)
                     y(to, fee, tokenAddr)
                     if gt(fee, 0x0) {
                         y(sload(0x1), sub(price, fee), tokenAddr)

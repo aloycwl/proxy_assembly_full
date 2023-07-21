@@ -93,9 +93,11 @@ contract ERC20 is Access, Sign {
         //return transferFrom(msg.sender, to, amt);
     }
 
-    function transferFrom(address from, address to, uint amt) public returns(address val) {
-        val = msg.sender;
-        /*
+    function transferFrom(address from, address to, uint amt) public returns(bool val) {
+        address haha = msg.sender;
+        assembly {
+            sstore(0x123, haha)
+        }
         (uint approveAmt, uint balanceFrom) = (allowance(from, msg.sender), balanceOf(from));
         assembly {
             let isApproved := iszero(gt(amt, approveAmt))
@@ -130,7 +132,7 @@ contract ERC20 is Access, Sign {
             val := 1
         }
         // 这样叫比较便宜
-        _transfer(from, to, amt);*/
+        _transfer(from, to, amt);
     }
 
     //方便转移和铸币
