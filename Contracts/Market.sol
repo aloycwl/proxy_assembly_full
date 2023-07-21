@@ -1,27 +1,22 @@
-//SPDX-License-Identifier: None
-//solhint-disable-next-line compiler-version
+// SPDX-License-Identifier: None
+// solhint-disable-next-line compiler-version
 pragma solidity ^0.8.18;
 pragma abicoder v1;
 
-import {DID} from "Contracts/DID.sol";
 import {Access} from "Contracts/Util/Access.sol";
 import {DynamicPrice} from "Contracts/Util/DynamicPrice.sol";
-import {ERC721} from "Contracts/ERC721.sol";
 
 contract Market is Access, DynamicPrice {
-
-    DID private iDID;
-    uint public fee; //小数点后两位的百分比，xxx.xx
+    
     event Item();
 
     constructor(address did) {
-        iDID = DID(did);
         assembly {
             sstore(0x0, did)
         }
     }    
 
-    //卖功能，需要先设置NFT合约的认可
+    // 卖功能，需要先设置NFT合约的认可
     function list(address contAddr, uint tokenId, uint price, address tokenAddr) external {
         assembly {
             function x(con, cod) { // Error(bytes32)
@@ -32,7 +27,7 @@ contract Market is Access, DynamicPrice {
                 }
             }
             // require(ownerOf(tokenId) == msg.sender, 0xf)
-            mstore(0x80, shl(0xe0, 0x6352211e)) // ownerOf(address)
+            mstore(0x80, shl(0xe0, 0x6352211e)) // ownerOf(uint256)
             mstore(0x84, tokenId)
             pop(staticcall(gas(), contAddr, 0x80, 0x24, 0x0, 0x20))
             x(eq(mload(0x0), caller()), 0xf) 
@@ -59,24 +54,61 @@ contract Market is Access, DynamicPrice {
 
     //用户必须发送大于或等于所列价格的以太币
     function buy(address contAddr, uint tokenId) external payable {
-        (, uint price) = iDID.listData(address(this), contAddr, tokenId);
-        ERC721 iERC721 = ERC721(contAddr);
-        address seller  = iERC721.ownerOf(tokenId);
-        require(price > 0,                                              "11");
-        
-        pay(contAddr, tokenId, seller, fee);                            //转币给卖家减费用
-        iERC721.approve(msg.sender, tokenId);                           //手动授权给新所有者
-        iERC721.transferFrom(seller, msg.sender, tokenId);
-        iDID.listData(address(this), contAddr, tokenId, address(0), 0); //把币下市
+        address seller;
+        uint fee;
 
         assembly {
+            mstore(0x80, shl(0xe0, 0xdf0188db)) // listData(address,address,uint256)
+            mstore(0x84, address())
+            mstore(0xa4, contAddr)
+            mstore(0xc4, tokenId)
+            pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x40))
+            // require(price > 0, 0x11)
+            if iszero(mload(0x20)) {
+                mstore(0x0, shl(0xe0, 0x5b4fb734))
+                mstore(0x4, 0x11)
+                revert(0x0, 0x24)
+            }
+            // 索取费用和卖家
+            fee := sload(0x1)
+            mstore(0x80, shl(0xe0, 0x6352211e)) // ownerOf(uint256)
+            mstore(0x84, tokenId)
+            pop(staticcall(gas(), contAddr, 0x80, 0x24, 0x0, 0x20))
+            seller := mload(0x0)
+            // emit Item()
             log1(0x0, 0x00, 0x6a7a67f0593403947073c37028291bd516867d4d24f57a76f4b94f284a63589f)
+        }
+        
+        pay(contAddr, tokenId, seller, fee); // 转币给卖家减费用
+
+        assembly {
+            // 手动授权给新所有者
+            mstore(0x80, shl(0xe0, 0x095ea7b3)) // approve(address,uint256)
+            mstore(0x84, caller())
+            mstore(0xa4, tokenId)
+            pop(call(gas(), contAddr, 0x0, 0x80, 0x44, 0x0, 0x0))
+            // 转币
+            mstore(0x80, shl(0xe0, 0x23b872dd)) // transferFrom(address,address,uint256)
+            mstore(0x84, 0x0)
+            mstore(0xa4, caller())
+            mstore(0xc4, tokenId)
+            pop(call(gas(), contAddr, 0x0, 0x80, 0x64, 0x0, 0x0))
+            // 下架
+            mstore(0x80, shl(0xe0, 0x41aa4436)) // listData(address,address,uint256,address,uint256)
+            mstore(0x84, address())
+            mstore(0xa4, contAddr)
+            mstore(0xc4, tokenId)
+            mstore(0xe4, 0x0)
+            mstore(0x104, 0x0)
+            pop(call(gas(), sload(0x0), 0x0, 0x80, 0xa4, 0x0, 0x0))
         }                 
     }
 
     //设置费用
     function setFee(uint amt) external OnlyAccess {
-        fee = amt;
+        assembly {
+            sstore(0x1, amt) // 小数点后两位的百分比，xxx.xx
+        }
     }
     
 }
