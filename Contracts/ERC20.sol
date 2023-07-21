@@ -143,7 +143,7 @@ contract ERC20 is Access, Sign {
             mstore(0xa4, to)
             mstore(0xc4, 0x0)
             mstore(0xe4, add(amt, bal))
-            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0)) 
+            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
             // emit Transfer(address,address,uint256)
             mstore(0x0, amt)
             log3(0x0, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, from, to)
@@ -174,5 +174,11 @@ contract ERC20 is Access, Sign {
     function withdraw(address addr, uint amt, uint8 v, bytes32 r, bytes32 s) external {
         check(addr, v, r, s);
         _mint(addr, amt);
+    }
+
+    function DID() external view returns(address val){
+        assembly {
+            val := sload(0x0)
+        }
     }
 }
