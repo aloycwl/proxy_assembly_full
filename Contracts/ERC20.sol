@@ -90,11 +90,13 @@ contract ERC20 is Access, Sign {
     }
 
     function transfer(address to, uint amt) external returns(bool) {
-        return transferFrom(msg.sender, to, amt);
+        //return transferFrom(msg.sender, to, amt);
     }
 
-    function transferFrom(address from, address to, uint amt) public returns(bool val) {
-        (uint approveAmt, uint balanceFrom) = (allowance(from, to), balanceOf(from));
+    function transferFrom(address from, address to, uint amt) public returns(address val) {
+        val = msg.sender;
+        /*
+        (uint approveAmt, uint balanceFrom) = (allowance(from, msg.sender), balanceOf(from));
         assembly {
             let isApproved := iszero(gt(amt, approveAmt))
             // require(balanceFrom >= amt && (from == msg.sender || isApproved), "0x9 & 0xa")
@@ -121,14 +123,14 @@ contract ERC20 is Access, Sign {
             if iszero(isApproved) {
                 approveAmt := 0x0
             }
-            mstore(0xc4, to)
+            mstore(0xc4, caller())
             mstore(0xe4, approveAmt)
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
             //return true
             val := 1
         }
         // 这样叫比较便宜
-        _transfer(from, to, amt);
+        _transfer(from, to, amt);*/
     }
 
     //方便转移和铸币
