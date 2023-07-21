@@ -1,20 +1,19 @@
-//SPDX-License-Identifier: None
-//solhint-disable-next-line compiler-version
+// SPDX-License-Identifier: None
+// solhint-disable-next-line compiler-version
 pragma solidity ^0.8.18;
 pragma abicoder v1;
 
 import {Access} from "Contracts/Util/Access.sol";
 import {Sign} from "Contracts/Util/Sign.sol";
 
-//代币合约
 contract ERC20 is Access, Sign {
 
     event Transfer(address indexed from, address indexed to, uint amt);
     event Approval(address indexed from, address indexed to, uint amt);
 
-    //ERC20标准函数 
     constructor(address did, string memory name_, string memory symbol_) {
         assembly {
+            // 设置string和string.length
             sstore(0x0, did)
             sstore(0x1, mload(name_))
             sstore(0x2, mload(add(name_, 0x20)))
@@ -108,14 +107,14 @@ contract ERC20 is Access, Sign {
             }
             x(gt(amt, balanceFrom), 0x9)
             x(and(iszero(eq(from, caller())), iszero(isApproved)), 0xa)
-            // -balanceOf()
+            // -balanceOf(from)
             mstore(0x80, shl(0xe0, 0x99758426)) // uintData(address,address,address,uint256)
             mstore(0x84, address())
             mstore(0xa4, from)
             mstore(0xc4, 0x0)
             mstore(0xe4, sub(balanceFrom, amt))
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
-            // 扣除授权数额
+            // -allowance()
             if gt(isApproved, 0) {
                 approveAmt := sub(approveAmt, amt)
             }
@@ -128,6 +127,7 @@ contract ERC20 is Access, Sign {
             //return true
             val := 1
         }
+        // 这样叫比较便宜
         _transfer(from, to, amt);
     }
 

@@ -1,5 +1,5 @@
-//SPDX-License-Identifier: None
-//solhint-disable-next-line compiler-version
+// SPDX-License-Identifier: None
+// solhint-disable-next-line compiler-version
 pragma solidity ^0.8.18;
 pragma abicoder v1;
 
@@ -20,6 +20,7 @@ contract DynamicPrice {
     function pay(address contAddr, uint _list, address to, uint fee) internal {
         unchecked {
             assembly {
+                // 索取List
                 mstore(0x80, shl(0xe0, 0xdf0188db)) // listData(address,address,uint256)
                 mstore(0x84, address())
                 mstore(0xa4, contAddr)

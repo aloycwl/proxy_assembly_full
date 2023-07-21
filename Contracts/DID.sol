@@ -1,5 +1,5 @@
-//SPDX-License-Identifier: None
-//solhint-disable-next-line compiler-version
+// SPDX-License-Identifier: None
+// solhint-disable-next-line compiler-version
 pragma solidity ^0.8.18;
 pragma abicoder v1;
 
@@ -13,7 +13,8 @@ struct List {
 contract DID is Access {
     
     constructor() {
-        assembly { //设置签名人
+        assembly {
+            //设置signer
             mstore(0x0, 0x0)
             mstore(0x20, 0x0)
             mstore(0x40, 0x1)
@@ -72,7 +73,7 @@ contract DID is Access {
         }
     }
     /*
-    stringData[a][b][c] = d
+    stringData[a][b] = c
     */
     function stringData(address a, uint b) external view returns(string memory val) { // 0x99eec064
         assembly{
@@ -86,16 +87,6 @@ contract DID is Access {
             mstore(add(val, 0x40), sload(add(d, 0x40)))
         }
     }
-    /*function stringData(address a, uint b, string memory c) external OnlyAccess { // 0xea502ecf
-        assembly {
-            mstore(0x0, a)
-            mstore(0x20, b)
-            let d := keccak256(0x0, 0x40)
-            sstore(d, mload(c))
-            sstore(add(d, 0x20), mload(add(c, 0x20)))
-            sstore(add(d, 0x40), mload(add(c, 0x40)))
-        }
-    }*/
     function stringData(bytes32 a, bytes32 b, bytes32 c, bytes32 d, bytes32 e) external OnlyAccess { // 0xc7070b58
         assembly {
             mstore(0x0, a)

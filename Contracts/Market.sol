@@ -52,7 +52,7 @@ contract Market is Access, DynamicPrice {
         }
     }
 
-    //用户必须发送大于或等于所列价格的以太币
+    // 币或代币
     function buy(address contAddr, uint tokenId) external payable {
         address seller;
         uint fee;
