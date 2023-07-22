@@ -11,6 +11,8 @@ contract ERC20 is Access, Sign {
     event Transfer(address indexed from, address indexed to, uint amt);
     event Approval(address indexed from, address indexed to, uint amt);
 
+    bytes32 _transferEvent = 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef;
+
     constructor(address did, string memory name_, string memory symbol_) {
         assembly {
             // 设置string和string.length
@@ -89,15 +91,34 @@ contract ERC20 is Access, Sign {
         }
     }
 
-    function transfer(address to, uint amt) external returns(bool) {
-        //return transferFrom(msg.sender, to, amt);
+    function transfer(address to, uint amt) external returns(bool val) {
+        uint baf = balanceOf(msg.sender);
+        uint bat = balanceOf(to);
+        assembly {
+            if gt(amt, baf) {
+                mstore(0x0, shl(0xe0, 0x5b4fb734))
+                mstore(0x4, 0x9)
+                revert(0x0, 0x24)
+            }
+            // -balanceOf(from)
+            mstore(0x80, shl(0xe0, 0x99758426)) // uintData(address,address,address,uint256)
+            mstore(0x84, address())
+            mstore(0xa4, caller())
+            mstore(0xc4, 0x0)
+            mstore(0xe4, sub(baf, amt))
+            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+            // +balanceOf(to)
+            mstore(0xa4, to)
+            mstore(0xe4, add(bat, amt))
+            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+            // emit Transfer(address,address,uint256)
+            mstore(0x0, amt)
+            log3(0x0, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, caller(), to)
+            val := 1
+        }
     }
 
     function transferFrom(address from, address to, uint amt) public returns(bool val) {
-        address haha = msg.sender;
-        assembly {
-            sstore(0x123, haha)
-        }
         (uint approveAmt, uint balanceFrom) = (allowance(from, msg.sender), balanceOf(from));
         assembly {
             let isApproved := iszero(gt(amt, approveAmt))

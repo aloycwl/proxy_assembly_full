@@ -40,7 +40,7 @@ contract Market is Access, DynamicPrice {
                 x(mload(0x0), 0x10)
             }
             // 上架
-            mstore(0x80, shl(0xe0, 0x41aa4436)) // listData(address,address,uint256,address,uint256)
+            mstore(0x80, shl(0xe0, 0xd18524af)) // store(bytes32,bytes32,bytes32,bytes32,bytes32)
             mstore(0x84, address())
             mstore(0xa4, contAddr)
             mstore(0xc4, tokenId)
@@ -94,14 +94,14 @@ contract Market is Access, DynamicPrice {
             mstore(0xc4, tokenId)
             pop(call(gas(), contAddr, 0x0, 0x80, 0x64, 0x0, 0x0))
             // 下架
-            mstore(0x80, shl(0xe0, 0x41aa4436)) // listData(address,address,uint256,address,uint256)
+            mstore(0x80, shl(0xe0, 0xd18524af)) // store(bytes32,bytes32,bytes32,bytes32,bytes32)
             mstore(0x84, address())
             mstore(0xa4, contAddr)
             mstore(0xc4, tokenId)
             mstore(0xe4, 0x0)
             mstore(0x104, 0x0)
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0xa4, 0x0, 0x0))
-        }                 
+        }            
     }
 
     //设置费用
