@@ -64,14 +64,6 @@ contract DID is Access {
             val := sload(keccak256(0x0, 0x60))
         }
     }
-    /*function addressData(address a, uint b, uint c, address d) external OnlyAccess { // 0xed3dae2b
-        assembly {
-            mstore(0x0, a)
-            mstore(0x20, b)
-            mstore(0x40, c)
-            sstore(keccak256(0x0, 0x60), d)
-        }
-    }*/
     /*
     stringData[a][b] = c
     */

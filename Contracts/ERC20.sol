@@ -6,6 +6,7 @@ pragma abicoder v1;
 import {Access} from "Contracts/Util/Access.sol";
 import {Sign} from "Contracts/Util/Sign.sol";
 
+// gas: 974705
 contract ERC20 is Access, Sign {
 
     event Transfer(address indexed from, address indexed to, uint amt);
@@ -54,7 +55,8 @@ contract ERC20 is Access, Sign {
 
     function balanceOf(address addr) public view returns(uint val) {
         assembly {
-            mstore(0x80, shl(0xe0, 0x4c200b10)) // uintData(address,address,address)
+            // uintData(address(), addr, 0x0)
+            mstore(0x80, 0x4c200b1000000000000000000000000000000000000000000000000000000000)
             mstore(0x84, address())
             mstore(0xa4, addr)
             mstore(0xc4, 0x0)
@@ -65,7 +67,8 @@ contract ERC20 is Access, Sign {
 
     function allowance(address from, address to) public view returns(uint val) {
         assembly {
-            mstore(0x80, shl(0xe0, 0x4c200b10)) // uintData(address,address,address)
+            // uintData(address(), from, to)
+            mstore(0x80, 0x4c200b1000000000000000000000000000000000000000000000000000000000) 
             mstore(0x84, address())
             mstore(0xa4, from)
             mstore(0xc4, to)
@@ -74,158 +77,207 @@ contract ERC20 is Access, Sign {
         }
     }
 
+    // gas: 61187/38302
     function approve(address to, uint amt) public returns(bool val) {
         assembly {
-            mstore(0x80, shl(0xe0, 0x99758426)) // uintData(address,address,address,uint256)
+            // uintData(address(), caller(), to, amt)
+            mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000) 
             mstore(0x84, address())
             mstore(0xa4, caller())
             mstore(0xc4, to)
             mstore(0xe4, amt)
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
             val := 1
-            // emit Approval(address,address,uint256)
+
+            // emit Approval(caller(), to, amt)
             mstore(0x0, amt)
             log3(0x0, 0x20, 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925, caller(), to)
         }
     }
 
+    // gas: 77637/57972
     function transfer(address to, uint amt) external returns(bool val) {
         checkSuspend(msg.sender, to);
         assembly {
-            // uintData(address,address,address)
-            mstore(0x80, shl(0xe0, 0x4c200b10))
+            // uintData(address(), caller(), 0x0)
+            mstore(0x80, 0x4c200b1000000000000000000000000000000000000000000000000000000000)
             mstore(0x84, address())
             mstore(0xc4, 0x0)
+
             // balanceOf(msg.sender)
             mstore(0xa4, caller())
             pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
             let baf := mload(0x0)
+
             // balanceOf(to)
             mstore(0xa4, to)
             pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
             let bat := mload(0x0)
+
             //require(balanceOf(msg.sender) >= msg.sender)
             if gt(amt, baf) {
                 mstore(0x0, shl(0xe0, 0x5b4fb734))
                 mstore(0x4, 0x9)
                 revert(0x0, 0x24)
             }
-            // uintData(address,address,address,uint256)
-            mstore(0x80, shl(0xe0, 0x99758426)) 
+
+            // uintData(addres(), caller(), 0x0, amt)
+            mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000) 
             mstore(0x84, address())
             mstore(0xa4, caller())
+
             // -balanceOf(from)
             mstore(0xc4, 0x0)
             mstore(0xe4, sub(baf, amt))
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+
             // +balanceOf(to)
             mstore(0xa4, to)
             mstore(0xe4, add(bat, amt))
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
-            // emit Transfer(address,address,uint256)
+
+            // emit Transfer(caller(), to, amt)
             mstore(0x0, amt)
             log3(0x0, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, caller(), to)
+
             // return true
             val := 1
         }
     }
 
+    // gas: 85644/65979
     function transferFrom(address from, address to, uint amt) public returns(bool val) {
         checkSuspend(from, to);
         assembly {
-            // uintData(address,address,address)
-            mstore(0x80, shl(0xe0, 0x4c200b10)) 
+            // uintData(address(), from, to)
+            mstore(0x80, 0x4c200b1000000000000000000000000000000000000000000000000000000000)
             mstore(0x84, address())
             mstore(0xc4, 0x0)
+
             // balanceOf(to)
             mstore(0xa4, to)
             pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
             let bat := mload(0x0)
+
             // balanceOf(from)
             mstore(0xa4, from)
             pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
             let baf := mload(0x0)
+
             // allowance(from, msg.sender)
             mstore(0xa4, from)
             mstore(0xc4, caller())
             pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
             let apa := mload(0x0)
-            // uintData(address,address,address)
-            function x(con, cod) {
-                if gt(con, 0x0) {
-                    mstore(0x0, shl(0xe0, 0x5b4fb734))
-                    mstore(0x4, cod)
-                    revert(0x0, 0x24)
-                }
+
+            // require(amt <= balanceOf(from))
+            if gt(amt, baf) {
+                mstore(0x0, shl(0xe0, 0x5b4fb734))
+                mstore(0x4, 0x9)
+                revert(0x0, 0x24)
             }
-            // require(balanceFrom >= amt)
-            x(gt(amt, baf), 0x9)
-            // require(isApproved)
-            x(gt(amt, apa), 0xa)
-            // uintData(address,address,address,uint256)
-            mstore(0x80, shl(0xe0, 0x99758426)) 
+
+            // require(amt <= allowance(from, msg.sender))
+            if gt(amt, apa) {
+                mstore(0x0, shl(0xe0, 0x5b4fb734))
+                mstore(0x4, 0xa)
+                revert(0x0, 0x24)
+            }
+
+            // uintData(address(), from, to, amt)
+            mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000)
             mstore(0x84, address())
+
             // -allowance(from, to)
             mstore(0xa4, from)
             mstore(0xc4, caller())
             mstore(0xe4, sub(apa, amt))
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+
             // -balanceOf(from)
             mstore(0xc4, 0x0)
             mstore(0xe4, sub(baf, amt))
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+
             // +balanceOf(to)
             mstore(0xa4, to)
             mstore(0xe4, add(amt, bat))
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
-            // emit Transfer(address,address,uint256)
+
+            // emit Transfer(from, to, amt)
             mstore(0x0, amt)
             log3(0x0, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, from, to)
+
             //return true
             val := 1
         }
     }
 
-    //铸币代币，只允许有访问权限的地址
+    // gas: 89876/50546
     function mint(address to, uint amt) public OnlyAccess {
-        _mint(to, amt);
-    }
-
-    function _mint(address to, uint amt) private {
-        uint bal = balanceOf(to);
         assembly {
-            //totalSupply += amt
-            sstore(0x5, add(amt, sload(0x5)))
-            // +balanceOf(to)
-            mstore(0x80, shl(0xe0, 0x99758426)) // uintData(address,address,address,uint256)
+            // uintData(address(), to, 0x0)
+            mstore(0x80, 0x4c200b1000000000000000000000000000000000000000000000000000000000)
+            // balanceOf(to)
             mstore(0x84, address())
             mstore(0xa4, to)
             mstore(0xc4, 0x0)
-            mstore(0xe4, add(amt, bal))
+            pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
+
+            // uintData(address(), to, 0x0, amt)
+            mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000)
+            // +balanceOf(to)
+            mstore(0x84, address())
+            mstore(0xa4, to)
+            mstore(0xc4, 0x0)
+            mstore(0xe4, add(amt, mload(0x0)))
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
-            // emit Transfer(address,address,uint256)
+
+            // totalSupply += amt
+            sstore(0x5, add(amt, sload(0x5)))
+
+            // emit Transfer(0x0, to, amt)
             mstore(0x0, amt) 
             log3(0x0, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, 0x0, to)
         }
     }
 
-    //烧毁代币，任何人都可以烧毁
+    function withdraw(address to, uint amt, uint8 v, bytes32 r, bytes32 s) external {
+        // 查拉黑和签名
+        checkSuspend(msg.sender, to);
+        check(to, v, r, s);
+        assembly {
+            // uintData(address(), 0x0, to)
+            mstore(0x80, 0x4c200b1000000000000000000000000000000000000000000000000000000000)
+            // balanceOf(to)
+            mstore(0x84, address())
+            mstore(0xa4, to)
+            mstore(0xc4, 0x0)
+            pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
+
+            // uintData(address(), from, to, amt)
+            mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000)
+            // +balanceOf(to)
+            mstore(0x84, address())
+            mstore(0xa4, to)
+            mstore(0xc4, 0x0)
+            mstore(0xe4, add(amt, mload(0x0)))
+            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+
+            // totalSupply += amt
+            sstore(0x5, add(amt, sload(0x5)))
+
+            // emit Transfer(0x0, to, amt)
+            mstore(0x0, amt) 
+            log3(0x0, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, 0x0, to)
+        }
+    }
+
     function burn(uint amt) external {
-        assembly { //totalSupply -= amt;
+        assembly {
+            // totalSupply -= amt;
             sstore(0x5, sub(sload(0x5), amt))
         }
         transferFrom(msg.sender, address(0), amt); //调用标准函数
-    }
-
-    //利用签名人来哈希信息
-    function withdraw(address to, uint amt, uint8 v, bytes32 r, bytes32 s) external {
-        check(to, v, r, s);
-        _mint(to, amt);
-    }
-
-    function DID() external view returns(address val){
-        assembly {
-            val := sload(0x0)
-        }
     }
 }

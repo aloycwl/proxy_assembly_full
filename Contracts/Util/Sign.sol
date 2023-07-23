@@ -9,8 +9,9 @@ contract Sign {
         bytes32 hash;
 
         assembly {
+            // uintData(address(), addr, 0x1)
+            mstore(0x80, 0x4c200b1000000000000000000000000000000000000000000000000000000000) 
             // 索取block.timestamp
-            mstore(0x80, shl(0xe0, 0x4c200b10)) // uintData(address,addrress,address)
             mstore(0x84, address())
             mstore(0xa4, addr)
             mstore(0xc4, 0x1)
@@ -24,8 +25,9 @@ contract Sign {
         address val = ecrecover(hash, v, r, s);
         
         assembly {
+            // addressData(0x0, 0x0, 0x1)；
+            mstore(0x80, 0x8c66f12800000000000000000000000000000000000000000000000000000000) 
             // 索取signer
-            mstore(0x80, shl(0xe0, 0x8c66f128)) // addressData(address,uint256,uint256)；
             mstore(0x84, 0x0)
             mstore(0xa4, 0x0)
             mstore(0xc4, 0x1)
@@ -36,8 +38,9 @@ contract Sign {
                 mstore(0x4, 0x3)
                 revert(0x0, 0x24)
             }
-            //更新block.timestamp
-            mstore(0x80, shl(0xe0, 0x99758426)) // uintData(address,address,address,uint256)
+            // uintData(address(), addr, 0x1, timestamp())
+            mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000)
+            // 更新block.timestamp
             mstore(0x84, address())
             mstore(0xa4, addr)
             mstore(0xc4, 0x1)
@@ -52,8 +55,8 @@ contract Sign {
             mstore(0x80, address())
             mstore(0xa0, a)
             mstore(0xc0, b)
-            // 不用改的变量放外面
-            mstore(0xe0, shl(0xe0, 0x4c200b10)) // uintData(address,address,address)
+            // uintData(address()/a/b, 0x0, 0x0)
+            mstore(0xe0, 0x4c200b1000000000000000000000000000000000000000000000000000000000) 
             mstore(0x104, 0x0)
             mstore(0x124, 0x0)
             for { let i := 0x0 } lt(i, 0x3) { i := add(i, 0x1) } {
