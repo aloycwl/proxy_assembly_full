@@ -8,8 +8,6 @@ contract DynamicPrice {
     constructor() {
         assembly {
             sstore(0xa, caller())
-
-            sstore(0x0, 0x9D7f74d0C41E726EC95884E0e97Fa6129e3b5E99)
         }
     }
 
@@ -22,43 +20,49 @@ contract DynamicPrice {
     function pay(address contAddr, uint _list, address to, uint fee) internal {
         assembly {
             // 索取List
-            mstore(0x80, shl(0xe0, 0xdf0188db)) // listData(address,address,uint256)
+            mstore(0x80, 0xdf0188db00000000000000000000000000000000000000000000000000000000) // listData(address,address,uint256)
             mstore(0x84, address())
             mstore(0xa4, contAddr)
             mstore(0xc4, _list)
             pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x40))
-            let tokenAddr := mload(0x0)
-            let price := mload(0x20)
+            let tka := mload(0x0)
+            let amt := mload(0x20)
             // 有价格才执行
-            if gt(price, 0x0) {
-                fee := div(mul(price, sub(0x2710, fee)), 0x2710)
-                function x(cod) {
-                    mstore(0x0, shl(0xe0, 0x5b4fb734))
-                    mstore(0x4, cod)
-                    revert(0x0, 0x24)
-                }
+            if gt(tka, 0x0) {
+                fee := div(mul(amt, sub(0x2710, fee)), 0x2710)
                 // 这是转加密货币
-                if eq(tokenAddr, 0x1) {
-                    if gt(price, callvalue()) { 
-                        x(0x4)
+                if eq(tka, 0x1) {
+                    // require(msg.value > amt)
+                    if gt(amt, callvalue()) { 
+                        mstore(0x0, shl(0xe0, 0x5b4fb734))
+                        mstore(0x4, 0x4)
+                        revert(0x0, 0x24)
                     }
                     pop(call(gas(), to, fee, 0x0, 0x0, 0x0, 0x0))
                     pop(call(gas(), sload(0x1), selfbalance(), 0x0, 0x0, 0x0, 0x0))
                 }
                 // 这是转ERC20代币
-                if gt(tokenAddr, 0x1) {
-                    mstore(0x80, shl(0xe0, 0x23b872dd)) // transferFrom(address,address,uint256)
+                if gt(tka, 0x1) {
+                    // transferFrom(origin(), to, amt)
+                    mstore(0x80, 0x23b872dd00000000000000000000000000000000000000000000000000000000)
                     mstore(0x84, origin())
-                    function y(a, b, c) {
-                        mstore(0xa4, a)
-                        mstore(0xc4, b)
-                        if iszero(call(gas(), c, 0x0, 0x80, 0x64, 0x0, 0x0)) {
-                            x(0x5)
-                        }
+                    // require(transferForm(origin(), to, fee) = true)
+                    mstore(0xa4, to)
+                    mstore(0xc4, fee)    
+                    if iszero(call(gas(), tka, 0x0, 0x80, 0x64, 0x0, 0x0)) {
+                        mstore(0x0, shl(0xe0, 0x5b4fb734))
+                        mstore(0x4, 0x5)
+                        revert(0x0, 0x24)
                     }
-                    y(to, fee, tokenAddr)
+                    // require(transferForm(origin(), owner, fee) = true)
                     if gt(fee, 0x0) {
-                        y(sload(0x1), sub(price, fee), tokenAddr)
+                        mstore(0xa4, sload(0x1))
+                        mstore(0xc4, sub(amt, fee))
+                        if iszero(call(gas(), tka, 0x0, 0x80, 0x64, 0x0, 0x0)) {
+                            mstore(0x0, shl(0xe0, 0x5b4fb734))
+                            mstore(0x4, 0x5)
+                            revert(0x0, 0x24)
+                        }
                     }
                 }
             }

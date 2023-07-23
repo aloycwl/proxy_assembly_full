@@ -122,7 +122,7 @@ contract ERC20 is Access, Sign {
             }
 
             // uintData(addres(), caller(), 0x0, amt)
-            mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000) 
+            mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000)
             mstore(0x84, address())
             mstore(0xa4, caller())
 

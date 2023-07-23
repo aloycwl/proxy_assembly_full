@@ -48,7 +48,8 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
 
     function supportsInterface(bytes4 a) external pure returns(bool val) {
         assembly {
-            val := or(eq(a, shl(0xe0, 0x80ac58cd)), eq(a, shl(0xe0, 0x5b5e139f))) 
+            val := or(eq(a, 0x80ac58cd00000000000000000000000000000000000000000000000000000000), 
+                eq(a, 0x5b5e139f00000000000000000000000000000000000000000000000000000000)) 
         }
     }
 
@@ -78,7 +79,8 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
 
     function ownerOf(uint id) public view returns(address val) { // 0x6352211e
         assembly {
-            mstore(0x80, shl(0xe0, 0x8c66f128)) // addressData(address,uint,uint)
+            // addressData(address(), 0x0, id)
+            mstore(0x80, 0x8c66f12800000000000000000000000000000000000000000000000000000000) 
             mstore(0x84, address())
             mstore(0xa4, 0x0)
             mstore(0xc4, id)
@@ -89,7 +91,8 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
 
     function getApproved(uint id) public view returns(address val) {
         assembly {
-            mstore(0x80, shl(0xe0, 0x8c66f128)) // addressData(address,uint,uint)
+            // addressData(address(), 0x1, id)
+            mstore(0x80, 0x8c66f12800000000000000000000000000000000000000000000000000000000)
             mstore(0x84, address())
             mstore(0xa4, 0x1)
             mstore(0xc4, id)
@@ -100,7 +103,8 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
 
     function isApprovedForAll(address from, address to) public view returns(bool val) { // 0xe985e9c5
         assembly {
-            mstore(0x80, shl(0xe0, 0x4c200b10)) // uintData(address,address,address)
+            // uintData(address(), from, to)
+            mstore(0x80, 0x4c200b1000000000000000000000000000000000000000000000000000000000)
             mstore(0x84, address())
             mstore(0xa4, from)
             mstore(0xc4, to)
@@ -119,13 +123,15 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
                 mstore(0x4, 0xb)
                 revert(0x0, 0x24)
             }
-            // 更新记录
-            mstore(0x80, shl(0xe0, 0xed3dae2b)) // addressData(address,uint256,uint256,address)
+
+            // addressData(address(), 0x1, id, to)
+            mstore(0x80, 0xed3dae2b00000000000000000000000000000000000000000000000000000000)
             mstore(0x84, address())
             mstore(0xa4, 0x1)
             mstore(0xc4, id)
             mstore(0xe4, to)
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+
             // emit Approval()
             log4(0x0, 0x0, 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925, oid, to, id)
         }
@@ -133,7 +139,8 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
 
     function setApprovalForAll(address to, bool bol) external {
         assembly {
-            mstore(0x80, shl(0xe0, 0x99758426)) // uintData(address,address,address,uint256)
+            // uintData(address(), caller(), to, bol)
+            mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000)
             mstore(0x84, address())
             mstore(0xa4, caller())
             mstore(0xc4, to)
@@ -147,7 +154,8 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
 
     function balanceOf(address addr) public view returns (uint val) {
         assembly {
-            mstore(0x80, shl(0xe0, 0x4c200b10)) // uintData(address,address,address)
+            // uintData(address(), addr, 0x0)
+            mstore(0x80, 0x4c200b1000000000000000000000000000000000000000000000000000000000)
             mstore(0x84, address())
             mstore(0xa4, addr)
             mstore(0xc4, 0x0)
@@ -158,10 +166,12 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
 
     function tokenURI(uint id) public view returns (string memory) {
         assembly {
-            mstore(0x80, shl(0xe0, 0x99eec064)) // stringData(address,uint)
+            // stringData(address(), id)
+            mstore(0x80, 0x99eec06400000000000000000000000000000000000000000000000000000000)
             mstore(0x84, address())
             mstore(0xa4, id)
             pop(staticcall(gas(), sload(0x0), 0x80, 0x44, 0xa0, 0x80))
+
             // string.concat()
             mstore(0x80, 0x20)
             mstore(0xa0, add(mload(0xc0), 0x20))
@@ -189,22 +199,28 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
                 mstore(0x4, 0xc)
                 revert(0x0, 0x24)
             }
+
+            // uintEnum(address,address,uint256,uint256)
+            mstore(0x80, 0x6795d52600000000000000000000000000000000000000000000000000000000)
             // --tokensOwned()
-            mstore(0x80, shl(0xe0, 0x6795d526)) // uintEnum(address,address,uint256,uint256)
             mstore(0x84, address())
             mstore(0xa4, oid)
             mstore(0xc4, id)
             mstore(0xe4, 1)
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
-            // delete approval
-            mstore(0x80, shl(0xe0, 0xed3dae2b)) // addressData(address,uint256,uint256,address)
+
+            // addressData(address,uint256,uint256,address)
+            mstore(0x80, 0xed3dae2b00000000000000000000000000000000000000000000000000000000)
+            // approval[id] = 0
             mstore(0x84, address())
             mstore(0xa4, 0x1)
             mstore(0xc4, id)
             mstore(0xe4, 0x0)
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+
+            // uintData(address,address,address,uint256)
+            mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000)
             // --balanceOf()
-            mstore(0x80, shl(0xe0, 0x99758426)) // uintData(address,address,address,uint256)
             mstore(0x84, address())
             mstore(0xa4, oid)
             mstore(0xc4, 0x0)
@@ -220,7 +236,8 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
 
         // 先拿数组长度
         assembly {
-            mstore(0x80, shl(0xe0, 0x82ff9d6f)) // uintEnum(address,address)
+            // uintEnum(address(), addr)
+            mstore(0x80, 0x82ff9d6f00000000000000000000000000000000000000000000000000000000)
             mstore(0x84, address())
             mstore(0xa4, addr)
             pop(staticcall(gas(), sload(0x0), 0x80, 0x84, 0x0, 0x40))
@@ -231,7 +248,8 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
 
         // 再每格插入
         assembly {
-            mstore(0x80, shl(0xe0, 0x82ff9d6f)) // uintEnum(address,address)
+            // uintEnum(address,address)
+            mstore(0x80, 0x82ff9d6f00000000000000000000000000000000000000000000000000000000)
             mstore(0x84, address())
             mstore(0xa4, addr)
             pop(staticcall(gas(), sload(0x0), 0x80, 0x44, 0xa0, mul(add(len, 0x2), 0x20)))
@@ -243,34 +261,40 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
     }
 
     //用于转移和铸币
-    function mint(address from, address to, uint id) private { // 0x668695c3
+    function mint(address from, address to, uint id) private {
         checkSuspend(from, to);
         uint bal = balanceOf(to);
 
         assembly {
             if gt(to, 0x0) {
+                // uintEnum(address(), to, id, 0x0)
+                mstore(0x80, 0x6795d52600000000000000000000000000000000000000000000000000000000)
                 // ++tokensOwned()
-                mstore(0x80, shl(0xe0, 0x6795d526)) // uintEnum(address,address,uint256,uint256)
                 mstore(0x84, address())
                 mstore(0xa4, to)
                 mstore(0xc4, id)
                 mstore(0xe4, 0x0)
                 pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+
+                // uintData(address,address,address,uint256)
+                mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000)
                 // ++balanceOf()
-                mstore(0x80, shl(0xe0, 0x99758426)) // uintData(address,address,address,uint256)
                 mstore(0x84, address())
                 mstore(0xa4, to)
                 mstore(0xc4, 0x0)
                 mstore(0xe4, add(0x1, bal))
                 pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
             }
+
+            // addressData(address(), 0x0, id, to)
+            mstore(0x80, 0xed3dae2b00000000000000000000000000000000000000000000000000000000)
             // 更新 ownerOf
-            mstore(0x80, shl(0xe0, 0xed3dae2b)) // addressData(address,uint256,uint256,address)
             mstore(0x84, address())
             mstore(0xa4, 0x0)
             mstore(0xc4, id)
             mstore(0xe4, to)
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+            
             // emit Transfer()
             log4(0x0, 0x0, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, from, to, id)
         }
@@ -288,16 +312,19 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
             }
         }
         
-        if (i == 0) mint(address(0), a, l); //铸币
+        if (i == 0) mint(address(0), a, l); // 铸币
 
         assembly {
-            if gt(i, 0) { //更新元数据详细信息
+            if gt(i, 0) { // 更新元数据详细信息
+                // count++
                 mstore(0x0, i)
                 log1(0x0, 0x20, 0xf8e1a15aba9398e019f0b49df1a4fde98ee17ae345cb5f6b5e2c27f5033e8ce7)
                 l := i
-            }             
-            //更新或铸新
-            mstore(0x80, shl(0xe0, 0xc7070b58)) // stringData(bytes32,bytes32,bytes32,bytes32,bytes32)
+            }         
+
+            // stringData(address(), l, len, str1, str2)
+            mstore(0x80, 0xc7070b5800000000000000000000000000000000000000000000000000000000)
+            // 更新或铸新
             mstore(0x84, address())
             mstore(0xa4, l)
             mstore(0xc4, mload(u))
@@ -310,7 +337,8 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
     //设置等级和价钱
     function setLevel(uint _list, address tokenAddr, uint price) external OnlyAccess {
         assembly {
-            mstore(0x80, shl(0xe0, 0x41aa4436)) // listData(address,address,uint256,address,uint256)
+            // listData(address(), address(), _list, tokenAddr, price)
+            mstore(0x80, 0x41aa443600000000000000000000000000000000000000000000000000000000)
             mstore(0x84, address())
             mstore(0xa4, address())
             mstore(0xc4, _list)
@@ -328,16 +356,20 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
     function assetify() public {
         uint l;
         assembly {         
-            //更新或铸新
+            // 更新或铸新
             l := add(sload(0x1), 0x1)
-            sstore(0x1, l)
-            mstore(0x80, shl(0xe0, 0xc7070b58)) // stringData(bytes32,bytes32,bytes32,bytes32,bytes32)
+            mstore(0x80, 0xc7070b5800000000000000000000000000000000000000000000000000000000)
+
+            // stringData(address(), l, len, str1, str2)
             mstore(0x84, address())
             mstore(0xa4, l)
             mstore(0xc4, 0x2c)
             mstore(0xe4, "QmVegGmha4L4pLPQAj7V46kQVc8EoGn")
             mstore(0x104, "wwKvbKvHbevRYD2")
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0xa4, 0x0, 0x0))
+
+            // count++
+            sstore(0x1, l)
         }
         mint(address(0), msg.sender, l);
     }
