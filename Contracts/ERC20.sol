@@ -11,8 +11,6 @@ contract ERC20 is Access, Sign {
     event Transfer(address indexed from, address indexed to, uint amt);
     event Approval(address indexed from, address indexed to, uint amt);
 
-    bytes32 _transferEvent = 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef;
-
     constructor(address did, string memory name_, string memory symbol_) {
         assembly {
             // 设置string和string.length
@@ -92,18 +90,31 @@ contract ERC20 is Access, Sign {
     }
 
     function transfer(address to, uint amt) external returns(bool val) {
-        uint baf = balanceOf(msg.sender);
-        uint bat = balanceOf(to);
+        checkSuspend(msg.sender, to);
         assembly {
+            // uintData(address,address,address)
+            mstore(0x80, shl(0xe0, 0x4c200b10))
+            mstore(0x84, address())
+            mstore(0xc4, 0x0)
+            // balanceOf(msg.sender)
+            mstore(0xa4, caller())
+            pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
+            let baf := mload(0x0)
+            // balanceOf(to)
+            mstore(0xa4, to)
+            pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
+            let bat := mload(0x0)
+            //require(balanceOf(msg.sender) >= msg.sender)
             if gt(amt, baf) {
                 mstore(0x0, shl(0xe0, 0x5b4fb734))
                 mstore(0x4, 0x9)
                 revert(0x0, 0x24)
             }
-            // -balanceOf(from)
-            mstore(0x80, shl(0xe0, 0x99758426)) // uintData(address,address,address,uint256)
+            // uintData(address,address,address,uint256)
+            mstore(0x80, shl(0xe0, 0x99758426)) 
             mstore(0x84, address())
             mstore(0xa4, caller())
+            // -balanceOf(from)
             mstore(0xc4, 0x0)
             mstore(0xe4, sub(baf, amt))
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
@@ -114,15 +125,32 @@ contract ERC20 is Access, Sign {
             // emit Transfer(address,address,uint256)
             mstore(0x0, amt)
             log3(0x0, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, caller(), to)
+            // return true
             val := 1
         }
     }
 
     function transferFrom(address from, address to, uint amt) public returns(bool val) {
-        (uint approveAmt, uint balanceFrom) = (allowance(from, msg.sender), balanceOf(from));
+        checkSuspend(from, to);
         assembly {
-            let isApproved := iszero(gt(amt, approveAmt))
-            // require(balanceFrom >= amt && (from == msg.sender || isApproved), "0x9 & 0xa")
+            // uintData(address,address,address)
+            mstore(0x80, shl(0xe0, 0x4c200b10)) 
+            mstore(0x84, address())
+            mstore(0xc4, 0x0)
+            // balanceOf(to)
+            mstore(0xa4, to)
+            pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
+            let bat := mload(0x0)
+            // balanceOf(from)
+            mstore(0xa4, from)
+            pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
+            let baf := mload(0x0)
+            // allowance(from, msg.sender)
+            mstore(0xa4, from)
+            mstore(0xc4, caller())
+            pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
+            let apa := mload(0x0)
+            // uintData(address,address,address)
             function x(con, cod) {
                 if gt(con, 0x0) {
                     mstore(0x0, shl(0xe0, 0x5b4fb734))
@@ -130,38 +158,44 @@ contract ERC20 is Access, Sign {
                     revert(0x0, 0x24)
                 }
             }
-            x(gt(amt, balanceFrom), 0x9)
-            x(and(iszero(eq(from, caller())), iszero(isApproved)), 0xa)
-            // -balanceOf(from)
-            mstore(0x80, shl(0xe0, 0x99758426)) // uintData(address,address,address,uint256)
+            // require(balanceFrom >= amt)
+            x(gt(amt, baf), 0x9)
+            // require(isApproved)
+            x(gt(amt, apa), 0xa)
+            // uintData(address,address,address,uint256)
+            mstore(0x80, shl(0xe0, 0x99758426)) 
             mstore(0x84, address())
+            // -allowance(from, to)
             mstore(0xa4, from)
-            mstore(0xc4, 0x0)
-            mstore(0xe4, sub(balanceFrom, amt))
-            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
-            // -allowance()
-            if gt(isApproved, 0) {
-                approveAmt := sub(approveAmt, amt)
-            }
-            if iszero(isApproved) {
-                approveAmt := 0x0
-            }
             mstore(0xc4, caller())
-            mstore(0xe4, approveAmt)
+            mstore(0xe4, sub(apa, amt))
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+            // -balanceOf(from)
+            mstore(0xc4, 0x0)
+            mstore(0xe4, sub(baf, amt))
+            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+            // +balanceOf(to)
+            mstore(0xa4, to)
+            mstore(0xe4, add(amt, bat))
+            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+            // emit Transfer(address,address,uint256)
+            mstore(0x0, amt)
+            log3(0x0, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, from, to)
             //return true
             val := 1
         }
-        // 这样叫比较便宜
-        _transfer(from, to, amt);
     }
 
-    //方便转移和铸币
-    function _transfer(address from, address to, uint amt) private {
-        checkSuspend(from, to);
+    //铸币代币，只允许有访问权限的地址
+    function mint(address to, uint amt) public OnlyAccess {
+        _mint(to, amt);
+    }
+
+    function _mint(address to, uint amt) private {
         uint bal = balanceOf(to);
-        
         assembly {
+            //totalSupply += amt
+            sstore(0x5, add(amt, sload(0x5)))
             // +balanceOf(to)
             mstore(0x80, shl(0xe0, 0x99758426)) // uintData(address,address,address,uint256)
             mstore(0x84, address())
@@ -170,21 +204,9 @@ contract ERC20 is Access, Sign {
             mstore(0xe4, add(amt, bal))
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
             // emit Transfer(address,address,uint256)
-            mstore(0x0, amt)
-            log3(0x0, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, from, to)
+            mstore(0x0, amt) 
+            log3(0x0, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, 0x0, to)
         }
-    }
-
-    //铸币代币，只允许有访问权限的地址
-    function mint(address addr, uint amt) public OnlyAccess {
-        _mint(addr, amt);
-    }
-
-    function _mint(address addr, uint amt) private {
-        assembly { //totalSupply += amt;
-            sstore(0x5, add(amt, sload(0x5)))
-        }
-        _transfer(address(0), addr, amt); //调用标准函数
     }
 
     //烧毁代币，任何人都可以烧毁
@@ -196,9 +218,9 @@ contract ERC20 is Access, Sign {
     }
 
     //利用签名人来哈希信息
-    function withdraw(address addr, uint amt, uint8 v, bytes32 r, bytes32 s) external {
-        check(addr, v, r, s);
-        _mint(addr, amt);
+    function withdraw(address to, uint amt, uint8 v, bytes32 r, bytes32 s) external {
+        check(to, v, r, s);
+        _mint(to, amt);
     }
 
     function DID() external view returns(address val){
