@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.10;
+// SPDX-License-Identifier: None
+pragma solidity ^0.8.18;
 
 import "./UUPS.sol";
 
 contract Pizza is Initializable, UUPSUpgradeable, OwnableUpgradeable {
-   uint256 public slices;
+   uint public slices;
 
-   function initialize(uint256 _sliceCount) public initializer {
+   function initialize(uint _sliceCount) public initializer {
        slices = _sliceCount;
        __Ownable_init();
    }

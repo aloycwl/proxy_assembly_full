@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: None
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.18;
 
 interface IERC1967Upgradeable {
     event Upgraded(address indexed implementation);
@@ -8,14 +8,51 @@ interface IERC1967Upgradeable {
 }
 
 interface IERC1822ProxiableUpgradeable {
-    function proxiableUUID() external view returns (bytes32);
+    function proxiableUUID() external view returns(bytes32);
+}
+
+interface IBeaconUpgradeable {
+    function implementation() external view returns(address);
+}
+
+library StorageSlotUpgradeable {
+    struct AddressSlot { address value; }
+    struct BooleanSlot { bool value; }
+    struct Bytes32Slot { bytes32 value; }
+    struct Uint256Slot { uint value; }
+    struct StringSlot { string value; }
+    struct BytesSlot { bytes value; }
+    function getAddressSlot(bytes32 slot) internal pure returns (AddressSlot storage r) {
+        assembly { r.slot := slot }
+    }
+    function getBooleanSlot(bytes32 slot) internal pure returns (BooleanSlot storage r) {
+        assembly { r.slot := slot }
+    }
+    function getBytes32Slot(bytes32 slot) internal pure returns (Bytes32Slot storage r) {
+        assembly { r.slot := slot }
+    }
+    function getUint256Slot(bytes32 slot) internal pure returns (Uint256Slot storage r) {
+        assembly { r.slot := slot }
+    }
+    function getStringSlot(bytes32 slot) internal pure returns (StringSlot storage r) {
+        assembly { r.slot := slot }
+    }
+    function getStringSlot(string storage store) internal pure returns (StringSlot storage r) {
+        assembly { r.slot := store.slot }
+    }
+    function getBytesSlot(bytes32 slot) internal pure returns (BytesSlot storage r) {
+        assembly { r.slot := slot }
+    }
+    function getBytesSlot(bytes storage store) internal pure returns (BytesSlot storage r) {
+        assembly { r.slot := store.slot }
+    }
 }
 
 library AddressUpgradeable {
     function isContract(address account) internal view returns (bool) {
         return account.code.length > 0;
     }
-    function sendValue(address payable recipient, uint256 amount) internal {
+    function sendValue(address payable recipient, uint amount) internal {
         require(address(this).balance >= amount, "Address: insufficient balance");
         (bool success, ) = recipient.call{value: amount}("");
         require(success, "Address: unable to send value, recipient may have reverted");
@@ -26,10 +63,10 @@ library AddressUpgradeable {
     function functionCall(address target, bytes memory data, string memory errorMessage) internal returns (bytes memory) {
         return functionCallWithValue(target, data, 0, errorMessage);
     }
-    function functionCallWithValue(address target, bytes memory data, uint256 value) internal returns (bytes memory) {
+    function functionCallWithValue(address target, bytes memory data, uint value) internal returns (bytes memory) {
         return functionCallWithValue(target, data, value, "Address: low-level call with value failed");
     }
-    function functionCallWithValue(address target, bytes memory data, uint256 value, string memory errorMessage) internal returns (bytes memory) {
+    function functionCallWithValue(address target, bytes memory data, uint value, string memory errorMessage) internal returns (bytes memory) {
         require(address(this).balance >= value, "Address: insufficient balance for call");
         (bool success, bytes memory returndata) = target.call{value: value}(data);
         return verifyCallResultFromTarget(target, success, returndata, errorMessage);
@@ -74,10 +111,8 @@ abstract contract Initializable {
     event Initialized(uint8 version);
     modifier initializer() {
         bool isTopLevelCall = !_initializing;
-        require(
-            (isTopLevelCall && _initialized < 1) || (!AddressUpgradeable.isContract(address(this)) && _initialized == 1),
-            "Initializable: contract is already initialized"
-        );
+        require((isTopLevelCall && _initialized < 1) || (!AddressUpgradeable.isContract(address(this)) && _initialized == 1),
+            "Initializable: contract is already initialized");
         _initialized = 1;
         if (isTopLevelCall) _initializing = true;
         _;
@@ -122,7 +157,7 @@ abstract contract ContextUpgradeable is Initializable {
     function _msgData() internal view virtual returns (bytes calldata) {
         return msg.data;
     }
-    uint256[50] private __gap;
+    uint[50] private __gap;
 }
 
 abstract contract OwnableUpgradeable is Initializable, ContextUpgradeable {
@@ -156,44 +191,7 @@ abstract contract OwnableUpgradeable is Initializable, ContextUpgradeable {
         _owner = newOwner;
         emit OwnershipTransferred(oldOwner, newOwner);
     }
-    uint256[49] private __gap;
-}
-
-library StorageSlotUpgradeable {
-    struct AddressSlot { address value; }
-    struct BooleanSlot { bool value; }
-    struct Bytes32Slot { bytes32 value; }
-    struct Uint256Slot { uint256 value; }
-    struct StringSlot { string value; }
-    struct BytesSlot { bytes value; }
-    function getAddressSlot(bytes32 slot) internal pure returns (AddressSlot storage r) {
-        assembly { r.slot := slot }
-    }
-    function getBooleanSlot(bytes32 slot) internal pure returns (BooleanSlot storage r) {
-        assembly { r.slot := slot }
-    }
-    function getBytes32Slot(bytes32 slot) internal pure returns (Bytes32Slot storage r) {
-        assembly { r.slot := slot }
-    }
-    function getUint256Slot(bytes32 slot) internal pure returns (Uint256Slot storage r) {
-        assembly { r.slot := slot }
-    }
-    function getStringSlot(bytes32 slot) internal pure returns (StringSlot storage r) {
-        assembly { r.slot := slot }
-    }
-    function getStringSlot(string storage store) internal pure returns (StringSlot storage r) {
-        assembly { r.slot := store.slot }
-    }
-    function getBytesSlot(bytes32 slot) internal pure returns (BytesSlot storage r) {
-        assembly { r.slot := slot }
-    }
-    function getBytesSlot(bytes storage store) internal pure returns (BytesSlot storage r) {
-        assembly { r.slot := store.slot }
-    }
-}
- 
-interface IBeaconUpgradeable {
-    function implementation() external view returns (address);
+    uint[49] private __gap;
 }
 
 abstract contract ERC1967UpgradeUpgradeable is Initializable, IERC1967Upgradeable {
@@ -246,17 +244,15 @@ abstract contract ERC1967UpgradeUpgradeable is Initializable, IERC1967Upgradeabl
     function _setBeacon(address newBeacon) private {
         require(AddressUpgradeable.isContract(newBeacon), "ERC1967: new beacon is not a contract");
         require(AddressUpgradeable.isContract(IBeaconUpgradeable(newBeacon).implementation()),
-            "ERC1967: beacon implementation is not a contract"
-        );
+            "ERC1967: beacon implementation is not a contract");
         StorageSlotUpgradeable.getAddressSlot(_BEACON_SLOT).value = newBeacon;
     }
     function _upgradeBeaconToAndCall(address newBeacon, bytes memory data, bool forceCall) internal {
         _setBeacon(newBeacon);
         emit BeaconUpgraded(newBeacon);
         if (data.length > 0 || forceCall) AddressUpgradeable.functionDelegateCall(IBeaconUpgradeable(newBeacon).implementation(), data);
-        
     }
-    uint256[50] private __gap;
+    uint[50] private __gap;
 }
 
 abstract contract UUPSUpgradeable is Initializable, IERC1822ProxiableUpgradeable, ERC1967UpgradeUpgradeable {
@@ -284,5 +280,5 @@ abstract contract UUPSUpgradeable is Initializable, IERC1822ProxiableUpgradeable
         _upgradeToAndCallUUPS(newImplementation, data, true);
     }
     function _authorizeUpgrade(address newImplementation) internal virtual;
-    uint256[50] private __gap;
+    uint[50] private __gap;
 }
