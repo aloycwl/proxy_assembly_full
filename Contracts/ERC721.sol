@@ -77,7 +77,7 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
         }
     }
 
-    function ownerOf(uint id) public view returns(address val) { // 0x6352211e
+    function ownerOf(uint id) external view returns(address val) { // 0x6352211e
         assembly {
             // addressData(address(), 0x0, id)
             mstore(0x80, 0x8c66f12800000000000000000000000000000000000000000000000000000000) 
@@ -89,7 +89,7 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
         }
     }
 
-    function balanceOf(address addr) public view returns (uint val) {
+    function balanceOf(address addr) external view returns (uint val) {
         assembly {
             // uintData(address(), addr, 0x0)
             mstore(0x80, 0x4c200b1000000000000000000000000000000000000000000000000000000000)
@@ -117,7 +117,7 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
         }
     }
 
-    function getApproved(uint id) public view returns(address val) {
+    function getApproved(uint id) external view returns(address val) {
         assembly {
             // addressData(address(), 0x1, id)
             mstore(0x80, 0x8c66f12800000000000000000000000000000000000000000000000000000000)
@@ -320,63 +320,56 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
         checkSuspend(oid, to);
     }
 
-    //用于转移和铸币
-    function mint(address from, address to, uint id) private {
-        checkSuspend(from, to);
-        uint bal = balanceOf(to);
-
+    //铸造功能，需要先决条件，也用来升级或合并
+    function assetify(uint l, address a, uint i, string memory u, uint8 v, bytes32 r, bytes32 s) external payable {
+        pay(address(this), l, this.owner(), 0); // 若金额设定就支付
+        checkSuspend(msg.sender, a); // 查有被拉黑不
+        check(a, v, r, s); // 查签名
+        
         assembly {
-            if gt(to, 0x0) {
+            if iszero(i) { // 铸币
+                // count++
+                l := add(sload(0x1), 0x1)
+                sstore(0x1, l)
+
                 // uintEnum(address(), to, id, 0x0)
                 mstore(0x80, 0x6795d52600000000000000000000000000000000000000000000000000000000)
                 // ++tokensOwned()
                 mstore(0x84, address())
-                mstore(0xa4, to)
-                mstore(0xc4, id)
+                mstore(0xa4, a)
+                mstore(0xc4, l)
                 mstore(0xe4, 0x0)
                 pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
 
-                // uintData(address,address,address,uint256)
-                mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000)
-                // ++balanceOf()
+                // uintData(address(), addr, 0x0)
+                mstore(0x80, 0x4c200b1000000000000000000000000000000000000000000000000000000000)
+                // balanceOf(to)
                 mstore(0x84, address())
-                mstore(0xa4, to)
+                mstore(0xa4, a)
                 mstore(0xc4, 0x0)
-                mstore(0xe4, add(0x1, bal))
+                pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
+
+                // uintData(address(), msg.sender, 0, balanceOf(msg.sender))
+                mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000)
+                // ++balanceOf(msg.sender)
+                mstore(0x84, address())
+                mstore(0xa4, a)
+                mstore(0xc4, 0x0)
+                mstore(0xe4, add(0x1, mload(0x0)))
                 pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+
+                // ownerOf[id] = to
+                mstore(0xa4, 0x0)
+                mstore(0xc4, l)
+                mstore(0xe4, a)
+                pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+                
+                // emit Transfer()
+                log4(0x0, 0x0, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, 0x0, a, l)
             }
 
-            // uintData(address(), 0x0, id, to)
-            mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000)
-            // 更新 ownerOf
-            mstore(0x84, address())
-            mstore(0xa4, 0x0)
-            mstore(0xc4, id)
-            mstore(0xe4, to)
-            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
-            
-            // emit Transfer()
-            log4(0x0, 0x0, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, from, to, id)
-        }
-    }
-
-    //铸造功能，需要先决条件，也用来升级或合并
-    function assetify(uint l, address a, uint i, string memory u, uint8 v, bytes32 r, bytes32 s) external payable {
-        pay(address(this), l, this.owner(), 0); //若金额设定就支付
-        check(a, v, r, s);
-        
-        assembly {
-            if iszero(i) {
-                l := add(sload(0x1), 0x1)
-                sstore(0x1, l)
-            }
-        }
-        
-        if (i == 0) mint(address(0), a, l); // 铸币
-
-        assembly {
-            if gt(i, 0) { // 更新元数据详细信息
-                // count++
+            if gt(i, 0) {  // 更新
+                // emit MetadataUpdate(i)
                 mstore(0x0, i)
                 log1(0x0, 0x20, 0xf8e1a15aba9398e019f0b49df1a4fde98ee17ae345cb5f6b5e2c27f5033e8ce7)
                 l := i
@@ -384,7 +377,7 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
 
             // stringData(address(), l, len, str1, str2)
             mstore(0x80, 0xc7070b5800000000000000000000000000000000000000000000000000000000)
-            // 更新或铸新
+            // tokenURI[l] = u
             mstore(0x84, address())
             mstore(0xa4, l)
             mstore(0xc4, mload(u))
@@ -430,7 +423,41 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
 
             // count++
             sstore(0x1, l)
+
+            // uintEnum(address(), to, id, 0x0)
+            mstore(0x80, 0x6795d52600000000000000000000000000000000000000000000000000000000)
+            // ++tokensOwned()
+            mstore(0x84, address())
+            mstore(0xa4, caller())
+            mstore(0xc4, l)
+            mstore(0xe4, 0x0)
+            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+
+            // uintData(address(), addr, 0x0)
+            mstore(0x80, 0x4c200b1000000000000000000000000000000000000000000000000000000000)
+            // balanceOf(to)
+            mstore(0x84, address())
+            mstore(0xa4, caller())
+            mstore(0xc4, 0x0)
+            pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
+
+            // uintData(address(), msg.sender, 0, balanceOf(msg.sender))
+            mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000)
+            // ++balanceOf(msg.sender)
+            mstore(0x84, address())
+            mstore(0xa4, caller())
+            mstore(0xc4, 0x0)
+            mstore(0xe4, add(0x1, mload(0x0)))
+            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+
+            // ownerOf[id] = to
+            mstore(0xa4, 0x0)
+            mstore(0xc4, l)
+            mstore(0xe4, caller())
+            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+            
+            // emit Transfer()
+            log4(0x0, 0x0, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, 0x0, caller(), l)
         }
-        mint(address(0), msg.sender, l);
     }
 }
