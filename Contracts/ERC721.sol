@@ -32,8 +32,8 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
     event MetadataUpdate    (uint id);
 
     //ERC20标准函数 
-    //constructor(address did, string memory name_, string memory symbol_) {
-    constructor() {
+    constructor(address did, string memory name_, string memory symbol_) {
+    /*constructor() {
         address did = 0xd9145CCE52D386f254917e481eB44e9943F39138;
         string memory name_ = "";
         string memory symbol_ = "";/**/
@@ -279,8 +279,8 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
             mstore(0xe4, 0x1)
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
 
+            // ++tokensOwned()
             if gt(to, 0x0) {
-                // ++tokensOwned()
                 mstore(0xa4, to)
                 mstore(0xe4, 0x0)
                 pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
@@ -307,8 +307,8 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
             mstore(0xe4, sub(baf, 0x1))
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
 
+            // ++balanceOf(to)
             if gt(to, 0x0) {
-                // ++balanceOf(to)
                 mstore(0xa4, to)
                 mstore(0xe4, add(0x1, bat))
                 pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
