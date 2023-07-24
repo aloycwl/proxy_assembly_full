@@ -16,7 +16,7 @@ contract Market is Access, DynamicPrice {
         }
     }    
 
-    // gas: 99294/98926 0x0000000000000000000000000000000000000001
+    // gas: 98539
     function list(address contAddr, uint id, uint price, address tokenAddr) external {
         assembly {
             // ownerOf(id)
@@ -62,13 +62,13 @@ contract Market is Access, DynamicPrice {
         }
     }
 
-    // 币或代币
+    // gas: 269403/292730
     function buy(address contAddr, uint id) external payable {
         address from;
         uint fee;
 
         assembly {
-            // listData(address(), contAddr, tokenId)
+            // listData(address(), contAddr, id)
             mstore(0x80, 0xdf0188db00000000000000000000000000000000000000000000000000000000)
             mstore(0x84, address())
             mstore(0xa4, contAddr)
@@ -82,7 +82,7 @@ contract Market is Access, DynamicPrice {
                 revert(0x0, 0x24)
             }
 
-            // ownerOf(uint256)
+            // ownerOf(id)
             mstore(0x80, 0x6352211e00000000000000000000000000000000000000000000000000000000)
             mstore(0x84, id)
             pop(staticcall(gas(), contAddr, 0x80, 0x24, 0x0, 0x20))
