@@ -32,11 +32,11 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
     event MetadataUpdate    (uint id);
 
     //ERC20标准函数 
-    constructor(address did, string memory name_, string memory symbol_) {
-    /*constructor() {
-        address did = 0xB57ee0797C3fc0205714a577c02F7205bB89dF30;
+    //constructor(address did, string memory name_, string memory symbol_) {
+    constructor() {
+        address did = 0xd9145CCE52D386f254917e481eB44e9943F39138;
         string memory name_ = "";
-        string memory symbol_ = "";*/
+        string memory symbol_ = "";/**/
         assembly {
             sstore(0x0, did)
             sstore(0x2, mload(name_))
@@ -89,69 +89,6 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
         }
     }
 
-    function getApproved(uint id) public view returns(address val) {
-        assembly {
-            // addressData(address(), 0x1, id)
-            mstore(0x80, 0x8c66f12800000000000000000000000000000000000000000000000000000000)
-            mstore(0x84, address())
-            mstore(0xa4, 0x1)
-            mstore(0xc4, id)
-            pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
-            val := mload(0x0)
-        }
-    }
-
-    function isApprovedForAll(address from, address to) public view returns(bool val) { // 0xe985e9c5
-        assembly {
-            // uintData(address(), from, to)
-            mstore(0x80, 0x4c200b1000000000000000000000000000000000000000000000000000000000)
-            mstore(0x84, address())
-            mstore(0xa4, from)
-            mstore(0xc4, to)
-            pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
-            val := mload(0x0)
-        }
-    }
-
-    function approve(address to, uint id) external { // 0x095ea7b3
-        address oid = ownerOf(id);
-        bool bol = isApprovedForAll(oid, msg.sender);
-        assembly {
-            // require(msg.sender == ownerOf(id) || isApprovedForAll(ownerOf(id), msg.sender))
-            if and(iszero(eq(caller(), oid)), iszero(bol)) {
-                mstore(0x0, shl(0xe0, 0x5b4fb734))
-                mstore(0x4, 0xb)
-                revert(0x0, 0x24)
-            }
-
-            // addressData(address(), 0x1, id, to)
-            mstore(0x80, 0xed3dae2b00000000000000000000000000000000000000000000000000000000)
-            mstore(0x84, address())
-            mstore(0xa4, 0x1)
-            mstore(0xc4, id)
-            mstore(0xe4, to)
-            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
-
-            // emit Approval()
-            log4(0x0, 0x0, 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925, oid, to, id)
-        }
-    }
-
-    function setApprovalForAll(address to, bool bol) external {
-        assembly {
-            // uintData(address(), caller(), to, bol)
-            mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000)
-            mstore(0x84, address())
-            mstore(0xa4, caller())
-            mstore(0xc4, to)
-            mstore(0xe4, bol)
-            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
-            // emit ApprovalForAll()
-            mstore(0x0, bol)
-            log3(0x0, 0x20, 0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31, origin(), to)
-        }
-    }
-
     function balanceOf(address addr) public view returns (uint val) {
         assembly {
             // uintData(address(), addr, 0x0)
@@ -164,7 +101,7 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
         }
     }
 
-    function tokenURI(uint id) public view returns (string memory) {
+    function tokenURI(uint id) external view returns (string memory) {
         assembly {
             // stringData(address(), id)
             mstore(0x80, 0x99eec06400000000000000000000000000000000000000000000000000000000)
@@ -180,57 +117,31 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
         }
     }
 
-    function safeTransferFrom(address from, address to, uint id) external {
-        transferFrom(from, to, id); 
-    }
-
-    function safeTransferFrom(address from, address to, uint id, bytes memory) external {
-        transferFrom(from, to, id); 
-    }
-
-    function transferFrom(address, address to, uint id) public { // 0x23b872dd
-        (address oid, address app) = (ownerOf(id), getApproved(id));
-        uint bal = balanceOf(oid);
-        
+    function getApproved(uint id) public view returns(address val) {
         assembly {
-            // require(所有者 || 被授权, "0c")
-            if and(iszero(eq(app, to)), iszero(eq(oid, caller()))) {
-                mstore(0x0, shl(0xe0, 0x5b4fb734))
-                mstore(0x4, 0xc)
-                revert(0x0, 0x24)
-            }
-
-            // uintEnum(address,address,uint256,uint256)
-            mstore(0x80, 0x6795d52600000000000000000000000000000000000000000000000000000000)
-            // --tokensOwned()
-            mstore(0x84, address())
-            mstore(0xa4, oid)
-            mstore(0xc4, id)
-            mstore(0xe4, 1)
-            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
-
-            // addressData(address,uint256,uint256,address)
-            mstore(0x80, 0xed3dae2b00000000000000000000000000000000000000000000000000000000)
-            // approval[id] = 0
+            // addressData(address(), 0x1, id)
+            mstore(0x80, 0x8c66f12800000000000000000000000000000000000000000000000000000000)
             mstore(0x84, address())
             mstore(0xa4, 0x1)
             mstore(0xc4, id)
-            mstore(0xe4, 0x0)
-            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
-
-            // uintData(address,address,address,uint256)
-            mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000)
-            // --balanceOf()
-            mstore(0x84, address())
-            mstore(0xa4, oid)
-            mstore(0xc4, 0x0)
-            mstore(0xe4, sub(bal, 0x1))
-            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+            pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
+            val := mload(0x0)
         }
-        mint(oid, to, id);
     }
 
-    //获取地址拥有的所有代币的数组
+    function isApprovedForAll(address from, address to) external view returns(bool val) { // 0xe985e9c5
+        assembly {
+            // uintData(address(), from, to)
+            mstore(0x80, 0x4c200b1000000000000000000000000000000000000000000000000000000000)
+            mstore(0x84, address())
+            mstore(0xa4, from)
+            mstore(0xc4, to)
+            pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
+            val := mload(0x0)
+        }
+    }
+
+    // 获取地址拥有的所有代币的数组
     function tokensOwned(address addr) external view returns(uint[] memory val) {
         uint len;
 
@@ -248,7 +159,7 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
 
         // 再每格插入
         assembly {
-            // uintEnum(address,address)
+            // uintEnum(address(), addr)
             mstore(0x80, 0x82ff9d6f00000000000000000000000000000000000000000000000000000000)
             mstore(0x84, address())
             mstore(0xa4, addr)
@@ -258,6 +169,155 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
                 mstore(add(val, mul(i, 0x20)), mload(add(0xa0, mul(add(i, 0x1), 0x20))))
             }
         }
+    }
+
+    // gas: 67909
+    function approve(address to, uint id) external { // 0x095ea7b3
+        assembly {
+            // uintData(address(), 0x0, id)
+            mstore(0x80, 0x4c200b1000000000000000000000000000000000000000000000000000000000)
+            // ownerOf(id)
+            mstore(0x84, address())
+            mstore(0xa4, 0x0)
+            mstore(0xc4, id)
+            pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
+            let oid := mload(0x0)
+
+            // isApprovedForAll(oid, msg.sender)
+            mstore(0xa4, oid)
+            mstore(0xc4, caller())
+            pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
+
+            // require(msg.sender == ownerOf(id) || isApprovedForAll(ownerOf(id), msg.sender))
+            if and(iszero(eq(caller(), oid)), iszero(mload(0x0))) {
+                mstore(0x0, shl(0xe0, 0x5b4fb734))
+                mstore(0x4, 0xb)
+                revert(0x0, 0x24)
+            }
+
+            // uintData(address(), 0x1, id, to)
+            mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000)
+            mstore(0x84, address())
+            mstore(0xa4, 0x1)
+            mstore(0xc4, id)
+            mstore(0xe4, to)
+            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+
+            // emit Approval()
+            log4(0x0, 0x0, 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925, oid, to, id)
+        }
+    }
+
+    // gas: 61095
+    function setApprovalForAll(address to, bool bol) external {
+        assembly {
+            // uintData(address(), caller(), to, bol)
+            mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000)
+            mstore(0x84, address())
+            mstore(0xa4, caller())
+            mstore(0xc4, to)
+            mstore(0xe4, bol)
+            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+
+            // emit ApprovalForAll()
+            mstore(0x0, bol)
+            log3(0x0, 0x20, 0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31, origin(), to)
+        }
+    }
+
+    function safeTransferFrom(address from, address to, uint id) external {
+        transferFrom(from, to, id); 
+    }
+
+    function safeTransferFrom(address from, address to, uint id, bytes memory) external {
+        transferFrom(from, to, id); 
+    }
+
+    // gas: 165100
+    function transferFrom(address, address to, uint id) public { // 0x23b872dd
+        address oid;
+
+        assembly {
+            // uintData(address(), addr, 0x0)
+            mstore(0x80, 0x4c200b1000000000000000000000000000000000000000000000000000000000)
+            // ownerOf(id)
+            mstore(0x84, address())
+            mstore(0xa4, 0x0)
+            mstore(0xc4, id)
+            pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
+            oid := mload(0x0)
+
+            // balanceOf(oid)
+            mstore(0xa4, oid)
+            mstore(0xc4, 0x0)
+            pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
+            let baf := mload(0x0)
+
+            // balanceOf(to)
+            mstore(0xa4, to)
+            pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
+            let bat := mload(0x0)
+
+            // getApproved(id)
+            mstore(0xa4, 0x1)
+            mstore(0xc4, id)
+            pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
+
+            // require(所有者 || 被授权, "0c")
+            if and(iszero(eq(mload(0x0), to)), iszero(eq(oid, caller()))) {
+                mstore(0x0, shl(0xe0, 0x5b4fb734))
+                mstore(0x4, 0xc)
+                revert(0x0, 0x24)
+            }
+
+            // uintEnum(address(), oid, id, 1)
+            mstore(0x80, 0x6795d52600000000000000000000000000000000000000000000000000000000)
+            // --tokensOwned()
+            mstore(0x84, address())
+            mstore(0xa4, oid)
+            mstore(0xc4, id)
+            mstore(0xe4, 0x1)
+            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+
+            if gt(to, 0x0) {
+                // ++tokensOwned()
+                mstore(0xa4, to)
+                mstore(0xe4, 0x0)
+                pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+            }
+
+            // uintData(address(), 1, id, 0)
+            mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000)
+            // approval[id] = 0
+            mstore(0x84, address())
+            mstore(0xa4, 0x1)
+            mstore(0xc4, id)
+            mstore(0xe4, 0x0)
+            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+
+            // ownerOf[id] = to
+            mstore(0xa4, 0x0)
+            mstore(0xc4, id)
+            mstore(0xe4, to)
+            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+
+            // --balanceOf(oid)
+            mstore(0xa4, oid)
+            mstore(0xc4, 0x0)
+            mstore(0xe4, sub(baf, 0x1))
+            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+
+            if gt(to, 0x0) {
+                // ++balanceOf(to)
+                mstore(0xa4, to)
+                mstore(0xe4, add(0x1, bat))
+                pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+            }
+
+            // emit Transfer()
+            log4(0x0, 0x0, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, oid, to, id)
+        }
+        checkSuspend(oid, to);
     }
 
     //用于转移和铸币
@@ -286,8 +346,8 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
                 pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
             }
 
-            // addressData(address(), 0x0, id, to)
-            mstore(0x80, 0xed3dae2b00000000000000000000000000000000000000000000000000000000)
+            // uintData(address(), 0x0, id, to)
+            mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000)
             // 更新 ownerOf
             mstore(0x84, address())
             mstore(0xa4, 0x0)
@@ -353,7 +413,7 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
     /*** 纯测试，实时部署前得删 ||| 纯测试，实时部署前得删 ||| 纯测试，实时部署前得删 ***/
     /*** 纯测试，实时部署前得删 ||| 纯测试，实时部署前得删 ||| 纯测试，实时部署前得删 ***/
     /*** 纯测试，实时部署前得删 ||| 纯测试，实时部署前得删 ||| 纯测试，实时部署前得删 ***/
-    function assetify() public {
+    function assetify() external {
         uint l;
         assembly {         
             // 更新或铸新
@@ -363,7 +423,7 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
             // stringData(address(), l, len, str1, str2)
             mstore(0x84, address())
             mstore(0xa4, l)
-            mstore(0xc4, 0x2c)
+            mstore(0xc4, 0x2f)
             mstore(0xe4, "QmVegGmha4L4pLPQAj7V46kQVc8EoGn")
             mstore(0x104, "wwKvbKvHbevRYD2")
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0xa4, 0x0, 0x0))
