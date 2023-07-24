@@ -16,34 +16,35 @@ contract Market is Access, DynamicPrice {
         }
     }    
 
-    // 卖功能，需要先设置NFT合约的认可
-    function list(address contAddr, uint tokenId, uint price, address tokenAddr) external {
+    // gas: 99294/98926 0x0000000000000000000000000000000000000001
+    function list(address contAddr, uint id, uint price, address tokenAddr) external {
         assembly {
-            function x(con, cod) { // Error(bytes32)
-                if iszero(con) {
-                    mstore(0x0, shl(0xe0, 0x5b4fb734))
-                    mstore(0x4, cod)
-                    revert(0x0, 0x24)
-                }
-            }
-
-            // ownerOf(uint256)
-            mstore(0x80, 0x8c66f12800000000000000000000000000000000000000000000000000000000)
-            mstore(0x84, tokenId)
+            // ownerOf(id)
+            mstore(0x80, 0x6352211e00000000000000000000000000000000000000000000000000000000)
+            mstore(0x84, id)
             pop(staticcall(gas(), contAddr, 0x80, 0x24, 0x0, 0x20))
 
             // require(ownerOf(tokenId) == msg.sender, 0xf)
-            x(eq(mload(0x0), caller()), 0xf)
+            if iszero(eq(mload(0x0), caller())) {
+                mstore(0x0, shl(0xe0, 0x5b4fb734))
+                mstore(0x4, 0xf)
+                revert(0x0, 0x24)
+            }
 
-            // 币地址0 = 下架
+            // tokenAddr > 0
             if gt(tokenAddr, 0x0) {
                 // isApprovedForAll(address,address)
                 mstore(0x80, 0xe985e9c500000000000000000000000000000000000000000000000000000000)
                 mstore(0x84, caller())
                 mstore(0xa4, address())
                 pop(staticcall(gas(), contAddr, 0x80, 0x44, 0x0, 0x20))
+                
                 // require(isApprovedForAll(msg.sender, address(this)), 0x10)
-                x(mload(0x0), 0x10)
+                if iszero(mload(0x0)) {
+                    mstore(0x0, shl(0xe0, 0x5b4fb734))
+                    mstore(0x4, 0x10)
+                    revert(0x0, 0x24)
+                }
             }
 
             // listData(address(), contAddr, tokenId, tokenAddr, price)
@@ -51,7 +52,7 @@ contract Market is Access, DynamicPrice {
             // 更新
             mstore(0x84, address())
             mstore(0xa4, contAddr)
-            mstore(0xc4, tokenId)
+            mstore(0xc4, id)
             mstore(0xe4, tokenAddr)
             mstore(0x104, price)
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0xa4, 0x0, 0x0))

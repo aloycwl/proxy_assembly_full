@@ -15,5 +15,4 @@ contract TestCall {
             val := shl(0x9c, 0x1)
         }
     }
-
 }
