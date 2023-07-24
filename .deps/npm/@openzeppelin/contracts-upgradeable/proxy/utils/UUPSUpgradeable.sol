@@ -3,110 +3,132 @@
 
 pragma solidity ^0.8.0;
 
-import "../../interfaces/draft-IERC1822Upgradeable.sol";
-import "../ERC1967/ERC1967UpgradeUpgradeable.sol";
 import "./Initializable.sol";
 
-/**
- * @dev An upgradeability mechanism designed for UUPS proxies. The functions included here can perform an upgrade of an
- * {ERC1967Proxy}, when this contract is set as the implementation behind such a proxy.
- *
- * A security mechanism ensures that an upgrade does not turn off upgradeability accidentally, although this risk is
- * reinstated if the upgrade retains upgradeability but removes the security mechanism, e.g. by replacing
- * `UUPSUpgradeable` with a custom implementation of upgrades.
- *
- * The {_authorizeUpgrade} function must be overridden to include access restriction to the upgrade mechanism.
- *
- * _Available since v4.1._
- */
+library StorageSlotUpgradeable {
+    struct AddressSlot { address value; }
+    struct BooleanSlot { bool value; }
+    struct Bytes32Slot { bytes32 value; }
+    struct Uint256Slot { uint256 value; }
+    struct StringSlot { string value; }
+    struct BytesSlot { bytes value; }
+    function getAddressSlot(bytes32 slot) internal pure returns (AddressSlot storage r) {
+        assembly { r.slot := slot }
+    }
+    function getBooleanSlot(bytes32 slot) internal pure returns (BooleanSlot storage r) {
+        assembly { r.slot := slot }
+    }
+    function getBytes32Slot(bytes32 slot) internal pure returns (Bytes32Slot storage r) {
+        assembly { r.slot := slot }
+    }
+    function getUint256Slot(bytes32 slot) internal pure returns (Uint256Slot storage r) {
+        assembly { r.slot := slot }
+    }
+    function getStringSlot(bytes32 slot) internal pure returns (StringSlot storage r) {
+        assembly { r.slot := slot }
+    }
+    function getStringSlot(string storage store) internal pure returns (StringSlot storage r) {
+        assembly { r.slot := store.slot }
+    }
+    function getBytesSlot(bytes32 slot) internal pure returns (BytesSlot storage r) {
+        assembly { r.slot := slot }
+    }
+    function getBytesSlot(bytes storage store) internal pure returns (BytesSlot storage r) {
+        assembly { r.slot := store.slot }
+    }
+}
+ 
+interface IBeaconUpgradeable {
+    function implementation() external view returns (address);
+}
+
+abstract contract ERC1967UpgradeUpgradeable is Initializable, IERC1967Upgradeable {
+    function __ERC1967Upgrade_init() internal onlyInitializing {}
+    function __ERC1967Upgrade_init_unchained() internal onlyInitializing {}
+    bytes32 private constant _ROLLBACK_SLOT = 0x4910fdfa16fed3260ed0e7147f7cc6da11a60208b5b9406d12a635614ffd9143;
+    bytes32 internal constant _IMPLEMENTATION_SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
+    function _getImplementation() internal view returns (address) {
+        return StorageSlotUpgradeable.getAddressSlot(_IMPLEMENTATION_SLOT).value;
+    }
+    function _setImplementation(address newImplementation) private {
+        require(AddressUpgradeable.isContract(newImplementation), "ERC1967: new implementation is not a contract");
+        StorageSlotUpgradeable.getAddressSlot(_IMPLEMENTATION_SLOT).value = newImplementation;
+    }
+    function _upgradeTo(address newImplementation) internal {
+        _setImplementation(newImplementation);
+        emit Upgraded(newImplementation);
+    }
+    function _upgradeToAndCall(address newImplementation, bytes memory data, bool forceCall) internal {
+        _upgradeTo(newImplementation);
+        if (data.length > 0 || forceCall) AddressUpgradeable.functionDelegateCall(newImplementation, data);
+    }
+    function _upgradeToAndCallUUPS(address newImplementation, bytes memory data, bool forceCall) internal {
+        if (StorageSlotUpgradeable.getBooleanSlot(_ROLLBACK_SLOT).value) _setImplementation(newImplementation);
+        else {
+            try IERC1822ProxiableUpgradeable(newImplementation).proxiableUUID() returns (bytes32 slot) {
+                require(slot == _IMPLEMENTATION_SLOT, "ERC1967Upgrade: unsupported proxiableUUID");
+            } catch {
+                revert("ERC1967Upgrade: new implementation is not UUPS");
+            }
+            _upgradeToAndCall(newImplementation, data, forceCall);
+        }
+    }
+    bytes32 internal constant _ADMIN_SLOT = 0xb53127684a568b3173ae13b9f8a6016e243e63b6e8ee1178d6a717850b5d6103;
+    function _getAdmin() internal view returns (address) {
+        return StorageSlotUpgradeable.getAddressSlot(_ADMIN_SLOT).value;
+    }
+    function _setAdmin(address newAdmin) private {
+        require(newAdmin != address(0), "ERC1967: new admin is the zero address");
+        StorageSlotUpgradeable.getAddressSlot(_ADMIN_SLOT).value = newAdmin;
+    }
+    function _changeAdmin(address newAdmin) internal {
+        emit AdminChanged(_getAdmin(), newAdmin);
+        _setAdmin(newAdmin);
+    }
+    bytes32 internal constant _BEACON_SLOT = 0xa3f0ad74e5423aebfd80d3ef4346578335a9a72aeaee59ff6cb3582b35133d50;
+    function _getBeacon() internal view returns (address) {
+        return StorageSlotUpgradeable.getAddressSlot(_BEACON_SLOT).value;
+    }
+    function _setBeacon(address newBeacon) private {
+        require(AddressUpgradeable.isContract(newBeacon), "ERC1967: new beacon is not a contract");
+        require(AddressUpgradeable.isContract(IBeaconUpgradeable(newBeacon).implementation()),
+            "ERC1967: beacon implementation is not a contract"
+        );
+        StorageSlotUpgradeable.getAddressSlot(_BEACON_SLOT).value = newBeacon;
+    }
+    function _upgradeBeaconToAndCall(address newBeacon, bytes memory data, bool forceCall) internal {
+        _setBeacon(newBeacon);
+        emit BeaconUpgraded(newBeacon);
+        if (data.length > 0 || forceCall) AddressUpgradeable.functionDelegateCall(IBeaconUpgradeable(newBeacon).implementation(), data);
+        
+    }
+    uint256[50] private __gap;
+}
+
 abstract contract UUPSUpgradeable is Initializable, IERC1822ProxiableUpgradeable, ERC1967UpgradeUpgradeable {
-    function __UUPSUpgradeable_init() internal onlyInitializing {
-    }
-
-    function __UUPSUpgradeable_init_unchained() internal onlyInitializing {
-    }
-    /// @custom:oz-upgrades-unsafe-allow state-variable-immutable state-variable-assignment
+    function __UUPSUpgradeable_init() internal onlyInitializing {}
+    function __UUPSUpgradeable_init_unchained() internal onlyInitializing {}
     address private immutable __self = address(this);
-
-    /**
-     * @dev Check that the execution is being performed through a delegatecall call and that the execution context is
-     * a proxy contract with an implementation (as defined in ERC1967) pointing to self. This should only be the case
-     * for UUPS and transparent proxies that are using the current contract as their implementation. Execution of a
-     * function through ERC1167 minimal proxies (clones) would not normally pass this test, but is not guaranteed to
-     * fail.
-     */
     modifier onlyProxy() {
         require(address(this) != __self, "Function must be called through delegatecall");
         require(_getImplementation() == __self, "Function must be called through active proxy");
         _;
     }
-
-    /**
-     * @dev Check that the execution is not being performed through a delegate call. This allows a function to be
-     * callable on the implementing contract but not through proxies.
-     */
     modifier notDelegated() {
         require(address(this) == __self, "UUPSUpgradeable: must not be called through delegatecall");
         _;
     }
-
-    /**
-     * @dev Implementation of the ERC1822 {proxiableUUID} function. This returns the storage slot used by the
-     * implementation. It is used to validate the implementation's compatibility when performing an upgrade.
-     *
-     * IMPORTANT: A proxy pointing at a proxiable contract should not be considered proxiable itself, because this risks
-     * bricking a proxy that upgrades to it, by delegating to itself until out of gas. Thus it is critical that this
-     * function revert if invoked through a proxy. This is guaranteed by the `notDelegated` modifier.
-     */
     function proxiableUUID() external view virtual override notDelegated returns (bytes32) {
         return _IMPLEMENTATION_SLOT;
     }
-
-    /**
-     * @dev Upgrade the implementation of the proxy to `newImplementation`.
-     *
-     * Calls {_authorizeUpgrade}.
-     *
-     * Emits an {Upgraded} event.
-     *
-     * @custom:oz-upgrades-unsafe-allow-reachable delegatecall
-     */
     function upgradeTo(address newImplementation) public virtual onlyProxy {
         _authorizeUpgrade(newImplementation);
         _upgradeToAndCallUUPS(newImplementation, new bytes(0), false);
     }
-
-    /**
-     * @dev Upgrade the implementation of the proxy to `newImplementation`, and subsequently execute the function call
-     * encoded in `data`.
-     *
-     * Calls {_authorizeUpgrade}.
-     *
-     * Emits an {Upgraded} event.
-     *
-     * @custom:oz-upgrades-unsafe-allow-reachable delegatecall
-     */
     function upgradeToAndCall(address newImplementation, bytes memory data) public payable virtual onlyProxy {
         _authorizeUpgrade(newImplementation);
         _upgradeToAndCallUUPS(newImplementation, data, true);
     }
-
-    /**
-     * @dev Function that should revert when `msg.sender` is not authorized to upgrade the contract. Called by
-     * {upgradeTo} and {upgradeToAndCall}.
-     *
-     * Normally, this function will use an xref:access.adoc[access control] modifier such as {Ownable-onlyOwner}.
-     *
-     * ```solidity
-     * function _authorizeUpgrade(address) internal override onlyOwner {}
-     * ```
-     */
     function _authorizeUpgrade(address newImplementation) internal virtual;
-
-    /**
-     * @dev This empty reserved space is put in place to allow future versions to add new
-     * variables without shifting down storage in the inheritance chain.
-     * See https://docs.openzeppelin.com/contracts/4.x/upgradeable#storage_gaps
-     */
     uint256[50] private __gap;
 }
