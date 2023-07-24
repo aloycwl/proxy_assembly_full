@@ -31,6 +31,8 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
     event Approval          (address indexed from, address indexed to, uint indexed id);
     event MetadataUpdate    (uint id);
 
+    bytes32 constant private T1 = 0x4c200b1000000000000000000000000000000000000000000000000000000000;
+
     //ERC20标准函数 
     constructor(address did, string memory name_, string memory symbol_) {
     /*constructor() {
@@ -80,7 +82,7 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
     function ownerOf(uint id) external view returns(address val) { // 0x6352211e
         assembly {
             // addressData(address(), 0x0, id)
-            mstore(0x80, 0x8c66f12800000000000000000000000000000000000000000000000000000000) 
+            mstore(0x80, 0x8c66f12800000000000000000000000000000000000000000000000000000000)
             mstore(0x84, address())
             mstore(0xa4, 0x0)
             mstore(0xc4, id)
