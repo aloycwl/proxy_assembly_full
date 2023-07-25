@@ -1,10 +1,6 @@
 // SPDX-License-Identifier: None
 pragma solidity ^0.8.18;
 
-interface IERC18223 {
-    function proxiableUUID() external view returns(bytes32);
-}
-
 abstract contract UUPSUpgradeable {
     bytes32 private constant _SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
     address private immutable __self = address(this);
@@ -38,11 +34,7 @@ abstract contract UUPSUpgradeable {
     }
 
     function _upgradeUUPS(address newAddr, bytes memory data, bool forceCall) internal {
-        try IERC18223(newAddr).proxiableUUID() returns (bytes32 slot) {
-            require(slot == _SLOT, "Unsupported proxiableUUID");
-        } catch {
-            revert("Not UUPS");
-        }
+        require(UUPSUpgradeable(newAddr).proxiableUUID() == _SLOT, "Unsupported proxiableUUID");
         if (data.length > 0 || forceCall) {
             (bool success, bytes memory returndata) = newAddr.delegatecall(data);
             require(success && returndata.length == 0 && newAddr.code.length > 0, "Call to non-contract");
@@ -50,10 +42,10 @@ abstract contract UUPSUpgradeable {
         require(newAddr.code.length > 0, "Not a contract");
         addrS(_SLOT).value = newAddr;
     }
-    /*function proxiableUUID() external view returns(bytes32) {
+    function proxiableUUID() external view returns(bytes32) {
         require(address(this) == __self, "Cannot delegatecall");
         return _SLOT;
-    }*/
+    }
     function upgradeTo(address newAddr) external onlyProxy {
         _upgradeUUPS(newAddr, new bytes(0), false);
     }
