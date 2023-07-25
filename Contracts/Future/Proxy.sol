@@ -3,29 +3,29 @@ pragma solidity ^0.8.18;
 
 import "./UUPS.sol";
 
+// gas: 1159850
 contract Pizza is UUPSUpgradeable {
    uint public slices;
 
-   function initialize(uint _sliceCount) external initializer {
+   function initialize(uint _sliceCount) external {
        slices = _sliceCount;
-       __Ownable_init();
+       owner = msg.sender;
    }
 
    function eatSlice() virtual external {
-       require(slices > 1, "no slices left");
-       slices -= 1;
+       require(slices-- > 1, "no slices left");
    }
 }
 
+// gas: 1208029
 contract PizzaV2 is Pizza {
    function refillSlice() external {
-       slices += 1;
+       ++slices;
    }
    function pizzaVersion() external pure returns (uint) {
        return 2;
    }
    function eatSlice() external override {
-       require(slices > 0, "no slices left");
-       slices -= 1;
+       require(slices-- > 0, "no slices left");
    }
 }
