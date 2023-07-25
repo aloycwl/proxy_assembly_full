@@ -3,7 +3,7 @@ pragma solidity ^0.8.18;
 
 import "./UUPS.sol";
 
-contract Pizza is Initializable, UUPSUpgradeable {
+contract Pizza is UUPSUpgradeable {
    uint public slices;
 
    function initialize(uint _sliceCount) external initializer {
