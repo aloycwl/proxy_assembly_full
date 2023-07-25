@@ -18,3 +18,12 @@ contract Pizza is Initializable, UUPSUpgradeable, OwnableUpgradeable {
        slices -= 1;
    }
 }
+
+contract PizzaV2 is Pizza {
+   function refillSlice() external {
+       slices += 1;
+   }
+   function pizzaVersion() external pure returns (uint) {
+       return 2;
+   }
+}
