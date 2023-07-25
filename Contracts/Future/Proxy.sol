@@ -3,15 +3,13 @@ pragma solidity ^0.8.18;
 
 import "./UUPS.sol";
 
-contract Pizza is Initializable, UUPSUpgradeable, OwnableUpgradeable {
+contract Pizza is Initializable, UUPSUpgradeable {
    uint public slices;
 
-   function initialize(uint _sliceCount) public initializer {
+   function initialize(uint _sliceCount) external initializer {
        slices = _sliceCount;
        __Ownable_init();
    }
-
-   function _authorizeUpgrade(address) internal override onlyOwner {}
 
    function eatSlice() virtual external {
        require(slices > 1, "no slices left");
@@ -26,7 +24,7 @@ contract PizzaV2 is Pizza {
    function pizzaVersion() external pure returns (uint) {
        return 2;
    }
-   function eatSlice() override external {
+   function eatSlice() external override {
        require(slices > 0, "no slices left");
        slices -= 1;
    }
