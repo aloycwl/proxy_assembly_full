@@ -13,7 +13,7 @@ contract Pizza is Initializable, UUPSUpgradeable, OwnableUpgradeable {
 
    function _authorizeUpgrade(address) internal override onlyOwner {}
 
-   function eatSlice() external {
+   function eatSlice() virtual external {
        require(slices > 1, "no slices left");
        slices -= 1;
    }
@@ -25,5 +25,9 @@ contract PizzaV2 is Pizza {
    }
    function pizzaVersion() external pure returns (uint) {
        return 2;
+   }
+   function eatSlice() override external {
+       require(slices > 0, "no slices left");
+       slices -= 1;
    }
 }
