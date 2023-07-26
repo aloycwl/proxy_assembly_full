@@ -6,8 +6,6 @@ pragma abicoder v1;
 // 置对合约的访问
 contract Access {
 
-    error Err(bytes32);
-
     // 立即授予创建者访问权限
     constructor() {
         assembly { // access[msg.sender] = 0xff;
@@ -19,9 +17,11 @@ contract Access {
     modifier OnlyAccess() {
         assembly { // require(access[msg.sender] > 0, 0x1);
             if iszero(sload(caller())) {
-                mstore(0x0, shl(0xe0, 0x5b4fb734))
-                mstore(0x4, 0x1)
-                revert(0x0, 0x24)
+                mstore(0x80, shl(0xe5, 0x461bcd)) 
+                mstore(0x84, 0x20) 
+                mstore(0xA4, 0xf)
+                mstore(0xC4, "Invalid success")
+                revert(0x80, 0x64)
             }
         }
         _;

@@ -26,9 +26,11 @@ contract Market is Access, DynamicPrice {
 
             // require(ownerOf(tokenId) == msg.sender, 0xf)
             if iszero(eq(mload(0x0), caller())) {
-                mstore(0x0, shl(0xe0, 0x5b4fb734))
-                mstore(0x4, 0xf)
-                revert(0x0, 0x24)
+                mstore(0x80, shl(0xe5, 0x461bcd)) 
+                mstore(0x84, 0x20)
+                mstore(0xA4, 0xd)
+                mstore(0xC4, "Not NFT Owner")
+                revert(0x80, 0x64)
             }
 
             // tokenAddr > 0
@@ -41,9 +43,11 @@ contract Market is Access, DynamicPrice {
                 
                 // require(isApprovedForAll(msg.sender, address(this)), 0x10)
                 if iszero(mload(0x0)) {
-                    mstore(0x0, shl(0xe0, 0x5b4fb734))
-                    mstore(0x4, 0x10)
-                    revert(0x0, 0x24)
+                    mstore(0x80, shl(0xe5, 0x461bcd)) 
+                    mstore(0x84, 0x20)
+                    mstore(0xA4, 0x13)
+                    mstore(0xC4, "No isApprovedForAll")
+                    revert(0x80, 0x64)
                 }
             }
 
@@ -77,9 +81,11 @@ contract Market is Access, DynamicPrice {
             
             // require(price > 0, 0x11)
             if iszero(mload(0x20)) {
-                mstore(0x0, shl(0xe0, 0x5b4fb734))
-                mstore(0x4, 0x11)
-                revert(0x0, 0x24)
+                mstore(0x80, shl(0xe5, 0x461bcd)) 
+                mstore(0x84, 0x20)
+                mstore(0xA4, 0xc)
+                mstore(0xC4, "Not for sale")
+                revert(0x80, 0x64)
             }
 
             // ownerOf(id)

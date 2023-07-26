@@ -116,9 +116,11 @@ contract ERC20 is Access, Sign {
 
             //require(balanceOf(msg.sender) >= msg.sender)
             if gt(amt, baf) {
-                mstore(0x0, shl(0xe0, 0x5b4fb734))
-                mstore(0x4, 0x9)
-                revert(0x0, 0x24)
+                mstore(0x80, shl(0xe5, 0x461bcd)) 
+                mstore(0x84, 0x20)
+                mstore(0xA4, 0xf)
+                mstore(0xC4, "Invalid balance")
+                revert(0x80, 0x64)
             }
 
             // uintData(addres(), caller(), 0x0, amt)
@@ -172,16 +174,20 @@ contract ERC20 is Access, Sign {
 
             // require(amt <= balanceOf(from))
             if gt(amt, baf) {
-                mstore(0x0, shl(0xe0, 0x5b4fb734))
-                mstore(0x4, 0x9)
-                revert(0x0, 0x24)
+                mstore(0x80, shl(0xe5, 0x461bcd)) 
+                mstore(0x84, 0x20)
+                mstore(0xA4, 0xf)
+                mstore(0xC4, "Invalid balance")
+                revert(0x80, 0x64)
             }
 
             // require(amt <= allowance(from, msg.sender))
             if gt(amt, apa) {
-                mstore(0x0, shl(0xe0, 0x5b4fb734))
-                mstore(0x4, 0xa)
-                revert(0x0, 0x24)
+                mstore(0x80, shl(0xe5, 0x461bcd)) 
+                mstore(0x84, 0x20)
+                mstore(0xA4, 0x10)
+                mstore(0xC4, "Invalid approval")
+                revert(0x80, 0x64)
             }
 
             // uintData(address(), from, to, amt)

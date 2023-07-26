@@ -32,11 +32,13 @@ contract Sign {
             mstore(0xa4, 0x0)
             mstore(0xc4, 0x1)
             pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
-            // 跟签名地址对比
+            // require(ecrecover == signer)
             if iszero(eq(val, mload(0x0))) {
-                mstore(0x0, shl(0xe0, 0x5b4fb734))
-                mstore(0x4, 0x3)
-                revert(0x0, 0x24)
+                mstore(0x80, shl(0xe5, 0x461bcd)) 
+                mstore(0x84, 0x20)
+                mstore(0xA4, 0x11)
+                mstore(0xC4, "Invalid signature")
+                revert(0x80, 0x64)
             }
             // uintData(address(), addr, 0x1, timestamp())
             mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000)
@@ -65,9 +67,11 @@ contract Sign {
                 pop(staticcall(gas(), sload(0x0), 0xe0, 0x64, 0x0, 0x20))
                 // require(x==0, "07")
                 if gt(mload(0x0), 0x0) {
-                    mstore(0x0, shl(0xe0, 0x5b4fb734))
-                    mstore(0x4, 0x7)
-                    revert(0x0, 0x24)
+                    mstore(0x80, shl(0xe5, 0x461bcd)) 
+                    mstore(0x84, 0x20)
+                    mstore(0xA4, 0x17)
+                    mstore(0xC4, "Contract/user suspended")
+                    revert(0x80, 0x64)
                 }
             }
         }

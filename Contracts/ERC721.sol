@@ -192,9 +192,11 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
 
             // require(msg.sender == ownerOf(id) || isApprovedForAll(ownerOf(id), msg.sender))
             if and(iszero(eq(caller(), oid)), iszero(mload(0x0))) {
-                mstore(0x0, shl(0xe0, 0x5b4fb734))
-                mstore(0x4, 0xb)
-                revert(0x0, 0x24)
+                mstore(0x80, shl(0xe5, 0x461bcd)) 
+                mstore(0x84, 0x20)
+                mstore(0xA4, 0xd)
+                mstore(0xC4, "Invalid owner")
+                revert(0x80, 0x64)
             }
 
             // uintData(address(), 0x1, id, to)
@@ -265,11 +267,13 @@ contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
             mstore(0xc4, id)
             pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
 
-            // require(所有者 || 被授权, "0c")
+            // require(所有者 || 被授权)
             if and(iszero(eq(mload(0x0), to)), iszero(eq(oid, caller()))) {
-                mstore(0x0, shl(0xe0, 0x5b4fb734))
-                mstore(0x4, 0xc)
-                revert(0x0, 0x24)
+                mstore(0x80, shl(0xe5, 0x461bcd)) 
+                mstore(0x84, 0x20)
+                mstore(0xA4, 0x10)
+                mstore(0xC4, "Invalid approval")
+                revert(0x80, 0x64)
             }
 
             // uintEnum(address(), oid, id, 1)

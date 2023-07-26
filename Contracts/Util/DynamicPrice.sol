@@ -34,9 +34,11 @@ contract DynamicPrice {
                 if eq(tka, 0x1) {
                     // require(msg.value > amt)
                     if gt(amt, callvalue()) { 
-                        mstore(0x0, shl(0xe0, 0x5b4fb734))
-                        mstore(0x4, 0x4)
-                        revert(0x0, 0x24)
+                        mstore(0x80, shl(0xe5, 0x461bcd)) 
+                        mstore(0x84, 0x20)
+                        mstore(0xA4, 0x10)
+                        mstore(0xC4, "Insufficient fee")
+                        revert(0x80, 0x64)
                     }
                     pop(call(gas(), to, fee, 0x0, 0x0, 0x0, 0x0))
                     pop(call(gas(), sload(0x1), selfbalance(), 0x0, 0x0, 0x0, 0x0))
@@ -50,18 +52,22 @@ contract DynamicPrice {
                     mstore(0xa4, to)
                     mstore(0xc4, fee)    
                     if iszero(call(gas(), tka, 0x0, 0x80, 0x64, 0x0, 0x0)) {
-                        mstore(0x0, shl(0xe0, 0x5b4fb734))
-                        mstore(0x4, 0x5)
-                        revert(0x0, 0x24)
+                        mstore(0x80, shl(0xe5, 0x461bcd)) 
+                        mstore(0x84, 0x20)
+                        mstore(0xA4, 0x12)
+                        mstore(0xC4, "Insufficient token")
+                        revert(0x80, 0x64)
                     }
                     // require(transferForm(origin(), owner, fee) = true)
                     if gt(fee, 0x0) {
                         mstore(0xa4, sload(0x1))
                         mstore(0xc4, sub(amt, fee))
                         if iszero(call(gas(), tka, 0x0, 0x80, 0x64, 0x0, 0x0)) {
-                            mstore(0x0, shl(0xe0, 0x5b4fb734))
-                            mstore(0x4, 0x5)
-                            revert(0x0, 0x24)
+                            mstore(0x80, shl(0xe5, 0x461bcd)) 
+                            mstore(0x84, 0x20)
+                            mstore(0xA4, 0x12)
+                            mstore(0xC4, "Insufficient token")
+                            revert(0x80, 0x64)
                         }
                     }
                 }
