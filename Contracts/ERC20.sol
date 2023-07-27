@@ -59,7 +59,7 @@ contract ERC20 is Access, Sign {
             mstore(0x80, 0x4c200b1000000000000000000000000000000000000000000000000000000000)
             mstore(0x84, address())
             mstore(0xa4, addr)
-            mstore(0xc4, 0x0)
+            mstore(0xc4, 0x2)
             pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
             val := mload(0x0)
         }
@@ -106,6 +106,7 @@ contract ERC20 is Access, Sign {
 
             // balanceOf(msg.sender)
             mstore(0xa4, caller())
+            mstore(0xc4, 0x2)
             pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
             let baf := mload(0x0)
 
@@ -129,7 +130,7 @@ contract ERC20 is Access, Sign {
             mstore(0xa4, caller())
 
             // -balanceOf(from)
-            mstore(0xc4, 0x0)
+            mstore(0xc4, 0x2)
             mstore(0xe4, sub(baf, amt))
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
 
@@ -154,10 +155,10 @@ contract ERC20 is Access, Sign {
             // uintData(address(), from, to)
             mstore(0x80, 0x4c200b1000000000000000000000000000000000000000000000000000000000)
             mstore(0x84, address())
-            mstore(0xc4, 0x0)
 
             // balanceOf(to)
             mstore(0xa4, to)
+            mstore(0xc4, 0x2)
             pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
             let bat := mload(0x0)
 
@@ -201,7 +202,7 @@ contract ERC20 is Access, Sign {
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
 
             // -balanceOf(from)
-            mstore(0xc4, 0x0)
+            mstore(0xc4, 0x2)
             mstore(0xe4, sub(baf, amt))
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
 
@@ -227,7 +228,7 @@ contract ERC20 is Access, Sign {
             // balanceOf(to)
             mstore(0x84, address())
             mstore(0xa4, to)
-            mstore(0xc4, 0x0)
+            mstore(0xc4, 0x2)
             pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
 
             // uintData(address(), to, 0x0, amt)
@@ -235,7 +236,7 @@ contract ERC20 is Access, Sign {
             // +balanceOf(to)
             mstore(0x84, address())
             mstore(0xa4, to)
-            mstore(0xc4, 0x0)
+            mstore(0xc4, 0x2)
             mstore(0xe4, add(amt, mload(0x0)))
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
 
@@ -258,7 +259,7 @@ contract ERC20 is Access, Sign {
             // balanceOf(to)
             mstore(0x84, address())
             mstore(0xa4, to)
-            mstore(0xc4, 0x0)
+            mstore(0xc4, 0x2)
             pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
 
             // uintData(address(), from, to, amt)
@@ -266,7 +267,7 @@ contract ERC20 is Access, Sign {
             // +balanceOf(to)
             mstore(0x84, address())
             mstore(0xa4, to)
-            mstore(0xc4, 0x0)
+            mstore(0xc4, 0x2)
             mstore(0xe4, add(amt, mload(0x0)))
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
 
