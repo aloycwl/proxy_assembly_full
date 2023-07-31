@@ -10,7 +10,7 @@ struct List {
     uint price;
 }
 
-contract DID is Access {
+contract Storage is Access {
     
     constructor() {
         assembly {
