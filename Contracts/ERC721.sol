@@ -4,10 +4,9 @@ pragma solidity ^0.8.18;
 pragma abicoder v1;
 
 import {Sign} from "Contracts/Util/Sign.sol";
-import {Access} from "Contracts/Util/Access.sol";
 import {DynamicPrice} from "Contracts/Util/DynamicPrice.sol";
 
-contract ERC721 is Access, Sign, DynamicPrice {
+contract ERC721 is Sign, DynamicPrice {
     event Transfer          (address indexed from, address indexed to, uint indexed id);
     event ApprovalForAll    (address indexed from, address indexed to, bool);
     event Approval          (address indexed from, address indexed to, uint indexed id);
@@ -365,20 +364,6 @@ contract ERC721 is Access, Sign, DynamicPrice {
             mstore(0xc4, mload(u))
             mstore(0xe4, mload(add(u, 0x20)))
             mstore(0x104, mload(add(u, 0x40)))
-            pop(call(gas(), sload(0x0), 0x0, 0x80, 0xa4, 0x0, 0x0))
-        }
-    }
-
-    //设置等级和价钱
-    function setLevel(uint _list, address tokenAddr, uint price) external OnlyAccess {
-        assembly {
-            // listData(address(), address(), _list, tokenAddr, price)
-            mstore(0x80, 0x41aa443600000000000000000000000000000000000000000000000000000000)
-            mstore(0x84, address())
-            mstore(0xa4, address())
-            mstore(0xc4, _list)
-            mstore(0xe4, tokenAddr)
-            mstore(0x104, price)
             pop(call(gas(), sload(0x0), 0x0, 0x80, 0xa4, 0x0, 0x0))
         }
     }

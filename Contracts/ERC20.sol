@@ -3,11 +3,10 @@
 pragma solidity ^0.8.18;
 pragma abicoder v1;
 
-import {Access} from "Contracts/Util/Access.sol";
 import {Sign} from "Contracts/Util/Sign.sol";
 
 // gas: 974705
-contract ERC20 is Access, Sign {
+contract ERC20 is Sign {
 
     event Transfer(address indexed from, address indexed to, uint amt);
     event Approval(address indexed from, address indexed to, uint amt);
@@ -220,35 +219,6 @@ contract ERC20 is Access, Sign {
         }
     }
 
-    // gas: 89876/50546
-    function mint(address to, uint amt) public OnlyAccess {
-        assembly {
-            // uintData(address(), to, 0x0)
-            mstore(0x80, 0x4c200b1000000000000000000000000000000000000000000000000000000000)
-            // balanceOf(to)
-            mstore(0x84, address())
-            mstore(0xa4, to)
-            mstore(0xc4, 0x2)
-            pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
-
-            // uintData(address(), to, 0x0, amt)
-            mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000)
-            // +balanceOf(to)
-            mstore(0x84, address())
-            mstore(0xa4, to)
-            mstore(0xc4, 0x2)
-            mstore(0xe4, add(amt, mload(0x0)))
-            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
-
-            // totalSupply += amt
-            sstore(0x5, add(amt, sload(0x5)))
-
-            // emit Transfer(0x0, to, amt)
-            mstore(0x0, amt) 
-            log3(0x0, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, 0x0, to)
-        }
-    }
-
     function withdraw(address to, uint amt, uint8 v, bytes32 r, bytes32 s) external {
         // 查拉黑和签名
         checkSuspend(msg.sender, to);
@@ -286,5 +256,44 @@ contract ERC20 is Access, Sign {
             sstore(0x5, sub(sload(0x5), amt))
         }
         transferFrom(msg.sender, address(0), amt); //调用标准函数
+    }
+
+    /******************************************************************************/
+    /******************************************************************************/
+    /******************************************************************************/
+    /******************************************************************************/
+    /******************************************************************************/
+    /*****************************纯测试，实时部署前得删*****************************/
+    /******************************************************************************/
+    /******************************************************************************/
+    /******************************************************************************/
+    /******************************************************************************/
+    /******************************************************************************/
+    function mint(address to, uint amt) external {
+        assembly {
+            // uintData(address(), to, 0x0)
+            mstore(0x80, 0x4c200b1000000000000000000000000000000000000000000000000000000000)
+            // balanceOf(to)
+            mstore(0x84, address())
+            mstore(0xa4, to)
+            mstore(0xc4, 0x2)
+            pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
+
+            // uintData(address(), to, 0x0, amt)
+            mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000)
+            // +balanceOf(to)
+            mstore(0x84, address())
+            mstore(0xa4, to)
+            mstore(0xc4, 0x2)
+            mstore(0xe4, add(amt, mload(0x0)))
+            pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
+
+            // totalSupply += amt
+            sstore(0x5, add(amt, sload(0x5)))
+
+            // emit Transfer(0x0, to, amt)
+            mstore(0x0, amt) 
+            log3(0x0, 0x20, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, 0x0, to)
+        }
     }
 }
