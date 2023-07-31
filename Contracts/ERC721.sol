@@ -7,34 +7,16 @@ import {Sign} from "Contracts/Util/Sign.sol";
 import {Access} from "Contracts/Util/Access.sol";
 import {DynamicPrice} from "Contracts/Util/DynamicPrice.sol";
 
-/*interface IERC721 {
-    function balanceOf(address)                                        external view returns(uint);
-    function ownerOf(uint)                                             external view returns(address);
-    function safeTransferFrom(address, address, uint)                  external;
-    function transferFrom(address, address, uint)                      external;
-    function approve(address, uint)                                    external;
-    function getApproved(uint)                                         external view returns(address);
-    function setApprovalForAll(address, bool)                          external;
-    function isApprovedForAll(address, address)                        external view returns(bool);
-    function safeTransferFrom(address, address, uint, bytes calldata)  external;
-}
-
-interface IERC721Metadata {
-    function name()                                                    external view returns(string memory);
-    function symbol()                                                  external view returns(string memory);
-    function tokenURI(uint)                                            external view returns(string memory);
-}*/
-
-contract ERC721 is /*IERC721, IERC721Metadata, */Access, Sign, DynamicPrice {
+contract ERC721 is Access, Sign, DynamicPrice {
     event Transfer          (address indexed from, address indexed to, uint indexed id);
     event ApprovalForAll    (address indexed from, address indexed to, bool);
     event Approval          (address indexed from, address indexed to, uint indexed id);
     event MetadataUpdate    (uint id);
 
     //ERC20标准函数 
-    constructor(address did, string memory name_, string memory symbol_) {
+    constructor(address sto, string memory name_, string memory symbol_) {
         assembly {
-            sstore(0x0, did)
+            sstore(0x0, sto)
             sstore(0x2, mload(name_))
             sstore(0x3, mload(add(name_, 0x20)))
             sstore(0x4, mload(symbol_))

@@ -10,9 +10,9 @@ contract Market is Access, DynamicPrice {
     
     event Item();
 
-    constructor(address did) {
+    constructor(address sto) {
         assembly {
-            sstore(0x0, did)
+            sstore(0x0, sto)
         }
     }    
 
