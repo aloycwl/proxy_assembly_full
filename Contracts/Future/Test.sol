@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: None
-pragma solidity ^0.8.18;
+pragma solidity ^0.8.20;
 
-contract TEST {
+contract UTIL {
     function getSelector(string memory a) external pure returns(bytes4) {
         return bytes4(keccak256(abi.encodePacked(a)));
     }
@@ -10,15 +10,14 @@ contract TEST {
         return keccak256(abi.encodePacked(a));
     }
 
-    function convertAddr2Uint(address a) external pure returns(uint val) {
-        assembly {
-            val := a
-        }
+    function hex2Uint(bytes memory a) external pure returns(uint b) {
+        for(uint i = 0; i < a.length; ++i) b += uint(uint8(a[i]))*(2**(8*(a.length-i-1)));
     }
 
-    function convertUint2Addr(uint a) external pure returns(address val) {
-        assembly {
-            val := a
-        }
+    function uint2Hex(uint a) external pure returns (bytes memory b) {
+        uint len;
+        for (uint i = a; i > 0; i /= 256) ++len;
+        b = new bytes(len);
+        for (uint i = 0; i < len; ++i) b[len-i-1] = bytes1(uint8(a / (2**(8*i))));
     }
 }
