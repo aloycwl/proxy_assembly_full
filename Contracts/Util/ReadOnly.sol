@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: None
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.19;
+pragma abicoder v1;
 
-contract UTIL {
+contract ReadOnly {
     function getSelector(string memory a) external pure returns(bytes4) {
         return bytes4(keccak256(abi.encodePacked(a)));
     }
