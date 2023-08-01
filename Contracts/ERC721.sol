@@ -301,10 +301,10 @@ contract ERC721 is Sign, DynamicPrice {
     }
 
     //铸造功能，需要先决条件，也用来升级或合并
-    function assetify(uint l, address a, uint i, string memory u, uint8 v, bytes32 r, bytes32 s) external payable {
+    function assetify(uint l, uint i, string memory u, uint8 v, bytes32 r, bytes32 s) external payable {
         pay(address(this), l, this.owner(), 0); // 若金额设定就支付
-        checkSuspend(msg.sender, a); // 查有被拉黑不
-        check(a, v, r, s); // 查签名
+        checkSuspend(msg.sender, msg.sender); // 查有被拉黑不
+        check(msg.sender, v, r, s); // 查签名
         
         assembly {
             if iszero(i) { // 铸币
@@ -316,7 +316,7 @@ contract ERC721 is Sign, DynamicPrice {
                 mstore(0x80, 0x6795d52600000000000000000000000000000000000000000000000000000000)
                 // ++tokensOwned()
                 mstore(0x84, address())
-                mstore(0xa4, a)
+                mstore(0xa4, caller())
                 mstore(0xc4, l)
                 mstore(0xe4, 0x0)
                 pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
@@ -325,7 +325,7 @@ contract ERC721 is Sign, DynamicPrice {
                 mstore(0x80, 0x4c200b1000000000000000000000000000000000000000000000000000000000)
                 // balanceOf(to)
                 mstore(0x84, address())
-                mstore(0xa4, a)
+                mstore(0xa4, caller())
                 mstore(0xc4, 0x0)
                 pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x0, 0x20))
 
@@ -333,7 +333,7 @@ contract ERC721 is Sign, DynamicPrice {
                 mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000)
                 // ++balanceOf(msg.sender)
                 mstore(0x84, address())
-                mstore(0xa4, a)
+                mstore(0xa4, caller())
                 mstore(0xc4, 0x0)
                 mstore(0xe4, add(0x1, mload(0x0)))
                 pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
@@ -341,11 +341,11 @@ contract ERC721 is Sign, DynamicPrice {
                 // ownerOf[id] = to
                 mstore(0xa4, 0x0)
                 mstore(0xc4, l)
-                mstore(0xe4, a)
+                mstore(0xe4, caller())
                 pop(call(gas(), sload(0x0), 0x0, 0x80, 0x84, 0x0, 0x0))
                 
                 // emit Transfer()
-                log4(0x0, 0x0, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, 0x0, a, l)
+                log4(0x0, 0x0, 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef, 0x0, caller(), l)
             }
 
             if gt(i, 0) {  // 更新
