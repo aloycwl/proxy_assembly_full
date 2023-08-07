@@ -41,8 +41,8 @@ contract DynamicPrice {
                     if gt(amt, callvalue()) { 
                         mstore(0x80, ERR) 
                         mstore(0x84, 0x20)
-                        mstore(0xA4, 0x10)
-                        mstore(0xC4, "Insufficient fee")
+                        mstore(0xA4, 0x0b)
+                        mstore(0xC4, "Invalid fee")
                         revert(0x80, 0x64)
                     }
                     pop(call(gas(), toa, fee, 0x00, 0x00, 0x00, 0x00))
@@ -59,8 +59,8 @@ contract DynamicPrice {
                     if iszero(call(gas(), tka, 0x00, 0x80, 0x64, 0x00, 0x00)) {
                         mstore(0x80, ERR) 
                         mstore(0x84, 0x20)
-                        mstore(0xA4, 0x12)
-                        mstore(0xC4, "Insufficient token")
+                        mstore(0xA4, 0x0b)
+                        mstore(0xC4, "Invalid fee")
                         revert(0x80, 0x64)
                     }
                     // require(transferForm(origin(), owner, fee) = true)
@@ -70,8 +70,8 @@ contract DynamicPrice {
                         if iszero(call(gas(), tka, 0x00, 0x80, 0x64, 0x00, 0x00)) {
                             mstore(0x80, ERR) 
                             mstore(0x84, 0x20)
-                            mstore(0xA4, 0x12)
-                            mstore(0xC4, "Insufficient token")
+                            mstore(0xA4, 0x0b)
+                            mstore(0xC4, "Invalid fee")
                             revert(0x80, 0x64)
                         }
                     }

@@ -38,8 +38,8 @@ contract Market is Access, DynamicPrice {
             if iszero(eq(mload(0x0), caller())) {
                 mstore(0x80, ERR) 
                 mstore(0x84, 0x20)
-                mstore(0xA4, 0xd)
-                mstore(0xC4, "Not NFT Owner")
+                mstore(0xA4, 0x0d)
+                mstore(0xC4, "Invalid Owner")
                 revert(0x80, 0x64)
             }
 
@@ -55,8 +55,8 @@ contract Market is Access, DynamicPrice {
                 if iszero(mload(0x0)) {
                     mstore(0x80, ERR) 
                     mstore(0x84, 0x20)
-                    mstore(0xA4, 0x13)
-                    mstore(0xC4, "No isApprovedForAll")
+                    mstore(0xA4, 0x11)
+                    mstore(0xC4, "No ApprovedForAll")
                     revert(0x80, 0x64)
                 }
             }

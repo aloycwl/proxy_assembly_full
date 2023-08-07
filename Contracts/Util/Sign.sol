@@ -12,7 +12,7 @@ contract Sign {
 
     function check(address adr, uint8 v, bytes32 r, bytes32 s) internal {
 
-        bytes32 hash;
+        bytes32 hsh;
 
         assembly {
             // uintData(address(), addr, 0x1)
@@ -25,10 +25,10 @@ contract Sign {
             // 拿哈希信息
             mstore(0x00, add(adr, mload(0x00)))
             mstore(0x00, keccak256(0x00, 0x20))
-            hash := keccak256(0x00, 0x20)
+            hsh := keccak256(0x00, 0x20)
         }
 
-        address val = ecrecover(hash, v, r, s);
+        address val = ecrecover(hsh, v, r, s);
         
         assembly {
             let sto := sload(STO)
@@ -43,8 +43,8 @@ contract Sign {
             if iszero(eq(val, mload(0x0))) {
                 mstore(0x80, ERR) 
                 mstore(0x84, 0x20)
-                mstore(0xA4, 0x11)
-                mstore(0xC4, "Invalid signature")
+                mstore(0xA4, 0x0b)
+                mstore(0xC4, "Invalid sig")
                 revert(0x80, 0x64)
             }
             // uintData(address(), addr, 0x1, timestamp())
