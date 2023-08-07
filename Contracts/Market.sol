@@ -6,6 +6,7 @@ import {Access} from "Contracts/Util/Access.sol";
 import {DynamicPrice} from "Contracts/Util/DynamicPrice.sol";
 
 contract Market is Access, DynamicPrice {
+    
     bytes32 constant private STO = 0x79030946dd457157e4aa08fcb4907c422402e75f0f0ecb4f2089cb35021ff964;
     bytes32 constant private FEE = 0x607744c37698f0ad2c7e8b300d57eaef2f987ccbb958ce7cd316a2c3e663f9ec;
     bytes32 constant private OWO = 0x6352211e00000000000000000000000000000000000000000000000000000000;
