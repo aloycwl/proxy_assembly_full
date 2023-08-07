@@ -4,18 +4,20 @@ pragma abicoder v1;
 
 contract DynamicPrice {
 
+    bytes32 constant private STO = 0x79030946dd457157e4aa08fcb4907c422402e75f0f0ecb4f2089cb35021ff964;
+    bytes32 constant private OWN = 0x658a3ae51bffe958a5b16701df6cfe4c3e73eac576c08ff07c35cf359a8a002e;
     bytes32 constant private LID = 0xdf0188db00000000000000000000000000000000000000000000000000000000;
     bytes32 constant private TTF = 0x23b872dd00000000000000000000000000000000000000000000000000000000;
 
     constructor() {
         assembly {
-            sstore(0xa, caller())
+            sstore(OWN, caller())
         }
     }
 
     function owner() external view returns (address a) {
         assembly {
-            a := sload(0xa)
+            a := sload(OWN)
         }
     }
 
@@ -26,7 +28,7 @@ contract DynamicPrice {
             mstore(0x84, address())
             mstore(0xa4, adr)
             mstore(0xc4, lst)
-            pop(staticcall(gas(), sload(0x0), 0x80, 0x64, 0x00, 0x40))
+            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x00, 0x40))
             let tka := mload(0x00)
             let amt := mload(0x20)
             // 有价格才执行
@@ -43,7 +45,7 @@ contract DynamicPrice {
                         revert(0x80, 0x64)
                     }
                     pop(call(gas(), toa, fee, 0x00, 0x00, 0x00, 0x00))
-                    pop(call(gas(), sload(0x01), selfbalance(), 0x00, 0x00, 0x00, 0x00))
+                    pop(call(gas(), sload(OWN), selfbalance(), 0x00, 0x00, 0x00, 0x00))
                 }
                 // 这是转ERC20代币
                 if gt(tka, 0x01) {
@@ -62,7 +64,7 @@ contract DynamicPrice {
                     }
                     // require(transferForm(origin(), owner, fee) = true)
                     if gt(fee, 0x00) {
-                        mstore(0xa4, sload(0x01))
+                        mstore(0xa4, sload(OWN))
                         mstore(0xc4, sub(amt, fee))
                         if iszero(call(gas(), tka, 0x00, 0x80, 0x64, 0x00, 0x00)) {
                             mstore(0x80, shl(0xe5, 0x461bcd)) 
