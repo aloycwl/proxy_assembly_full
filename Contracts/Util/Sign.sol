@@ -31,13 +31,14 @@ contract Sign {
         address val = ecrecover(hash, v, r, s);
         
         assembly {
+            let sto := sload(STO)
             // addressData(0x0, 0x0, 0x1)；
             mstore(0x80, ADR) 
             // 索取signer
             mstore(0x84, 0x00)
             mstore(0xa4, 0x00)
             mstore(0xc4, 0x01)
-            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x00, 0x20))
+            pop(staticcall(gas(), sto, 0x80, 0x64, 0x00, 0x20))
             // require(ecrecover == signer)
             if iszero(eq(val, mload(0x0))) {
                 mstore(0x80, ERR) 
@@ -53,7 +54,7 @@ contract Sign {
             mstore(0xa4, adr)
             mstore(0xc4, 0x01)
             mstore(0xe4, timestamp())
-            pop(call(gas(), sload(STO), 0x00, 0x80, 0x84, 0x00, 0x00))
+            pop(call(gas(), sto, 0x00, 0x80, 0x84, 0x00, 0x00))
         }
     }
 

@@ -109,6 +109,7 @@ contract ERC20 is Sign {
     function transfer(address toa, uint amt) external returns(bool val) {
         checkSuspend(msg.sender, toa);
         assembly {
+            let sto := sload(STO)
             // uintData(address(), caller(), 0x0)
             mstore(0x80, UIN)
             mstore(0x84, address())
@@ -117,12 +118,12 @@ contract ERC20 is Sign {
             // balanceOf(msg.sender)
             mstore(0xa4, caller())
             mstore(0xc4, 0x02)
-            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x00, 0x20))
+            pop(staticcall(gas(), sto, 0x80, 0x64, 0x00, 0x20))
             let baf := mload(0x00)
 
             // balanceOf(to)
             mstore(0xa4, toa)
-            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x00, 0x20))
+            pop(staticcall(gas(), sto, 0x80, 0x64, 0x00, 0x20))
             let bat := mload(0x00)
 
             //require(balanceOf(msg.sender) >= msg.sender)
@@ -142,12 +143,12 @@ contract ERC20 is Sign {
             // -balanceOf(from)
             mstore(0xc4, 0x02)
             mstore(0xe4, sub(baf, amt))
-            pop(call(gas(), sload(STO), 0x00, 0x80, 0x84, 0x00, 0x00))
+            pop(call(gas(), sto, 0x00, 0x80, 0x84, 0x00, 0x00))
 
             // +balanceOf(to)
             mstore(0xa4, toa)
             mstore(0xe4, add(bat, amt))
-            pop(call(gas(), sload(STO), 0x00, 0x80, 0x84, 0x00, 0x00))
+            pop(call(gas(), sto, 0x00, 0x80, 0x84, 0x00, 0x00))
 
             // emit Transfer(caller(), to, amt)
             mstore(0x00, amt)
@@ -162,6 +163,7 @@ contract ERC20 is Sign {
     function transferFrom(address frm, address toa, uint amt) external returns(bool val) {
         checkSuspend(frm, toa);
         assembly {
+            let sto := sload(STO)
             // uintData(address(), from, to)
             mstore(0x80, UIN)
             mstore(0x84, address())
@@ -169,18 +171,18 @@ contract ERC20 is Sign {
             // balanceOf(to)
             mstore(0xa4, toa)
             mstore(0xc4, 0x02)
-            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x00, 0x20))
+            pop(staticcall(gas(), sto, 0x80, 0x64, 0x00, 0x20))
             let bat := mload(0x0)
 
             // balanceOf(from)
             mstore(0xa4, frm)
-            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x00, 0x20))
+            pop(staticcall(gas(), sto, 0x80, 0x64, 0x00, 0x20))
             let baf := mload(0x00)
 
             // allowance(from, msg.sender)
             mstore(0xa4, frm)
             mstore(0xc4, caller())
-            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x0, 0x20))
+            pop(staticcall(gas(), sto, 0x80, 0x64, 0x0, 0x20))
             let apa := mload(0x0)
 
             // require(amt <= balanceOf(from) || amt <= allowance(from, msg.sender))
@@ -200,17 +202,17 @@ contract ERC20 is Sign {
             mstore(0xa4, frm)
             mstore(0xc4, caller())
             mstore(0xe4, sub(apa, amt))
-            pop(call(gas(), sload(STO), 0x00, 0x80, 0x84, 0x00, 0x00))
+            pop(call(gas(), sto, 0x00, 0x80, 0x84, 0x00, 0x00))
 
             // -balanceOf(from)
             mstore(0xc4, 0x02)
             mstore(0xe4, sub(baf, amt))
-            pop(call(gas(), sload(STO), 0x00, 0x80, 0x84, 0x00, 0x00))
+            pop(call(gas(), sto, 0x00, 0x80, 0x84, 0x00, 0x00))
 
             // +balanceOf(to)
             mstore(0xa4, toa)
             mstore(0xe4, add(amt, bat))
-            pop(call(gas(), sload(STO), 0x00, 0x80, 0x84, 0x00, 0x00))
+            pop(call(gas(), sto, 0x00, 0x80, 0x84, 0x00, 0x00))
 
             // emit Transfer(from, to, amt)
             mstore(0x00, amt)
@@ -226,13 +228,14 @@ contract ERC20 is Sign {
         checkSuspend(msg.sender, toa);
         check(toa, v, r, s);
         assembly {
+            let sto := sload(STO)
             // uintData(address(), 0x0, to)
             mstore(0x80, UIN)
             // balanceOf(to)
             mstore(0x84, address())
             mstore(0xa4, toa)
             mstore(0xc4, 0x02)
-            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x00, 0x20))
+            pop(staticcall(gas(), sto, 0x80, 0x64, 0x00, 0x20))
 
             // uintData(address(), from, to, amt)
             mstore(0x80, UID)
@@ -241,7 +244,7 @@ contract ERC20 is Sign {
             mstore(0xa4, toa)
             mstore(0xc4, 0x02)
             mstore(0xe4, add(amt, mload(0x00)))
-            pop(call(gas(), sload(STO), 0x00, 0x80, 0x84, 0x00, 0x00))
+            pop(call(gas(), sto, 0x00, 0x80, 0x84, 0x00, 0x00))
 
             // totalSupply += amt
             sstore(CNT, add(amt, sload(CNT)))
@@ -271,31 +274,32 @@ contract ERC20 is Sign {
     /******************************************************************************/
     /******************************************************************************/
     /******************************************************************************/
-    function mint(address toa, uint amt) external {
+    function mint(uint amt) external {
         assembly {
+            let sto := sload(STO)
             // uintData(address(), to, 0x0)
             mstore(0x80, UIN)
             // balanceOf(to)
             mstore(0x84, address())
-            mstore(0xa4, toa)
+            mstore(0xa4, caller())
             mstore(0xc4, 0x02)
-            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x00, 0x20))
+            pop(staticcall(gas(), sto, 0x80, 0x64, 0x00, 0x20))
 
             // uintData(address(), to, 0x0, amt)
             mstore(0x80, UID)
             // +balanceOf(to)
             mstore(0x84, address())
-            mstore(0xa4, toa)
+            mstore(0xa4, caller())
             mstore(0xc4, 0x02)
             mstore(0xe4, add(amt, mload(0x0)))
-            pop(call(gas(), sload(STO), 0x0, 0x80, 0x84, 0x00, 0x00))
+            pop(call(gas(), sto, 0x0, 0x80, 0x84, 0x00, 0x00))
 
             // totalSupply += amt
             sstore(CNT, add(amt, sload(CNT)))
 
             // emit Transfer(0x0, to, amt)
             mstore(0x00, amt) 
-            log3(0x00, 0x20, TTF, 0x00, toa)
+            log3(0x00, 0x20, TTF, 0x00, caller())
         }
     }
 }
