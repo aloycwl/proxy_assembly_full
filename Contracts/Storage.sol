@@ -119,46 +119,46 @@ contract Storage is Access {
         uint len;
         
         assembly {
-            mstore(0x0, a)
+            mstore(0x00, a)
             mstore(0x20, b)
             let ptr := keccak256(0x0, 0x40)
-            mstore(0x0, ptr)
+            mstore(0x00, ptr)
             len := sload(ptr)
         }
 
         val = new uint[](len);
 
         assembly {
-            let ptr := keccak256(0x0, 0x20)
-            for { let i := 0x0 } lt(i, len) { i := add(i, 0x1) } {
-                mstore(add(val, mul(add(i, 0x1), 0x20)), sload(add(ptr, i)))
+            let ptr := keccak256(0x00, 0x20)
+            for { let i := 0x00 } lt(i, len) { i := add(i, 0x01) } {
+                mstore(add(val, mul(add(i, 0x01), 0x20)), sload(add(ptr, i)))
             }
         }
     }
     function uintEnum(address a, address b, uint c, uint d) external OnlyAccess { // 0x6795d526
         assembly {
-            mstore(0x0, a)
+            mstore(0x00, a)
             mstore(0x20, b)
-            let ptr := keccak256(0x0, 0x40)
+            let ptr := keccak256(0x00, 0x40)
             let len := sload(ptr)
 
             switch d 
                 case 1 { // pop()
                     sstore(ptr, sub(len, 0x1)) 
-                    mstore(0x0, ptr)
-                    ptr := keccak256(0x0, 0x20)
-                    d := sload(add(ptr, sub(len, 0x1)))
-                    for { let i := 0x0 } lt(i, len) { i := add(i, 0x1) } {
+                    mstore(0x00, ptr)
+                    ptr := keccak256(0x00, 0x20)
+                    d := sload(add(ptr, sub(len, 0x01)))
+                    for { let i := 0x00 } lt(i, len) { i := add(i, 0x01) } {
                         if eq(c, sload(add(ptr, i))) {
                             len := i
                         }
                     }
                 }
                 default { // push()
-                    sstore(ptr, add(len, 0x1))
+                    sstore(ptr, add(len, 0x01))
                     d := c
-                    mstore(0x0, ptr)
-                    ptr := keccak256(0x0, 0x20)
+                    mstore(0x00, ptr)
+                    ptr := keccak256(0x00, 0x20)
                 }
             sstore(add(ptr, len), d)
         }
