@@ -5,28 +5,29 @@ pragma abicoder v1;
 import "./UUPS.sol";
 
 contract NFTExample is UUPSUpgradeable {
-   uint public totalSupply;
-   string public name;
 
-   function initialize(uint totalSupply_) external {
-       init();
-       (totalSupply, name) = (totalSupply_, "Crazy NFT");
-   }
+    uint public totalSupply;
+    string public name;
 
-   function mint() virtual external {
-       require(totalSupply-- > 0x1, "Ran out of supply");
-   }
+    function initialize(uint totalSupply_) external {
+        init();
+        (totalSupply, name) = (totalSupply_, "Crazy NFT");
+    }
+
+    function mint() virtual external {
+        require(totalSupply-- > 0x1, "Ran out of supply");
+    }
 }
 
 contract NFTExampleV2 is NFTExample {
-   uint constant public NFTVersion = 0x2;
+    uint constant public NFTVersion = 0x02;
 
-   function newNFT() external {
-       totalSupply += 0xf;
-       name = "Wild NFT";
-   } 
+    function newNFT() external {
+        totalSupply += 0x0f;
+        name = "Wild NFT";
+    } 
 
-   function mint() external override {
-       require(totalSupply-- > 0x0, "Ran out of supply");
-   }
+    function mint() external override {
+        require(totalSupply-- > 0x00, "Ran out of supply");
+    }
 }
