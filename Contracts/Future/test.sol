@@ -28,4 +28,8 @@ contract no {
             sstore(0x02016836a56b71f0d02689e69e326f4f4c1b9057164ef592671cf0d37c8040c0, 0x55)
         }
     }
+
+    function testLen() external view returns (uint) {
+        return 0x26b989b9525Bb775C8DEDf70FeE40C36B397CE67.code.length;
+    }
 }

@@ -7,7 +7,6 @@ abstract contract UUPSUpgradeable {
     bytes32 private constant owner = 0x02016836a56b71f0d02689e69e326f4f4c1b9057164ef592671cf0d37c8040c0;
     bytes32 private constant inited = 0x9016906c42b25b8b9c5a4f8fb96df431241948aae1ac92547e2f35e14403c4d8;
     address private immutable _SLF = address(this);
-    //bool inited;
 
     modifier onlyProxy() {
         address _slf = _SLF;
@@ -50,13 +49,15 @@ abstract contract UUPSUpgradeable {
     function upgradeTo(address newAddr) external onlyProxy {
         upgradeToAndCall(newAddr, new bytes(0));
     }
+
     function upgradeToAndCall(address newAddr, bytes memory data) public onlyProxy {
-        require(UUPSUpgradeable(newAddr).UUID() == UUID, "Unsupported proxiableUUID");
-        if (data.length > 0 || data.length > 0 ? true : false) {
-            (bool success, bytes memory returndata) = newAddr.delegatecall(data);
-            require(success && returndata.length == 0 && newAddr.code.length > 0, "Call to non-contract");
+        require(UUPSUpgradeable(newAddr).UUID() == UUID, "Unsupported UUID");
+        if (data.length > 0) //{
+            (, data) = newAddr.delegatecall(data);
+            //require(success && returndata.length == 0 && newAddr.code.length > 0, "Call to non-contract");
+        //}
+        assembly { 
+            sstore(UUID, newAddr) 
         }
-        require(newAddr.code.length > 0, "Not a contract");
-        assembly { sstore(UUID, newAddr) }
     }
 }
