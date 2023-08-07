@@ -14,7 +14,7 @@ contract Storage is Access {
     constructor() {
         assembly {
             //设置signer
-            mstore(0x0, 0x0)
+            mstore(0x00, 0x0)
             mstore(0x20, 0x0)
             mstore(0x40, 0x1)
             sstore(keccak256(0x0, 0x60), caller())
@@ -46,10 +46,10 @@ contract Storage is Access {
     }
     function uintData(address a, address b, address c, uint d) external OnlyAccess { // 0x99758426
         assembly {
-            mstore(0x0, a)
+            mstore(0x00, a)
             mstore(0x20, b)
             mstore(0x40, c)
-            sstore(keccak256(0x0, 0x60), d)
+            sstore(keccak256(0x00, 0x60), d)
         }
     }
     /*
@@ -57,10 +57,10 @@ contract Storage is Access {
     */
     function addressData(address a, uint b, uint c) external view returns(address val) { // 0x8c66f128
         assembly{
-            mstore(0x0, a)
+            mstore(0x00, a)
             mstore(0x20, b)
             mstore(0x40, c)
-            val := sload(keccak256(0x0, 0x60))
+            val := sload(keccak256(0x00, 0x60))
         }
     }
     /*
@@ -68,7 +68,7 @@ contract Storage is Access {
     */
     function stringData(address a, uint b) external view returns(string memory val) { // 0x99eec064
         assembly{
-            mstore(0x0, a)
+            mstore(0x00, a)
             mstore(0x20, b)
             let d := keccak256(0x0, 0x40)
             val := mload(0x40)
@@ -80,9 +80,9 @@ contract Storage is Access {
     }
     function stringData(bytes32 a, bytes32 b, bytes32 c, bytes32 d, bytes32 e) external OnlyAccess { // 0xc7070b58
         assembly {
-            mstore(0x0, a)
+            mstore(0x00, a)
             mstore(0x20, b)
-            let f := keccak256(0x0, 0x40)
+            let f := keccak256(0x00, 0x40)
             sstore(f, c)
             sstore(add(f, 0x20), d)
             sstore(add(f, 0x40), e)
@@ -103,7 +103,7 @@ contract Storage is Access {
     }
     function listData(address a, address b, uint c, address d, uint e) external OnlyAccess { // 0x41aa4436
         assembly {
-            mstore(0x0, a)
+            mstore(0x00, a)
             mstore(0x20, b)
             mstore(0x40, c)
             let f := keccak256(0x0, 0x60)
@@ -121,7 +121,7 @@ contract Storage is Access {
         assembly {
             mstore(0x00, a)
             mstore(0x20, b)
-            let ptr := keccak256(0x0, 0x40)
+            let ptr := keccak256(0x00, 0x40)
             mstore(0x00, ptr)
             len := sload(ptr)
         }
