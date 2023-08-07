@@ -6,7 +6,6 @@ import {Sign} from "Contracts/Util/Sign.sol";
 import {DynamicPrice} from "Contracts/Util/DynamicPrice.sol";
 
 contract ERC721 is Sign, DynamicPrice {
-    //bytes32 constant private 
     bytes32 constant private STO = 0x79030946dd457157e4aa08fcb4907c422402e75f0f0ecb4f2089cb35021ff964;
     bytes32 constant private NA1 = 0xf81b3fd3135366259880acbe67fe529187df5bd875ef3a249ed4221ded1733a8;
     bytes32 constant private NA2 = 0xf2611493f75085dca50c1fd2ac8e34bc6d0eb7c274307efa54c50582314985bf;
