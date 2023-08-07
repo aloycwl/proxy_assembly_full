@@ -7,6 +7,7 @@ import {DynamicPrice} from "Contracts/Util/DynamicPrice.sol";
 
 contract ERC721 is Sign, DynamicPrice {
     bytes32 constant private STO = 0x79030946dd457157e4aa08fcb4907c422402e75f0f0ecb4f2089cb35021ff964;
+    bytes32 constant private CNT = 0x5e423f2848a55862b54c89a4d1538a2d8aec99c1ee890237e17cdd6f0b5769d9;
     bytes32 constant private NA1 = 0xf81b3fd3135366259880acbe67fe529187df5bd875ef3a249ed4221ded1733a8;
     bytes32 constant private NA2 = 0xf2611493f75085dca50c1fd2ac8e34bc6d0eb7c274307efa54c50582314985bf;
     bytes32 constant private SB1 = 0x77f364795cb46b5690938fb39c14204236f4c9ec06ef0393ae0727afffac44e5;
@@ -49,7 +50,7 @@ contract ERC721 is Sign, DynamicPrice {
 
     function count() external view returns(uint val) {
         assembly {
-            val := sload(0x1)
+            val := sload(CNT)
         }
     }
 
@@ -66,41 +67,41 @@ contract ERC721 is Sign, DynamicPrice {
         assembly {
             val := mload(0x40)
             mstore(0x40, add(val, 0x40))
-            mstore(val, sload(0x4))
-            mstore(add(val, 0x20), sload(0x5))
+            mstore(val, sload(SB1))
+            mstore(add(val, 0x20), sload(SB2))
         }
     }
 
-    function ownerOf(uint id) external view returns(address val) { // 0x6352211e
+    function ownerOf(uint tid) external view returns(address val) { // 0x6352211e
         assembly {
             // addressData(address(), 0x0, id)
             mstore(0x80, ADR)
             mstore(0x84, address())
             mstore(0xa4, 0x0)
-            mstore(0xc4, id)
+            mstore(0xc4, tid)
             pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x0, 0x20))
             val := mload(0x0)
         }
     }
 
-    function balanceOf(address addr) external view returns (uint val) {
+    function balanceOf(address adr) external view returns (uint val) {
         assembly {
             // uintData(address(), addr, 0x0)
             mstore(0x80, UIN)
             mstore(0x84, address())
-            mstore(0xa4, addr)
+            mstore(0xa4, adr)
             mstore(0xc4, 0x0)
             pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x0, 0x20))
             val := mload(0x0)
         }
     }
 
-    function tokenURI(uint id) external view returns (string memory) {
+    function tokenURI(uint tid) external view returns (string memory) {
         assembly {
             // stringData(address(), id)
             mstore(0x80, STR)
             mstore(0x84, address())
-            mstore(0xa4, id)
+            mstore(0xa4, tid)
             pop(staticcall(gas(), sload(STO), 0x80, 0x44, 0xa0, 0x80))
 
             // string.concat()
@@ -111,32 +112,32 @@ contract ERC721 is Sign, DynamicPrice {
         }
     }
 
-    function getApproved(uint id) external view returns(address val) {
+    function getApproved(uint tid) external view returns(address val) {
         assembly {
             // addressData(address(), 0x1, id)
             mstore(0x80, ADR)
             mstore(0x84, address())
-            mstore(0xa4, 0x1)
-            mstore(0xc4, id)
-            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x0, 0x20))
-            val := mload(0x0)
+            mstore(0xa4, 0x01)
+            mstore(0xc4, tid)
+            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x00, 0x20))
+            val := mload(0x00)
         }
     }
 
-    function isApprovedForAll(address from, address to) external view returns(bool val) { // 0xe985e9c5
+    function isApprovedForAll(address frm, address toa) external view returns(bool val) { // 0xe985e9c5
         assembly {
             // uintData(address(), from, to)
             mstore(0x80, UIN)
             mstore(0x84, address())
-            mstore(0xa4, from)
-            mstore(0xc4, to)
-            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x0, 0x20))
-            val := mload(0x0)
+            mstore(0xa4, frm)
+            mstore(0xc4, toa)
+            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x00, 0x20))
+            val := mload(0x00)
         }
     }
 
     // 获取地址拥有的所有代币的数组
-    function tokensOwned(address addr) external view returns(uint[] memory val) {
+    function tokensOwned(address adr) external view returns(uint[] memory val) {
         uint len;
 
         // 先拿数组长度
@@ -144,8 +145,8 @@ contract ERC721 is Sign, DynamicPrice {
             // uintEnum(address(), addr)
             mstore(0x80, ENU)
             mstore(0x84, address())
-            mstore(0xa4, addr)
-            pop(staticcall(gas(), sload(STO), 0x80, 0x84, 0x0, 0x40))
+            mstore(0xa4, adr)
+            pop(staticcall(gas(), sload(STO), 0x80, 0x84, 0x00, 0x40))
             len := mload(0x20)
         }
 
@@ -156,34 +157,34 @@ contract ERC721 is Sign, DynamicPrice {
             // uintEnum(address(), addr)
             mstore(0x80, ENU)
             mstore(0x84, address())
-            mstore(0xa4, addr)
-            pop(staticcall(gas(), sload(STO), 0x80, 0x44, 0xa0, mul(add(len, 0x2), 0x20)))
+            mstore(0xa4, adr)
+            pop(staticcall(gas(), sload(STO), 0x80, 0x44, 0xa0, mul(add(len, 0x02), 0x20)))
             
-            for { let i := 0x0 } lt(i, add(len, 0x2)) { i := add(i, 0x1) } {
-                mstore(add(val, mul(i, 0x20)), mload(add(0xa0, mul(add(i, 0x1), 0x20))))
+            for { let i := 0x00 } lt(i, add(len, 0x02)) { i := add(i, 0x01) } {
+                mstore(add(val, mul(i, 0x20)), mload(add(0xa0, mul(add(i, 0x01), 0x20))))
             }
         }
     }
 
     // gas: 67909
-    function approve(address to, uint id) external { // 0x095ea7b3
+    function approve(address toa, uint tid) external { // 0x095ea7b3
         assembly {
             // uintData(address(), 0x0, id)
             mstore(0x80, UIN)
             // ownerOf(id)
             mstore(0x84, address())
-            mstore(0xa4, 0x0)
-            mstore(0xc4, id)
-            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x0, 0x20))
-            let oid := mload(0x0)
+            mstore(0xa4, 0x00)
+            mstore(0xc4, tid)
+            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x00, 0x20))
+            let oid := mload(0x00)
 
             // isApprovedForAll(oid, msg.sender)
             mstore(0xa4, oid)
             mstore(0xc4, caller())
-            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x0, 0x20))
+            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x00, 0x20))
 
             // require(msg.sender == ownerOf(id) || isApprovedForAll(ownerOf(id), msg.sender))
-            if and(iszero(eq(caller(), oid)), iszero(mload(0x0))) {
+            if and(iszero(eq(caller(), oid)), iszero(mload(0x00))) {
                 mstore(0x80, shl(0xe5, 0x461bcd)) 
                 mstore(0x84, 0x20)
                 mstore(0xA4, 0xd)
@@ -195,42 +196,42 @@ contract ERC721 is Sign, DynamicPrice {
             mstore(0x80, UID)
             mstore(0x84, address())
             mstore(0xa4, 0x1)
-            mstore(0xc4, id)
-            mstore(0xe4, to)
-            pop(call(gas(), sload(STO), 0x0, 0x80, 0x84, 0x0, 0x0))
+            mstore(0xc4, tid)
+            mstore(0xe4, toa)
+            pop(call(gas(), sload(STO), 0x00, 0x80, 0x84, 0x00, 0x00))
 
             // emit Approval()
-            log4(0x0, 0x0, APP, oid, to, id)
+            log4(0x00, 0x00, APP, oid, toa, tid)
         }
     }
 
     // gas: 61095
-    function setApprovalForAll(address to, bool bol) external {
+    function setApprovalForAll(address toa, bool bol) external {
         assembly {
             // uintData(address(), caller(), to, bol)
             mstore(0x80, UID)
             mstore(0x84, address())
             mstore(0xa4, caller())
-            mstore(0xc4, to)
+            mstore(0xc4, toa)
             mstore(0xe4, bol)
-            pop(call(gas(), sload(STO), 0x0, 0x80, 0x84, 0x0, 0x0))
+            pop(call(gas(), sload(STO), 0x00, 0x80, 0x84, 0x00, 0x00))
 
             // emit ApprovalForAll()
-            mstore(0x0, bol)
-            log3(0x0, 0x20, AFA, origin(), to)
+            mstore(0x00, bol)
+            log3(0x00, 0x20, AFA, origin(), toa)
         }
     }
 
-    function safeTransferFrom(address from, address to, uint id) external {
-        transferFrom(from, to, id); 
+    function safeTransferFrom(address frm, address toa, uint tid) external {
+        transferFrom(frm, toa, tid); 
     }
 
-    function safeTransferFrom(address from, address to, uint id, bytes memory) external {
-        transferFrom(from, to, id); 
+    function safeTransferFrom(address frm, address toa, uint tid, bytes memory) external {
+        transferFrom(frm, toa, tid); 
     }
 
     // gas: 165100
-    function transferFrom(address, address to, uint id) public { // 0x23b872dd
+    function transferFrom(address, address toa, uint tid) public { // 0x23b872dd
         address oid;
 
         assembly {
@@ -238,29 +239,29 @@ contract ERC721 is Sign, DynamicPrice {
             mstore(0x80, UIN)
             // ownerOf(id)
             mstore(0x84, address())
-            mstore(0xa4, 0x0)
-            mstore(0xc4, id)
-            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x0, 0x20))
-            oid := mload(0x0)
+            mstore(0xa4, 0x00)
+            mstore(0xc4, tid)
+            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x00, 0x20))
+            oid := mload(0x00)
 
             // balanceOf(oid)
             mstore(0xa4, oid)
-            mstore(0xc4, 0x0)
-            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x0, 0x20))
-            let baf := mload(0x0)
+            mstore(0xc4, 0x00)
+            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x00, 0x20))
+            let baf := mload(0x00)
 
             // balanceOf(to)
-            mstore(0xa4, to)
-            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x0, 0x20))
-            let bat := mload(0x0)
+            mstore(0xa4, toa)
+            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x00, 0x20))
+            let bat := mload(0x00)
 
             // getApproved(id)
-            mstore(0xa4, 0x1)
-            mstore(0xc4, id)
+            mstore(0xa4, 0x01)
+            mstore(0xc4, tid)
             pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x0, 0x20))
 
             // require(所有者 || 被授权)
-            if and(iszero(eq(mload(0x0), to)), iszero(eq(oid, caller()))) {
+            if and(iszero(eq(mload(0x00), toa)), iszero(eq(oid, caller()))) {
                 mstore(0x80, shl(0xe5, 0x461bcd)) 
                 mstore(0x84, 0x20)
                 mstore(0xA4, 0x10)
@@ -273,115 +274,115 @@ contract ERC721 is Sign, DynamicPrice {
             // --tokensOwned()
             mstore(0x84, address())
             mstore(0xa4, oid)
-            mstore(0xc4, id)
-            mstore(0xe4, 0x1)
-            pop(call(gas(), sload(STO), 0x0, 0x80, 0x84, 0x0, 0x0))
+            mstore(0xc4, tid)
+            mstore(0xe4, 0x01)
+            pop(call(gas(), sload(STO), 0x00, 0x80, 0x84, 0x00, 0x00))
 
             // ++tokensOwned()
-            if gt(to, 0x0) {
-                mstore(0xa4, to)
-                mstore(0xe4, 0x0)
-                pop(call(gas(), sload(STO), 0x0, 0x80, 0x84, 0x0, 0x0))
+            if gt(toa, 0x00) {
+                mstore(0xa4, toa)
+                mstore(0xe4, 0x00)
+                pop(call(gas(), sload(STO), 0x00, 0x80, 0x84, 0x00, 0x00))
             }
 
             // uintData(address(), 1, id, 0)
             mstore(0x80, UID)
             // approval[id] = 0
             mstore(0x84, address())
-            mstore(0xa4, 0x1)
-            mstore(0xc4, id)
-            mstore(0xe4, 0x0)
-            pop(call(gas(), sload(STO), 0x0, 0x80, 0x84, 0x0, 0x0))
+            mstore(0xa4, 0x01)
+            mstore(0xc4, tid)
+            mstore(0xe4, 0x00)
+            pop(call(gas(), sload(STO), 0x00, 0x80, 0x84, 0x00, 0x00))
 
             // ownerOf[id] = to
-            mstore(0xa4, 0x0)
-            mstore(0xc4, id)
-            mstore(0xe4, to)
-            pop(call(gas(), sload(STO), 0x0, 0x80, 0x84, 0x0, 0x0))
+            mstore(0xa4, 0x00)
+            mstore(0xc4, tid)
+            mstore(0xe4, toa)
+            pop(call(gas(), sload(STO), 0x00, 0x80, 0x84, 0x00, 0x00))
 
             // --balanceOf(oid)
             mstore(0xa4, oid)
-            mstore(0xc4, 0x0)
-            mstore(0xe4, sub(baf, 0x1))
-            pop(call(gas(), sload(STO), 0x0, 0x80, 0x84, 0x0, 0x0))
+            mstore(0xc4, 0x00)
+            mstore(0xe4, sub(baf, 0x01))
+            pop(call(gas(), sload(STO), 0x00, 0x80, 0x84, 0x00, 0x00))
 
             // ++balanceOf(to)
-            if gt(to, 0x0) {
-                mstore(0xa4, to)
-                mstore(0xe4, add(0x1, bat))
-                pop(call(gas(), sload(STO), 0x0, 0x80, 0x84, 0x0, 0x0))
+            if gt(toa, 0x00) {
+                mstore(0xa4, toa)
+                mstore(0xe4, add(0x01, bat))
+                pop(call(gas(), sload(STO), 0x00, 0x80, 0x84, 0x00, 0x00))
             }
 
             // emit Transfer()
-            log4(0x0, 0x0, TTF, oid, to, id)
+            log4(0x00, 0x00, TTF, oid, toa, tid)
         }
-        checkSuspend(oid, to);
+        checkSuspend(oid, toa);
     }
 
     //铸造功能，需要先决条件，也用来升级或合并
-    function assetify(uint l, uint i, string memory u, uint8 v, bytes32 r, bytes32 s) external payable {
-        pay(address(this), l, this.owner(), 0); // 若金额设定就支付
+    function assetify(uint lis, uint tid, string memory uri, uint8 v, bytes32 r, bytes32 s) external payable {
+        pay(address(this), lis, this.owner(), 0); // 若金额设定就支付
         checkSuspend(msg.sender, msg.sender); // 查有被拉黑不
         check(msg.sender, v, r, s); // 查签名
         
         assembly {
-            if iszero(i) { // 铸币
+            if iszero(tid) { // 铸币
                 // count++
-                l := add(sload(0x1), 0x1)
-                sstore(0x1, l)
+                lis := add(sload(0x01), 0x01)
+                sstore(CNT, lis)
 
                 // uintEnum(address(), to, id, 0x0)
                 mstore(0x80, ENM)
                 // ++tokensOwned()
                 mstore(0x84, address())
                 mstore(0xa4, caller())
-                mstore(0xc4, l)
+                mstore(0xc4, lis)
                 mstore(0xe4, 0x0)
-                pop(call(gas(), sload(STO), 0x0, 0x80, 0x84, 0x0, 0x0))
+                pop(call(gas(), sload(STO), 0x00, 0x80, 0x84, 0x00, 0x00))
 
                 // uintData(address(), addr, 0x0)
                 mstore(0x80, UIN)
                 // balanceOf(to)
                 mstore(0x84, address())
                 mstore(0xa4, caller())
-                mstore(0xc4, 0x0)
-                pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x0, 0x20))
+                mstore(0xc4, 0x00)
+                pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x00, 0x20))
 
                 // uintData(address(), msg.sender, 0, balanceOf(msg.sender))
                 mstore(0x80, UID)
                 // ++balanceOf(msg.sender)
                 mstore(0x84, address())
                 mstore(0xa4, caller())
-                mstore(0xc4, 0x0)
-                mstore(0xe4, add(0x1, mload(0x0)))
-                pop(call(gas(), sload(STO), 0x0, 0x80, 0x84, 0x0, 0x0))
+                mstore(0xc4, 0x00)
+                mstore(0xe4, add(0x01, mload(0x00)))
+                pop(call(gas(), sload(STO), 0x00, 0x80, 0x84, 0x00, 0x00))
 
                 // ownerOf[id] = to
-                mstore(0xa4, 0x0)
-                mstore(0xc4, l)
+                mstore(0xa4, 0x00)
+                mstore(0xc4, lis)
                 mstore(0xe4, caller())
-                pop(call(gas(), sload(STO), 0x0, 0x80, 0x84, 0x0, 0x0))
+                pop(call(gas(), sload(STO), 0x00, 0x80, 0x84, 0x00, 0x00))
                 
                 // emit Transfer()
-                log4(0x0, 0x0, TTF, 0x0, caller(), l)
+                log4(0x00, 0x00, TTF, 0x00, caller(), lis)
             }
 
-            if gt(i, 0) {  // 更新
+            if gt(tid, 0x00) {  // 更新
                 // emit MetadataUpdate(i)
-                mstore(0x0, i)
-                log1(0x0, 0x20, UPD)
-                l := i
+                mstore(0x00, tid)
+                log1(0x00, 0x20, UPD)
+                lis := tid
             }         
 
             // stringData(address(), l, len, str1, str2)
             mstore(0x80, STD)
             // tokenURI[l] = u
             mstore(0x84, address())
-            mstore(0xa4, l)
-            mstore(0xc4, mload(u))
-            mstore(0xe4, mload(add(u, 0x20)))
-            mstore(0x104, mload(add(u, 0x40)))
-            pop(call(gas(), sload(STO), 0x0, 0x80, 0xa4, 0x0, 0x0))
+            mstore(0xa4, lis)
+            mstore(0xc4, mload(uri))
+            mstore(0xe4, mload(add(uri, 0x20)))
+            mstore(0x0104, mload(add(uri, 0x40)))
+            pop(call(gas(), sload(STO), 0x00, 0x80, 0xa4, 0x00, 0x00))
         }
     }
     
@@ -400,7 +401,7 @@ contract ERC721 is Sign, DynamicPrice {
         uint l;
         assembly {         
             // 更新或铸新
-            l := add(sload(0x1), 0x1)
+            l := add(sload(CNT), 0x1)
             mstore(0x80, STD)
 
             // stringData(address(), l, len, str1, str2)
@@ -412,7 +413,7 @@ contract ERC721 is Sign, DynamicPrice {
             pop(call(gas(), sload(STO), 0x0, 0x80, 0xa4, 0x0, 0x0))
 
             // count++
-            sstore(0x1, l)
+            sstore(CNT, l)
 
             // uintEnum(address(), to, id, 0x0)
             mstore(0x80, ENM)
