@@ -2,7 +2,6 @@
 pragma solidity 0.8.19;
 pragma abicoder v1;
 
-// gas: 452331
 abstract contract UUPSUpgradeable {
     bytes32 private constant _SLOT = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
     address private immutable __self = address(this);
