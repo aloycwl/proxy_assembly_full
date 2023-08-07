@@ -5,6 +5,9 @@ pragma abicoder v1;
 contract Sign {
 
     bytes32 constant private STO = 0x79030946dd457157e4aa08fcb4907c422402e75f0f0ecb4f2089cb35021ff964;
+    bytes32 constant private UIN = 0x4c200b1000000000000000000000000000000000000000000000000000000000;
+    bytes32 constant private UID = 0x9975842600000000000000000000000000000000000000000000000000000000;
+    bytes32 constant private ADR = 0x8c66f12800000000000000000000000000000000000000000000000000000000;
 
     function check(address adr, uint8 v, bytes32 r, bytes32 s) internal {
 
@@ -12,7 +15,7 @@ contract Sign {
 
         assembly {
             // uintData(address(), addr, 0x1)
-            mstore(0x80, 0x4c200b1000000000000000000000000000000000000000000000000000000000) 
+            mstore(0x80, UIN) 
             // 索取block.timestamp
             mstore(0x84, address())
             mstore(0xa4, adr)
@@ -28,7 +31,7 @@ contract Sign {
         
         assembly {
             // addressData(0x0, 0x0, 0x1)；
-            mstore(0x80, 0x8c66f12800000000000000000000000000000000000000000000000000000000) 
+            mstore(0x80, ADR) 
             // 索取signer
             mstore(0x84, 0x00)
             mstore(0xa4, 0x00)
@@ -43,7 +46,7 @@ contract Sign {
                 revert(0x80, 0x64)
             }
             // uintData(address(), addr, 0x1, timestamp())
-            mstore(0x80, 0x9975842600000000000000000000000000000000000000000000000000000000)
+            mstore(0x80, UID)
             // 更新block.timestamp
             mstore(0x84, address())
             mstore(0xa4, adr)
@@ -60,7 +63,7 @@ contract Sign {
             mstore(0xa0, adr)
             mstore(0xc0, ad2)
             // uintData(address()/a/b, 0x0, 0x0)
-            mstore(0xe0, 0x4c200b1000000000000000000000000000000000000000000000000000000000) 
+            mstore(0xe0, UIN) 
             mstore(0x0104, 0x00)
             mstore(0x0124, 0x00)
             for { let i := 0x00 } lt(i, 0x03) { i := add(i, 0x01) } {
