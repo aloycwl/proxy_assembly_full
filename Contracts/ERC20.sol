@@ -6,7 +6,7 @@ import {Sign} from "Contracts/Util/Sign.sol";
 
 // gas: 974705
 contract ERC20 is Sign {
-    
+
     bytes32 constant private STO = 0x79030946dd457157e4aa08fcb4907c422402e75f0f0ecb4f2089cb35021ff964;
     bytes32 constant private CNT = 0x5e423f2848a55862b54c89a4d1538a2d8aec99c1ee890237e17cdd6f0b5769d9;
     bytes32 constant private NA1 = 0xf81b3fd3135366259880acbe67fe529187df5bd875ef3a249ed4221ded1733a8;
@@ -299,7 +299,7 @@ contract ERC20 is Sign {
             pop(call(gas(), sload(STO), 0x0, 0x80, 0x84, 0x00, 0x00))
 
             // totalSupply += amt
-            sstore(CNT, add(amt, sload(0x5)))
+            sstore(CNT, add(amt, sload(CNT)))
 
             // emit Transfer(0x0, to, amt)
             mstore(0x00, amt) 
