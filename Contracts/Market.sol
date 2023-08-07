@@ -6,7 +6,7 @@ import {Access} from "Contracts/Util/Access.sol";
 import {DynamicPrice} from "Contracts/Util/DynamicPrice.sol";
 
 contract Market is Access, DynamicPrice {
-    
+
     bytes32 constant private STO = 0x79030946dd457157e4aa08fcb4907c422402e75f0f0ecb4f2089cb35021ff964;
     bytes32 constant private FEE = 0x607744c37698f0ad2c7e8b300d57eaef2f987ccbb958ce7cd316a2c3e663f9ec;
     bytes32 constant private OWO = 0x6352211e00000000000000000000000000000000000000000000000000000000;
@@ -15,6 +15,7 @@ contract Market is Access, DynamicPrice {
     bytes32 constant private TTF = 0x23b872dd00000000000000000000000000000000000000000000000000000000;
     bytes32 constant private LIS = 0xdf0188db00000000000000000000000000000000000000000000000000000000;
     bytes32 constant private LID = 0x41aa443600000000000000000000000000000000000000000000000000000000;
+    bytes32 constant private ERR = 0x08c379a000000000000000000000000000000000000000000000000000000000;
     bytes32 constant private ITM = 0x6a7a67f0593403947073c37028291bd516867d4d24f57a76f4b94f284a63589f;
 
     event Item();
@@ -35,7 +36,7 @@ contract Market is Access, DynamicPrice {
 
             // require(ownerOf(tokenId) == msg.sender, 0xf)
             if iszero(eq(mload(0x0), caller())) {
-                mstore(0x80, shl(0xe5, 0x461bcd)) 
+                mstore(0x80, ERR) 
                 mstore(0x84, 0x20)
                 mstore(0xA4, 0xd)
                 mstore(0xC4, "Not NFT Owner")
@@ -52,7 +53,7 @@ contract Market is Access, DynamicPrice {
                 
                 // require(isApprovedForAll(msg.sender, address(this)), 0x10)
                 if iszero(mload(0x0)) {
-                    mstore(0x80, shl(0xe5, 0x461bcd)) 
+                    mstore(0x80, ERR) 
                     mstore(0x84, 0x20)
                     mstore(0xA4, 0x13)
                     mstore(0xC4, "No isApprovedForAll")
@@ -90,7 +91,7 @@ contract Market is Access, DynamicPrice {
             
             // require(price > 0, 0x11)
             if iszero(mload(0x20)) {
-                mstore(0x80, shl(0xe5, 0x461bcd)) 
+                mstore(0x80, ERR) 
                 mstore(0x84, 0x20)
                 mstore(0xA4, 0xc)
                 mstore(0xC4, "Not for sale")
