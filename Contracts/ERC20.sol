@@ -63,7 +63,7 @@ contract ERC20 is Sign {
         }
     }
 
-    function balanceOf(address adr) public view returns(uint val) {
+    function balanceOf(address adr) external view returns(uint val) {
         assembly {
             // uintData(address(), addr, 0x0)
             mstore(0x80, UIN)
@@ -75,7 +75,7 @@ contract ERC20 is Sign {
         }
     }
 
-    function allowance(address frm, address toa) public view returns(uint val) {
+    function allowance(address frm, address toa) external view returns(uint val) {
         assembly {
             // uintData(address(), from, to)
             mstore(0x80, UIN) 
@@ -88,7 +88,7 @@ contract ERC20 is Sign {
     }
 
     // gas: 61187/38302
-    function approve(address toa, uint amt) public returns(bool val) {
+    function approve(address toa, uint amt) external returns(bool val) {
         assembly {
             // uintData(address(), caller(), to, amt)
             mstore(0x80, UID) 
@@ -159,7 +159,7 @@ contract ERC20 is Sign {
     }
 
     // gas: 85644/65979
-    function transferFrom(address frm, address toa, uint amt) public returns(bool val) {
+    function transferFrom(address frm, address toa, uint amt) external returns(bool val) {
         checkSuspend(frm, toa);
         assembly {
             // uintData(address(), from, to)
@@ -183,21 +183,12 @@ contract ERC20 is Sign {
             pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x0, 0x20))
             let apa := mload(0x0)
 
-            // require(amt <= balanceOf(from))
-            if gt(amt, baf) {
+            // require(amt <= balanceOf(from) || amt <= allowance(from, msg.sender))
+            if and(gt(amt, baf), gt(amt, apa)) {
                 mstore(0x80, ERR) 
                 mstore(0x84, 0x20)
-                mstore(0xA4, 0x0f)
-                mstore(0xC4, "Invalid balance")
-                revert(0x80, 0x64)
-            }
-
-            // require(amt <= allowance(from, msg.sender))
-            if gt(amt, apa) {
-                mstore(0x80, ERR) 
-                mstore(0x84, 0x20)
-                mstore(0xA4, 0x10)
-                mstore(0xC4, "Invalid approval")
+                mstore(0xA4, 0x1b)
+                mstore(0xC4, "Invalid balance or approval")
                 revert(0x80, 0x64)
             }
 
@@ -266,7 +257,7 @@ contract ERC20 is Sign {
             // totalSupply -= amt;
             sstore(CNT, sub(sload(CNT), amt))
         }
-        transferFrom(msg.sender, address(0), amt); //调用标准函数
+        this.transferFrom(msg.sender, address(0), amt); //调用标准函数
     }
 
     /******************************************************************************/
