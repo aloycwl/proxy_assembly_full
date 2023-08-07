@@ -4,31 +4,28 @@ pragma abicoder v1;
 
 import "./UUPS.sol";
 
-// gas: 1159850
-contract Pizza is UUPSUpgradeable {
-   uint public slices;
-   string public shopName;
+contract NFTExample is UUPSUpgradeable {
+   uint public totalSupply;
+   string public name = "Crazy NFT";
 
-   function initialize(uint _sliceCount) external init {
-       slices = _sliceCount;
-       shopName = "Pizza Hut";
+   function initialize(uint totalSupply_) external init {
+       totalSupply = totalSupply_;
        owner = msg.sender;
    }
-   function eatSlice() virtual external {
-       require(slices-- > 1, "no slices left");
+   function mint() virtual external {
+       require(totalSupply-- > 1, "Ran out of supply");
    }
 }
 
-// gas: 1208029
-contract PizzaV2 is Pizza {
-   function pizzaVersion() external pure returns (uint) {
+contract NFTExampleV2 is NFTExample {
+   function NFTVersion() external pure returns (uint) {
        return 2;
    }
-   function newShop() external {
-       slices+=24;
-       shopName = "Domino";
+   function newNFT() external {
+       totalSupply += 24;
+       name = "Wild NFT";
    } 
-   function eatSlice() external override {
-       require(slices-- > 0, "no slices left");
+   function mint() external override {
+       require(totalSupply-- > 0, "Ran out of supply");
    }
 }
