@@ -225,15 +225,15 @@ contract ERC721 is Sign, DynamicPrice {
     }
 
     function safeTransferFrom(address frm, address toa, uint tid) external {
-        transferFrom(frm, toa, tid); 
+        this.transferFrom(frm, toa, tid); 
     }
 
     function safeTransferFrom(address frm, address toa, uint tid, bytes memory) external {
-        transferFrom(frm, toa, tid); 
+        this.transferFrom(frm, toa, tid); 
     }
 
     // gas: 165100
-    function transferFrom(address, address toa, uint tid) public { // 0x23b872dd
+    function transferFrom(address, address toa, uint tid) external { // 0x23b872dd
         address oid;
 
         assembly {
