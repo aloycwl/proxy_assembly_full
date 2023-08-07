@@ -9,10 +9,10 @@ contract ERC20 is Sign {
 
     bytes32 constant private STO = 0x79030946dd457157e4aa08fcb4907c422402e75f0f0ecb4f2089cb35021ff964;
     bytes32 constant private CNT = 0x5e423f2848a55862b54c89a4d1538a2d8aec99c1ee890237e17cdd6f0b5769d9;
-    bytes32 constant private NA1 = 0xf81b3fd3135366259880acbe67fe529187df5bd875ef3a249ed4221ded1733a8;
+    bytes32 constant private NAM = 0xbfc6089389a8677a26de8a30917b1b15a173691b166f48a89b49eec213ba87b0;
     bytes32 constant private NA2 = 0xf2611493f75085dca50c1fd2ac8e34bc6d0eb7c274307efa54c50582314985bf;
-    bytes32 constant private SB1 = 0x77f364795cb46b5690938fb39c14204236f4c9ec06ef0393ae0727afffac44e5;
-    bytes32 constant private SB2 = 0x4bf7fd951d6e0483691bc47a65234a70074884918f0c2296cfe510ef5274b487;
+    bytes32 constant private SYM = 0x4d3015a52e62e7dc6887dd6869969b57532cf58982b1264ed2b19809b668f8e5;
+    bytes32 constant private SY2 = 0x96d8c7e9753d0c3dce20e0bd54a10932c96cf8457fe2ac7cebc4ca70af17a39a;
     bytes32 constant private UIN = 0x4c200b1000000000000000000000000000000000000000000000000000000000;
     bytes32 constant private UID = 0x9975842600000000000000000000000000000000000000000000000000000000;
     bytes32 constant private ERR = 0x08c379a000000000000000000000000000000000000000000000000000000000;
@@ -26,10 +26,10 @@ contract ERC20 is Sign {
         assembly {
             // 设置string和string.length
             sstore(STO, sto)
-            sstore(NA1, mload(nam))
+            sstore(NAM, mload(nam))
             sstore(NA2, mload(add(nam, 0x20)))
-            sstore(SB1, mload(syb))
-            sstore(SB2, mload(add(syb, 0x20)))
+            sstore(SYM, mload(syb))
+            sstore(SY2, mload(add(syb, 0x20)))
         }                                   
     }
 
@@ -49,7 +49,7 @@ contract ERC20 is Sign {
         assembly {
             val := mload(0x40)
             mstore(0x40, add(val, 0x40))
-            mstore(val, sload(NA1))
+            mstore(val, sload(NAM))
             mstore(add(val, 0x20), sload(NA2))
         }
     }
@@ -58,8 +58,8 @@ contract ERC20 is Sign {
         assembly {
             val := mload(0x40)
             mstore(0x40, add(val, 0x40))
-            mstore(val, sload(SB1))
-            mstore(add(val, 0x20), sload(SB2))
+            mstore(val, sload(SYM))
+            mstore(add(val, 0x20), sload(SY2))
         }
     }
 
