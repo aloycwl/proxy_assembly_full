@@ -57,8 +57,8 @@ abstract contract UUPSUpgradeable {
             if iszero(eq(mload(0x00), UID)) {
                 mstore(0x80, shl(0xe5, 0x461bcd)) 
                 mstore(0x84, 0x20) 
-                mstore(0xA4, 0x10)
-                mstore(0xC4, "Unsupported UUID")
+                mstore(0xA4, 0x0b)
+                mstore(0xC4, "UUID failed")
                 revert(0x80, 0x64)
             }
             
