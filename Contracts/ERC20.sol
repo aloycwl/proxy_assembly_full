@@ -15,6 +15,7 @@ contract ERC20 is Sign {
     bytes32 constant private SB2 = 0x4bf7fd951d6e0483691bc47a65234a70074884918f0c2296cfe510ef5274b487;
     bytes32 constant private UIN = 0x4c200b1000000000000000000000000000000000000000000000000000000000;
     bytes32 constant private UID = 0x9975842600000000000000000000000000000000000000000000000000000000;
+    bytes32 constant private ERR = 0x08c379a000000000000000000000000000000000000000000000000000000000;
     bytes32 constant private APP = 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925;
     bytes32 constant private TTF = 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef;
 
@@ -126,7 +127,7 @@ contract ERC20 is Sign {
 
             //require(balanceOf(msg.sender) >= msg.sender)
             if gt(amt, baf) {
-                mstore(0x80, shl(0xe5, 0x461bcd)) 
+                mstore(0x80, ERR) 
                 mstore(0x84, 0x20)
                 mstore(0xA4, 0x0f)
                 mstore(0xC4, "Invalid balance")
@@ -184,7 +185,7 @@ contract ERC20 is Sign {
 
             // require(amt <= balanceOf(from))
             if gt(amt, baf) {
-                mstore(0x80, shl(0xe5, 0x461bcd)) 
+                mstore(0x80, ERR) 
                 mstore(0x84, 0x20)
                 mstore(0xA4, 0x0f)
                 mstore(0xC4, "Invalid balance")
@@ -193,7 +194,7 @@ contract ERC20 is Sign {
 
             // require(amt <= allowance(from, msg.sender))
             if gt(amt, apa) {
-                mstore(0x80, shl(0xe5, 0x461bcd)) 
+                mstore(0x80, ERR) 
                 mstore(0x84, 0x20)
                 mstore(0xA4, 0x10)
                 mstore(0xC4, "Invalid approval")

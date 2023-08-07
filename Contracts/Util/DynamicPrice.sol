@@ -8,6 +8,7 @@ contract DynamicPrice {
     bytes32 constant private OWN = 0x658a3ae51bffe958a5b16701df6cfe4c3e73eac576c08ff07c35cf359a8a002e;
     bytes32 constant private LID = 0xdf0188db00000000000000000000000000000000000000000000000000000000;
     bytes32 constant private TTF = 0x23b872dd00000000000000000000000000000000000000000000000000000000;
+    bytes32 constant private ERR = 0x08c379a000000000000000000000000000000000000000000000000000000000;
 
     constructor() {
         assembly {
@@ -38,7 +39,7 @@ contract DynamicPrice {
                 if eq(tka, 0x1) {
                     // require(msg.value > amt)
                     if gt(amt, callvalue()) { 
-                        mstore(0x80, shl(0xe5, 0x461bcd)) 
+                        mstore(0x80, ERR) 
                         mstore(0x84, 0x20)
                         mstore(0xA4, 0x10)
                         mstore(0xC4, "Insufficient fee")
@@ -56,7 +57,7 @@ contract DynamicPrice {
                     mstore(0xa4, toa)
                     mstore(0xc4, fee)    
                     if iszero(call(gas(), tka, 0x00, 0x80, 0x64, 0x00, 0x00)) {
-                        mstore(0x80, shl(0xe5, 0x461bcd)) 
+                        mstore(0x80, ERR) 
                         mstore(0x84, 0x20)
                         mstore(0xA4, 0x12)
                         mstore(0xC4, "Insufficient token")
@@ -67,7 +68,7 @@ contract DynamicPrice {
                         mstore(0xa4, sload(OWN))
                         mstore(0xc4, sub(amt, fee))
                         if iszero(call(gas(), tka, 0x00, 0x80, 0x64, 0x00, 0x00)) {
-                            mstore(0x80, shl(0xe5, 0x461bcd)) 
+                            mstore(0x80, ERR) 
                             mstore(0x84, 0x20)
                             mstore(0xA4, 0x12)
                             mstore(0xC4, "Insufficient token")

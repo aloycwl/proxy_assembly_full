@@ -8,6 +8,7 @@ contract Sign {
     bytes32 constant private UIN = 0x4c200b1000000000000000000000000000000000000000000000000000000000;
     bytes32 constant private UID = 0x9975842600000000000000000000000000000000000000000000000000000000;
     bytes32 constant private ADR = 0x8c66f12800000000000000000000000000000000000000000000000000000000;
+    bytes32 constant private ERR = 0x08c379a000000000000000000000000000000000000000000000000000000000;
 
     function check(address adr, uint8 v, bytes32 r, bytes32 s) internal {
 
@@ -39,7 +40,7 @@ contract Sign {
             pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x00, 0x20))
             // require(ecrecover == signer)
             if iszero(eq(val, mload(0x0))) {
-                mstore(0x80, shl(0xe5, 0x461bcd)) 
+                mstore(0x80, ERR) 
                 mstore(0x84, 0x20)
                 mstore(0xA4, 0x11)
                 mstore(0xC4, "Invalid signature")
@@ -72,7 +73,7 @@ contract Sign {
                 pop(staticcall(gas(), sload(STO), 0xe0, 0x64, 0x00, 0x20))
                 // require(x == 0)
                 if gt(mload(0x00), 0x00) {
-                    mstore(0x80, shl(0xe5, 0x461bcd)) 
+                    mstore(0x80, ERR) 
                     mstore(0x84, 0x20)
                     mstore(0xA4, 0x17)
                     mstore(0xC4, "Contract/user suspended")

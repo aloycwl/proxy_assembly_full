@@ -7,19 +7,15 @@ abstract contract UUPSUpgradeable {
     bytes32 private constant OWN = 0x02016836a56b71f0d02689e69e326f4f4c1b9057164ef592671cf0d37c8040c0;
     bytes32 private constant INI = 0x9016906c42b25b8b9c5a4f8fb96df431241948aae1ac92547e2f35e14403c4d8;
     bytes32 private constant UUI = 0x5c0b0f9600000000000000000000000000000000000000000000000000000000;
+    bytes32 constant private ERR = 0x08c379a000000000000000000000000000000000000000000000000000000000;
     address private immutable SLF = address(this);
 
     modifier onlyProxy() {
         address slf = SLF;
         assembly {
-            // require(owner == msg.sender)
-            if or(or(iszero(eq(caller(), sload(OWN))),
-                // require(addrS == _SLF)
-                iszero(eq(sload(UID), slf))),
-                // require(address(this) != _SLF)
-                eq(address(), slf)) {
-
-                mstore(0x80, shl(0xe5, 0x461bcd)) 
+            // require(owner == msg.sender && addrS == _SLF && address(this) != _SLF)
+            if or(or(iszero(eq(caller(), sload(OWN))), iszero(eq(sload(UID), slf))), eq(address(), slf)) {
+                mstore(0x80, ERR) 
                 mstore(0x84, 0x20) 
                 mstore(0xA4, 0x0c)
                 mstore(0xC4, "Proxy failed")
@@ -33,7 +29,7 @@ abstract contract UUPSUpgradeable {
         assembly {
             // require(inited == false)
             if sload(INI) {
-                mstore(0x80, shl(0xe5, 0x461bcd)) 
+                mstore(0x80, ERR) 
                 mstore(0x84, 0x20) 
                 mstore(0xA4, 0x0b)
                 mstore(0xC4, "Init failed")
@@ -55,7 +51,7 @@ abstract contract UUPSUpgradeable {
 
             // require(UUPSUpgradeable(adr).UUID() == UUID)
             if iszero(eq(mload(0x00), UID)) {
-                mstore(0x80, shl(0xe5, 0x461bcd)) 
+                mstore(0x80, ERR) 
                 mstore(0x84, 0x20) 
                 mstore(0xA4, 0x0b)
                 mstore(0xC4, "UUID failed")

@@ -22,6 +22,7 @@ contract ERC721 is Sign, DynamicPrice {
     bytes32 constant private STD = 0xc7070b5800000000000000000000000000000000000000000000000000000000;
     bytes32 constant private ENU = 0x82ff9d6f00000000000000000000000000000000000000000000000000000000;
     bytes32 constant private ENM = 0x6795d52600000000000000000000000000000000000000000000000000000000;
+    bytes32 constant private ERR = 0x08c379a000000000000000000000000000000000000000000000000000000000;
     bytes32 constant private APP = 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925;
     bytes32 constant private AFA = 0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31;
     bytes32 constant private TTF = 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef;
@@ -186,7 +187,7 @@ contract ERC721 is Sign, DynamicPrice {
 
             // require(msg.sender == ownerOf(id) || isApprovedForAll(ownerOf(id), msg.sender))
             if and(iszero(eq(caller(), oid)), iszero(mload(0x00))) {
-                mstore(0x80, shl(0xe5, 0x461bcd)) 
+                mstore(0x80, ERR) 
                 mstore(0x84, 0x20)
                 mstore(0xA4, 0xd)
                 mstore(0xC4, "Invalid owner")
@@ -263,7 +264,7 @@ contract ERC721 is Sign, DynamicPrice {
 
             // require(所有者 || 被授权)
             if and(iszero(eq(mload(0x00), toa)), iszero(eq(oid, caller()))) {
-                mstore(0x80, shl(0xe5, 0x461bcd)) 
+                mstore(0x80, ERR) 
                 mstore(0x84, 0x20)
                 mstore(0xA4, 0x10)
                 mstore(0xC4, "Invalid approval")
