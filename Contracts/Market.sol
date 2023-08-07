@@ -68,7 +68,7 @@ contract Market is Access, DynamicPrice {
     // gas: 269403/292730
     function buy(address contAddr, uint id) external payable {
         address from;
-        uint fee;
+        uint amt;
 
         assembly {
             // listData(address(), contAddr, id)
@@ -94,13 +94,13 @@ contract Market is Access, DynamicPrice {
             from := mload(0x0)
 
             // 索取费用和卖家
-            fee := sload(0x1)
+            amt := sload(0x1)
 
             // emit Item()
             log1(0x0, 0x00, 0x6a7a67f0593403947073c37028291bd516867d4d24f57a76f4b94f284a63589f)
         }
         
-        pay(contAddr, id, from, fee); // 转币给卖家减费用
+        pay(contAddr, id, from, amt); // 转币给卖家减费用
 
         assembly {
             // approve(msg.sender, id)
@@ -132,6 +132,12 @@ contract Market is Access, DynamicPrice {
     function setFee(uint amt) external OnlyAccess {
         assembly {
             sstore(0x1, amt) // 小数点后两位的百分比，xxx.xx
+        }
+    }
+
+    function fee() external view returns (uint val) {
+        assembly {
+            val := sload(0x1)
         }
     }
     
