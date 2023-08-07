@@ -3,7 +3,7 @@ pragma solidity 0.8.19;
 pragma abicoder v1;
 
 abstract contract UUPSUpgradeable {
-    bytes32 public constant UUID = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
+    bytes32 public constant UID = 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc;
     bytes32 private constant OWN = 0x02016836a56b71f0d02689e69e326f4f4c1b9057164ef592671cf0d37c8040c0;
     bytes32 private constant INI = 0x9016906c42b25b8b9c5a4f8fb96df431241948aae1ac92547e2f35e14403c4d8;
     bytes32 private constant UUI = 0x5c0b0f9600000000000000000000000000000000000000000000000000000000;
@@ -15,7 +15,7 @@ abstract contract UUPSUpgradeable {
             // require(owner == msg.sender)
             if or(or(iszero(eq(caller(), sload(OWN))),
                 // require(addrS == _SLF)
-                iszero(eq(sload(UUID), slf))),
+                iszero(eq(sload(UID), slf))),
                 // require(address(this) != _SLF)
                 eq(address(), slf)) {
 
@@ -42,7 +42,7 @@ abstract contract UUPSUpgradeable {
             // owner = msg.sender
             sstore(OWN, caller())
             // inited = true;
-            sstore(INI, 0x1)
+            sstore(INI, 0x01)
         }
     }
 
@@ -54,7 +54,7 @@ abstract contract UUPSUpgradeable {
             pop(staticcall(gas(), adr, 0x80, 0x04, 0x00, 0x20))
 
             // require(UUPSUpgradeable(adr).UUID() == UUID)
-            if iszero(eq(mload(0x00), UUID)) {
+            if iszero(eq(mload(0x00), UID)) {
                 mstore(0x80, shl(0xe5, 0x461bcd)) 
                 mstore(0x84, 0x20) 
                 mstore(0xA4, 0x10)
@@ -62,7 +62,7 @@ abstract contract UUPSUpgradeable {
                 revert(0x80, 0x64)
             }
             
-            sstore(UUID, adr) 
+            sstore(UID, adr) 
         }
     }
 }
