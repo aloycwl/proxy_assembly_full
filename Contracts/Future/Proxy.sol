@@ -7,15 +7,18 @@ import "./UUPS.sol";
 contract NFTExample is UUPSUpgradeable {
 
     uint public totalSupply;
-    string public name;
 
     function initialize(uint totalSupply_) external {
         init();
-        (totalSupply, name) = (totalSupply_, "Crazy NFT");
+        totalSupply = totalSupply_;
     }
 
     function mint() virtual external {
         require(totalSupply-- > 0x1, "Ran out of supply");
+    }
+
+    function name() virtual external pure returns (string memory) {
+        return "Crazy NFT";
     }
 }
 
@@ -24,10 +27,14 @@ contract NFTExampleV2 is NFTExample {
 
     function newNFT() external {
         totalSupply += 0x0f;
-        name = "Wild NFT";
+        
     } 
 
     function mint() external override {
         require(totalSupply-- > 0x00, "Ran out of supply");
+    }
+
+    function name() override external pure returns (string memory) {
+        return "Wild NFT";
     }
 }
