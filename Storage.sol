@@ -2,7 +2,7 @@
 pragma solidity 0.8.19;
 pragma abicoder v1;
 
-import {Access} from "Contracts/Util/Access.sol";
+import {Access} from "../Util/Access.sol";
 
 struct List {
     address tokenAddr;

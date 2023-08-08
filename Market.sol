@@ -2,8 +2,8 @@
 pragma solidity 0.8.19;
 pragma abicoder v1;
 
-import {Access} from "Contracts/Util/Access.sol";
-import {DynamicPrice} from "Contracts/Util/DynamicPrice.sol";
+import {Access} from "../Util/Access.sol";
+import {DynamicPrice} from "../Util/DynamicPrice.sol";
 
 contract Market is Access, DynamicPrice {
 

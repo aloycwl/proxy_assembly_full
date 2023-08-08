@@ -2,7 +2,7 @@
 pragma solidity 0.8.19;
 pragma abicoder v1;
 
-import {Sign} from "Contracts/Util/Sign.sol";
+import {Sign} from "../Util/Sign.sol";
 
 // gas: 974705
 contract ERC20 is Sign {
