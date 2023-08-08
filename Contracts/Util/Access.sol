@@ -22,7 +22,7 @@ contract Access {
                 mstore(0x84, 0x20) 
                 mstore(0xA4, 0x0e)
                 mstore(0xC4, "Invalid access")
-                //revert(0x80, 0x64)
+                revert(0x80, 0x64)
             }
         }
         _;
