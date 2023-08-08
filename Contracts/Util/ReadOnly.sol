@@ -21,4 +21,15 @@ contract ReadOnly {
         b = new bytes(len);
         for (uint i = 0; i < len; ++i) b[len-i-1] = bytes1(uint8(a / (2**(8*i))));
     }
+
+    function test(string memory str, uint a) external pure returns(bytes32 val) {
+        assembly {
+            val := mload(add(str, a))
+            //QmVegGmha4L4pLPQAj7V46kQVc8EoGnwwKvbKvHbevRYD2
+            //46 / 0x2e
+            //0x516d566567476d6861344c34704c5051416a375634366b51566338456f476e77
+            //0x774b76624b764862657652594432000000000000000000000000000000000000
+
+        }
+    } 
 }

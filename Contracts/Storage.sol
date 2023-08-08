@@ -78,7 +78,7 @@ contract Storage is Access {
             mstore(add(val, 0x40), sload(add(d, 0x40)))
         }
     }
-    function stringData(bytes32 a, bytes32 b, bytes32 c, bytes32 d, bytes32 e) external OnlyAccess { // 0xc7070b58
+    function stringData(address a, uint b, uint c, bytes32 d, bytes32 e) external OnlyAccess { // 0x4155d39b
         assembly {
             mstore(0x00, a)
             mstore(0x20, b)

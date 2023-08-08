@@ -19,7 +19,7 @@ contract ERC721 is Sign, DynamicPrice {
     bytes32 constant private UIN = 0x4c200b1000000000000000000000000000000000000000000000000000000000;
     bytes32 constant private UID = 0x9975842600000000000000000000000000000000000000000000000000000000;
     bytes32 constant private STR = 0x99eec06400000000000000000000000000000000000000000000000000000000;
-    bytes32 constant private STD = 0xc7070b5800000000000000000000000000000000000000000000000000000000;
+    bytes32 constant private STD = 0x4155d39b00000000000000000000000000000000000000000000000000000000;
     bytes32 constant private ENU = 0x82ff9d6f00000000000000000000000000000000000000000000000000000000;
     bytes32 constant private ENM = 0x6795d52600000000000000000000000000000000000000000000000000000000;
     bytes32 constant private ERR = 0x08c379a000000000000000000000000000000000000000000000000000000000;
@@ -337,36 +337,36 @@ contract ERC721 is Sign, DynamicPrice {
                 sstore(CNT, lis)
 
                 // uintEnum(address(), to, id, 0x0)
-                mstore(0x80, ENM)
+                mstore(0xe0, ENM)
                 // ++tokensOwned()
-                mstore(0x84, address())
-                mstore(0xa4, caller())
-                mstore(0xc4, lis)
-                mstore(0xe4, 0x0)
-                pop(call(gas(), sto, 0x00, 0x80, 0x84, 0x00, 0x00))
+                mstore(0xe4, address())
+                mstore(0x0104, caller())
+                mstore(0x0124, lis)
+                mstore(0x0144, 0x0)
+                pop(call(gas(), sto, 0x00, 0xe0, 0x84, 0x00, 0x00))
 
                 // uintData(address(), addr, 0x0)
-                mstore(0x80, UIN)
+                mstore(0xe0, UIN)
                 // balanceOf(to)
-                mstore(0x84, address())
-                mstore(0xa4, caller())
-                mstore(0xc4, 0x00)
-                pop(staticcall(gas(), sto, 0x80, 0x64, 0x00, 0x20))
+                mstore(0xe4, address())
+                mstore(0x0104, caller())
+                mstore(0x0124, 0x00)
+                pop(staticcall(gas(), sto, 0xe0, 0x64, 0x00, 0x20))
 
                 // uintData(address(), msg.sender, 0, balanceOf(msg.sender))
-                mstore(0x80, UID)
+                mstore(0xe0, UID)
                 // ++balanceOf(msg.sender)
-                mstore(0x84, address())
-                mstore(0xa4, caller())
-                mstore(0xc4, 0x00)
-                mstore(0xe4, add(0x01, mload(0x00)))
-                pop(call(gas(), sto, 0x00, 0x80, 0x84, 0x00, 0x00))
+                mstore(0xe4, address())
+                mstore(0x0104, caller())
+                mstore(0x0124, 0x00)
+                mstore(0x0144, add(0x01, mload(0x00)))
+                pop(call(gas(), sto, 0x00, 0xe0, 0x84, 0x00, 0x00))
 
                 // ownerOf[id] = to
-                mstore(0xa4, 0x00)
-                mstore(0xc4, lis)
-                mstore(0xe4, caller())
-                pop(call(gas(), sto, 0x00, 0x80, 0x84, 0x00, 0x00))
+                mstore(0x0104, 0x00)
+                mstore(0x0124, lis)
+                mstore(0x0144, caller())
+                pop(call(gas(), sto, 0x00, 0xe0, 0x84, 0x00, 0x00))
                 
                 // emit Transfer()
                 log4(0x00, 0x00, TTF, 0x00, caller(), lis)
@@ -380,14 +380,14 @@ contract ERC721 is Sign, DynamicPrice {
             }         
 
             // stringData(address(), l, len, str1, str2)
-            mstore(0x80, STD)
+            mstore(0xe0, STD)
             // tokenURI[l] = u
-            mstore(0x84, address())
-            mstore(0xa4, lis)
-            mstore(0xc4, mload(uri))
-            mstore(0xe4, mload(add(uri, 0x20)))
-            mstore(0x0104, mload(add(uri, 0x40)))
-            pop(call(gas(), sto, 0x00, 0x80, 0xa4, 0x00, 0x00))
+            mstore(0xe4, address())
+            mstore(0x0104, lis)
+            mstore(0x0124, mload(uri))
+            mstore(0x0144, mload(add(uri, 0x20)))
+            mstore(0x0164, mload(add(uri, 0x40)))
+            pop(call(gas(), sto, 0x00, 0xe0, 0xa4, 0x00, 0x00))
         }
     }
     
@@ -413,9 +413,9 @@ contract ERC721 is Sign, DynamicPrice {
             // stringData(address(), l, len, str1, str2)
             mstore(0x84, address())
             mstore(0xa4, l)
-            mstore(0xc4, 0x2f)
-            mstore(0xe4, "QmVegGmha4L4pLPQAj7V46kQVc8EoGn")
-            mstore(0x104, "wwKvbKvHbevRYD2")
+            mstore(0xc4, 0x2e)
+            mstore(0xe4, 0x516d566567476d6861344c34704c5051416a375634366b51566338456f476e77)
+            mstore(0x0104, 0x774b76624b764862657652594432000000000000000000000000000000000000)
             pop(call(gas(), sto, 0x0, 0x80, 0xa4, 0x0, 0x0))
 
             // count++
