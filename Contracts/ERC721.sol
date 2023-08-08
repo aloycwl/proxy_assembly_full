@@ -79,10 +79,10 @@ contract ERC721 is Sign, DynamicPrice {
             // addressData(address(), 0x0, id)
             mstore(0x80, ADR)
             mstore(0x84, address())
-            mstore(0xa4, 0x0)
+            mstore(0xa4, 0x00)
             mstore(0xc4, tid)
             pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x0, 0x20))
-            val := mload(0x0)
+            val := mload(0x00)
         }
     }
 
@@ -92,9 +92,9 @@ contract ERC721 is Sign, DynamicPrice {
             mstore(0x80, UIN)
             mstore(0x84, address())
             mstore(0xa4, adr)
-            mstore(0xc4, 0x0)
-            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x0, 0x20))
-            val := mload(0x0)
+            mstore(0xc4, 0x00)
+            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x00, 0x20))
+            val := mload(0x00)
         }
     }
 
@@ -448,10 +448,10 @@ contract ERC721 is Sign, DynamicPrice {
             pop(call(gas(), sto, 0x0, 0x80, 0x84, 0x0, 0x0))
 
             // ownerOf[id] = to
-            mstore(0xa4, 0x0)
+            mstore(0xa4, 0x00)
             mstore(0xc4, l)
             mstore(0xe4, caller())
-            pop(call(gas(), sto, 0x0, 0x80, 0x84, 0x0, 0x0))
+            pop(call(gas(), sto, 0x00, 0x80, 0x84, 0x00, 0x0))
             
             // emit Transfer()
             log4(0x0, 0x0, TTF, 0x0, caller(), l)

@@ -14,10 +14,10 @@ contract Storage is Access {
     constructor() {
         assembly {
             //设置signer
-            mstore(0x00, 0x0)
-            mstore(0x20, 0x0)
-            mstore(0x40, 0x1)
-            sstore(keccak256(0x0, 0x60), caller())
+            mstore(0x80, 0x00)
+            mstore(0xa0, 0x00)
+            mstore(0xc0, 0x01)
+            sstore(keccak256(0x80, 0x60), caller())
         }
     }
     /*
@@ -46,10 +46,10 @@ contract Storage is Access {
     }
     function uintData(address a, address b, address c, uint d) external OnlyAccess { // 0x99758426
         assembly {
-            mstore(0x00, a)
-            mstore(0x20, b)
-            mstore(0x40, c)
-            sstore(keccak256(0x00, 0x60), d)
+            mstore(0x80, a)
+            mstore(0xa0, b)
+            mstore(0xc0, c)
+            sstore(keccak256(0x80, 0x60), d)
         }
     }
     /*
@@ -57,10 +57,10 @@ contract Storage is Access {
     */
     function addressData(address a, uint b, uint c) external view returns(address val) { // 0x8c66f128
         assembly{
-            mstore(0x00, a)
-            mstore(0x20, b)
-            mstore(0x40, c)
-            val := sload(keccak256(0x00, 0x60))
+            mstore(0x80, a)
+            mstore(0xa0, b)
+            mstore(0xc0, c)
+            val := sload(keccak256(0x80, 0x60))
         }
     }
     /*
