@@ -83,4 +83,17 @@ contract Sign {
             }
         }
     }
+
+    // block.timestamp
+    function getUint(address adr, uint uid) external view returns (uint val) {
+        assembly {
+            // uintData(address(), addr, 0x0)
+            mstore(0x80, UIN)
+            mstore(0x84, address())
+            mstore(0xa4, adr)
+            mstore(0xc4, uid)
+            pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x00, 0x20))
+            val := mload(0x00)
+        }
+    }
 }
