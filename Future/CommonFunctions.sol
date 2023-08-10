@@ -21,4 +21,20 @@ contract ReadOnly {
         b = new bytes(len);
         for (uint i = 0; i < len; ++i) b[len-i-1] = bytes1(uint8(a / (2**(8*i))));
     }
+
+    function recover(bytes32 h, bytes memory c) external pure returns (address) {
+        uint8 v;
+        bytes32 r;
+        bytes32 s;
+        assembly {
+            r := mload(add(c, 0x20))
+            s := mload(add(c, 0x40))
+            v := byte(0, mload(add(c, 0x60)))
+        }
+        return ecrecover(h, v, r, s);
+    }
+
+    function recover(bytes32 h, uint8 v, bytes32 r, bytes32 s) external pure returns (address) {
+        return ecrecover(h, v, r, s);
+    }
 }
