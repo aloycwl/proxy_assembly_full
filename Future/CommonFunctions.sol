@@ -15,6 +15,14 @@ library lib {
         return a.code.length;
     }
 
+    function getBytecode() external pure returns (bytes memory){
+        return type(TestCreationCode).creationCode;
+    }
+
+    function getDeployAdr(bytes memory a, uint b)public view returns (address){
+        return address(uint160(uint(keccak256(abi.encodePacked(bytes1(0xff), address(this), b, keccak256(a))))));
+    }
+
     function convertHex2Dec(bytes memory a) external pure returns(uint b) {
         for(uint i = 0; i < a.length; ++i) b += uint(uint8(a[i]))*(2**(8*(a.length-i-1)));
     }
@@ -47,4 +55,8 @@ library lib {
     function recover(bytes32 h, uint8 v, bytes32 r, bytes32 s) external pure returns(address) {
         return ecrecover(h, v, r, s);
     }
+}
+
+contract TestCreationCode {
+
 }
