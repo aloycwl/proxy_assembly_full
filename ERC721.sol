@@ -28,10 +28,10 @@ contract ERC721 is Sign, DynamicPrice {
     bytes32 constant private TTF = 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef;
     bytes32 constant private UPD = 0xf8e1a15aba9398e019f0b49df1a4fde98ee17ae345cb5f6b5e2c27f5033e8ce7;
 
-    event Transfer (address indexed from, address indexed to, uint indexed id) anonymous;
-    event ApprovalForAll (address indexed from, address indexed to, bool) anonymous;
-    event Approval (address indexed from, address indexed to, uint indexed id) anonymous;
-    event MetadataUpdate (uint id) anonymous;
+    event Transfer (address indexed from, address indexed to, uint indexed id);
+    event ApprovalForAll (address indexed from, address indexed to, bool);
+    event Approval (address indexed from, address indexed to, uint indexed id);
+    event MetadataUpdate (uint id);
 
     //ERC20标准函数 
     constructor(address sto, string memory nam, string memory sym) {

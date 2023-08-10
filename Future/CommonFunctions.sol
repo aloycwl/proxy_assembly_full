@@ -2,7 +2,7 @@
 pragma solidity 0.8.19;
 pragma abicoder v1;
 
-library lib {
+contract lib {
     function getSelector(string memory a) external pure returns(bytes4) {
         return bytes4(keccak256(abi.encodePacked(a)));
     }
@@ -15,12 +15,19 @@ library lib {
         return a.code.length;
     }
 
-    function getBytecode() external pure returns (bytes memory){
+    function getBytecode() external pure returns (bytes memory) {
         return type(TestCreationCode).creationCode;
     }
 
-    function getDeployAdr(bytes memory a, uint b)public view returns (address){
+    function getDeployAdr(bytes memory a, uint b)public view returns (address) {
         return address(uint160(uint(keccak256(abi.encodePacked(bytes1(0xff), address(this), b, keccak256(a))))));
+    }
+
+    function deploy(bytes memory a, uint b) external payable returns(address) {
+        assembly{
+            mstore(0x00, create2(callvalue(), add(a, 0x20), mload(a), b))
+            return(0x00, 0x20)
+        }
     }
 
     function convertHex2Dec(bytes memory a) external pure returns(uint b) {
@@ -58,5 +65,5 @@ library lib {
 }
 
 contract TestCreationCode {
-
+    uint public constant storedNumber = 0x0500;
 }
