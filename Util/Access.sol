@@ -15,7 +15,7 @@ contract Access {
     }
 
     //用作函数的修饰符
-    modifier OnlyAccess() {
+    modifier onlyAccess() {
         assembly { // require(access[msg.sender] > 0, 0x1);
             if iszero(sload(caller())) {
                 mstore(0x80, ERR) 
@@ -29,7 +29,7 @@ contract Access {
     }
 
     //只可以管理权限币你小的人和授权比自己低的等级
-    function setAccess(address addr, uint u) external OnlyAccess {
+    function setAccess(address addr, uint u) external onlyAccess {
         assembly { // access[addr] = u;
             sstore(addr, u)
         }

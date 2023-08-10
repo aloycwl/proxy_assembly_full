@@ -140,7 +140,7 @@ contract Market is Access, DynamicPrice {
     }
 
     //设置费用
-    function setFee(uint amt) external OnlyAccess {
+    function setFee(uint amt) external onlyAccess {
         assembly {
             sstore(FEE, amt) // 小数点后两位的百分比，xxx.xx
         }

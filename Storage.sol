@@ -28,7 +28,7 @@ contract Storage is Access {
             val := sload(keccak256(a, 0x40))
         }
     }
-    function did(string memory a, address b) external OnlyAccess { // 0x7148bc72
+    function did(string memory a, address b) external onlyAccess { // 0x7148bc72
         assembly {
             sstore(keccak256(a, 0x40), b)
         }
@@ -44,7 +44,7 @@ contract Storage is Access {
             val := sload(keccak256(0x80, 0x60))
         }
     }
-    function uintData(address a, address b, address c, uint d) external OnlyAccess { // 0x99758426
+    function uintData(address a, address b, address c, uint d) external onlyAccess { // 0x99758426
         assembly {
             mstore(0x80, a)
             mstore(0xa0, b)
@@ -63,6 +63,14 @@ contract Storage is Access {
             val := sload(keccak256(0x80, 0x60))
         }
     }
+    function addressData(address a, uint b, uint c, address d) external onlyAccess { // 0x8c66f128
+        assembly{
+            mstore(0x80, a)
+            mstore(0xa0, b)
+            mstore(0xc0, c)
+            sstore(keccak256(0x80, 0x60), d)
+        }
+    }
     /*
     stringData[a][b] = c
     */
@@ -78,7 +86,7 @@ contract Storage is Access {
             mstore(add(val, 0x40), sload(add(d, 0x40)))
         }
     }
-    function stringData(address a, uint b, uint c, bytes32 d, bytes32 e) external OnlyAccess { // 0x4155d39b
+    function stringData(address a, uint b, uint c, bytes32 d, bytes32 e) external onlyAccess { // 0x4155d39b
         assembly {
             mstore(0x00, a)
             mstore(0x20, b)
@@ -101,7 +109,7 @@ contract Storage is Access {
             e := sload(add(f, 0x20))
         }
     }
-    function listData(address a, address b, uint c, address d, uint e) external OnlyAccess { // 0x41aa4436
+    function listData(address a, address b, uint c, address d, uint e) external onlyAccess { // 0x41aa4436
         assembly {
             mstore(0x00, a)
             mstore(0x20, b)
@@ -135,7 +143,7 @@ contract Storage is Access {
             }
         }
     }
-    function uintEnum(address a, address b, uint c, uint d) external OnlyAccess { // 0x6795d526
+    function uintEnum(address a, address b, uint c, uint d) external onlyAccess { // 0x6795d526
         assembly {
             mstore(0x00, a)
             mstore(0x20, b)
