@@ -23,9 +23,10 @@ contract Storage is Access {
     /*
     did[a] = b
     */
-    function did(string memory a) external view returns(address val) { // 0x31b35552
+    function did(string memory a) external view returns(address) { // 0x31b35552
         assembly {
-            val := sload(keccak256(a, 0x40))
+            mstore(0x00, sload(keccak256(a, 0x40)))
+            return(0x00, 0x20)
         }
     }
     function did(string memory a, address b) external onlyAccess { // 0x7148bc72
@@ -36,12 +37,13 @@ contract Storage is Access {
     /*
     uintData[a][b][c] = d
     */
-    function uintData(address a, address b, address c) external view returns(uint val) { // 0x4c200b10
+    function uintData(address a, address b, address c) external view returns(uint) { // 0x4c200b10
         assembly{
             mstore(0x80, a)
             mstore(0xa0, b)
             mstore(0xc0, c)
-            val := sload(keccak256(0x80, 0x60))
+            mstore(0x00, sload(keccak256(0x80, 0x60)))
+            return(0x00, 0x20)
         }
     }
     function uintData(address a, address b, address c, uint d) external onlyAccess { // 0x99758426
@@ -55,12 +57,13 @@ contract Storage is Access {
     /*
     addressData[a][b][c] = d
     */
-    function addressData(address a, uint b, uint c) external view returns(address val) { // 0x8c66f128
+    function addressData(address a, uint b, uint c) external view returns(address) { // 0x8c66f128
         assembly{
             mstore(0x80, a)
             mstore(0xa0, b)
             mstore(0xc0, c)
-            val := sload(keccak256(0x80, 0x60))
+            mstore(0x00, sload(keccak256(0x80, 0x60)))
+            return(0x00, 0x20)
         }
     }
     function addressData(address a, uint b, uint c, address d) external onlyAccess { // 0x8c66f128
@@ -74,16 +77,16 @@ contract Storage is Access {
     /*
     stringData[a][b] = c
     */
-    function stringData(address a, uint b) external view returns(string memory val) { // 0x99eec064
+    function stringData(address a, uint b) external view returns(string memory) { // 0x99eec064
         assembly{
             mstore(0x00, a)
             mstore(0x20, b)
             let d := keccak256(0x0, 0x40)
-            val := mload(0x40)
-            mstore(0x40, add(val, 0x60))
-            mstore(val, sload(d))
-            mstore(add(val, 0x20), sload(add(d, 0x20)))
-            mstore(add(val, 0x40), sload(add(d, 0x40)))
+            mstore(0x80, 0x20)
+            mstore(0xa0, 0x25)
+            mstore(0xc0, sload(add(d, 0x20)))
+            mstore(0xe0, sload(add(d, 0x40)))
+            return(0x80, 0x80)
         }
     }
     function stringData(address a, uint b, uint c, bytes32 d, bytes32 e) external onlyAccess { // 0x4155d39b
@@ -99,14 +102,15 @@ contract Storage is Access {
     /*
     lists[a][b][c] = List(d, e);
     */
-    function listData(address a, address b, uint c) external view returns(address d, uint e) { // 0xdf0188db
+    function listData(address a, address b, uint c) external view returns(address, uint) { // 0xdf0188db
         assembly{
             mstore(0x80, a)
             mstore(0xa0, b)
             mstore(0xc0, c)
             let f := keccak256(0x80, 0x60)
-            d := sload(f)
-            e := sload(add(f, 0x20))
+            mstore(0x00, sload(f))
+            mstore(0x20, sload(add(f, 0x20)))
+            return(0x00, 0x40)
         }
     }
     function listData(address a, address b, uint c, address d, uint e) external onlyAccess { // 0x41aa4436
