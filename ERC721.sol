@@ -7,26 +7,26 @@ import {DynamicPrice} from "../Util/DynamicPrice.sol";
 
 contract ERC721 is Sign, DynamicPrice {
 
-    bytes32 constant private STO = 0x79030946dd457157e4aa08fcb4907c422402e75f0f0ecb4f2089cb35021ff964;
-    bytes32 constant private CNT = 0x5e423f2848a55862b54c89a4d1538a2d8aec99c1ee890237e17cdd6f0b5769d9;
-    bytes32 constant private NAM = 0xbfc6089389a8677a26de8a30917b1b15a173691b166f48a89b49eec213ba87b0;
-    bytes32 constant private NA2 = 0xf2611493f75085dca50c1fd2ac8e34bc6d0eb7c274307efa54c50582314985bf;
-    bytes32 constant private SYM = 0x4d3015a52e62e7dc6887dd6869969b57532cf58982b1264ed2b19809b668f8e5;
-    bytes32 constant private SY2 = 0x96d8c7e9753d0c3dce20e0bd54a10932c96cf8457fe2ac7cebc4ca70af17a39a;
-    bytes32 constant private IN7 = 0x80ac58cd00000000000000000000000000000000000000000000000000000000;
-    bytes32 constant private INM = 0x5b5e139f00000000000000000000000000000000000000000000000000000000;
-    bytes32 constant private ADR = 0x8c66f12800000000000000000000000000000000000000000000000000000000;
-    bytes32 constant private UIN = 0x4c200b1000000000000000000000000000000000000000000000000000000000;
-    bytes32 constant private UID = 0x9975842600000000000000000000000000000000000000000000000000000000;
-    bytes32 constant private STR = 0x99eec06400000000000000000000000000000000000000000000000000000000;
-    bytes32 constant private STD = 0x4155d39b00000000000000000000000000000000000000000000000000000000;
-    bytes32 constant private ENU = 0x82ff9d6f00000000000000000000000000000000000000000000000000000000;
-    bytes32 constant private ENM = 0x6795d52600000000000000000000000000000000000000000000000000000000;
-    bytes32 constant private ERR = 0x08c379a000000000000000000000000000000000000000000000000000000000;
-    bytes32 constant private APP = 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925;
-    bytes32 constant private AFA = 0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31;
-    bytes32 constant private TTF = 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef;
-    bytes32 constant private UPD = 0xf8e1a15aba9398e019f0b49df1a4fde98ee17ae345cb5f6b5e2c27f5033e8ce7;
+    bytes32 constant internal STO = 0x79030946dd457157e4aa08fcb4907c422402e75f0f0ecb4f2089cb35021ff964;
+    bytes32 constant internal CNT = 0x5e423f2848a55862b54c89a4d1538a2d8aec99c1ee890237e17cdd6f0b5769d9;
+    bytes32 constant internal NAM = 0xbfc6089389a8677a26de8a30917b1b15a173691b166f48a89b49eec213ba87b0;
+    bytes32 constant internal NA2 = 0xf2611493f75085dca50c1fd2ac8e34bc6d0eb7c274307efa54c50582314985bf;
+    bytes32 constant internal SYM = 0x4d3015a52e62e7dc6887dd6869969b57532cf58982b1264ed2b19809b668f8e5;
+    bytes32 constant internal SY2 = 0x96d8c7e9753d0c3dce20e0bd54a10932c96cf8457fe2ac7cebc4ca70af17a39a;
+    bytes32 constant internal IN7 = 0x80ac58cd00000000000000000000000000000000000000000000000000000000;
+    bytes32 constant internal INM = 0x5b5e139f00000000000000000000000000000000000000000000000000000000;
+    bytes32 constant internal ADR = 0x8c66f12800000000000000000000000000000000000000000000000000000000;
+    bytes32 constant internal UIN = 0x4c200b1000000000000000000000000000000000000000000000000000000000;
+    bytes32 constant internal UID = 0x9975842600000000000000000000000000000000000000000000000000000000;
+    bytes32 constant internal STR = 0x99eec06400000000000000000000000000000000000000000000000000000000;
+    bytes32 constant internal STD = 0x4155d39b00000000000000000000000000000000000000000000000000000000;
+    bytes32 constant internal ENU = 0x82ff9d6f00000000000000000000000000000000000000000000000000000000;
+    bytes32 constant internal ENM = 0x6795d52600000000000000000000000000000000000000000000000000000000;
+    bytes32 constant internal ERR = 0x08c379a000000000000000000000000000000000000000000000000000000000;
+    bytes32 constant internal EAP = 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925;
+    bytes32 constant internal EAA = 0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31;
+    bytes32 constant internal ETF = 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef;
+    bytes32 constant internal EMD = 0xf8e1a15aba9398e019f0b49df1a4fde98ee17ae345cb5f6b5e2c27f5033e8ce7;
 
     event Transfer (address indexed from, address indexed to, uint indexed id);
     event ApprovalForAll (address indexed from, address indexed to, bool);
@@ -203,7 +203,7 @@ contract ERC721 is Sign, DynamicPrice {
             pop(call(gas(), sto, 0x00, 0x80, 0x84, 0x00, 0x00))
 
             // emit Approval()
-            log4(0x00, 0x00, APP, oid, toa, tid)
+            log4(0x00, 0x00, EAP, oid, toa, tid)
         }
     }
 
@@ -220,7 +220,7 @@ contract ERC721 is Sign, DynamicPrice {
 
             // emit ApprovalForAll()
             mstore(0x00, bol)
-            log3(0x00, 0x20, AFA, origin(), toa)
+            log3(0x00, 0x20, EAA, origin(), toa)
         }
     }
 
@@ -317,7 +317,7 @@ contract ERC721 is Sign, DynamicPrice {
             }
 
             // emit Transfer()
-            log4(0x00, 0x00, TTF, oid, toa, tid)
+            log4(0x00, 0x00, ETF, oid, toa, tid)
         }
         checkSuspend(oid, toa);
     }
@@ -368,13 +368,13 @@ contract ERC721 is Sign, DynamicPrice {
                 pop(call(gas(), sto, 0x00, 0xe0, 0x84, 0x00, 0x00))
                 
                 // emit Transfer()
-                log4(0x00, 0x00, TTF, 0x00, caller(), lis)
+                log4(0x00, 0x00, ETF, 0x00, caller(), lis)
             }
 
             if gt(tid, 0x00) {  // 更新
                 // emit MetadataUpdate(i)
                 mstore(0x00, tid)
-                log1(0x00, 0x20, UPD)
+                log1(0x00, 0x20, EMD)
                 lis := tid
             }         
 
@@ -453,7 +453,7 @@ contract ERC721 is Sign, DynamicPrice {
             pop(call(gas(), sto, 0x00, 0x80, 0x84, 0x00, 0x0))
             
             // emit Transfer()
-            log4(0x0, 0x0, TTF, 0x0, caller(), l)
+            log4(0x0, 0x0, ETF, 0x0, caller(), l)
         }
     }
 }

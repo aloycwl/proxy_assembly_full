@@ -7,17 +7,17 @@ import {Sign} from "../Util/Sign.sol";
 // gas: 974705
 contract ERC20 is Sign {
 
-    bytes32 constant private STO = 0x79030946dd457157e4aa08fcb4907c422402e75f0f0ecb4f2089cb35021ff964;
-    bytes32 constant private CNT = 0x5e423f2848a55862b54c89a4d1538a2d8aec99c1ee890237e17cdd6f0b5769d9;
-    bytes32 constant private NAM = 0xbfc6089389a8677a26de8a30917b1b15a173691b166f48a89b49eec213ba87b0;
-    bytes32 constant private NA2 = 0xf2611493f75085dca50c1fd2ac8e34bc6d0eb7c274307efa54c50582314985bf;
-    bytes32 constant private SYM = 0x4d3015a52e62e7dc6887dd6869969b57532cf58982b1264ed2b19809b668f8e5;
-    bytes32 constant private SY2 = 0x96d8c7e9753d0c3dce20e0bd54a10932c96cf8457fe2ac7cebc4ca70af17a39a;
-    bytes32 constant private UIN = 0x4c200b1000000000000000000000000000000000000000000000000000000000;
-    bytes32 constant private UID = 0x9975842600000000000000000000000000000000000000000000000000000000;
-    bytes32 constant private ERR = 0x08c379a000000000000000000000000000000000000000000000000000000000;
-    bytes32 constant private APP = 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925;
-    bytes32 constant private TTF = 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef;
+    bytes32 constant internal STO = 0x79030946dd457157e4aa08fcb4907c422402e75f0f0ecb4f2089cb35021ff964;
+    bytes32 constant internal CNT = 0x5e423f2848a55862b54c89a4d1538a2d8aec99c1ee890237e17cdd6f0b5769d9;
+    bytes32 constant internal NAM = 0xbfc6089389a8677a26de8a30917b1b15a173691b166f48a89b49eec213ba87b0;
+    bytes32 constant internal NA2 = 0xf2611493f75085dca50c1fd2ac8e34bc6d0eb7c274307efa54c50582314985bf;
+    bytes32 constant internal SYM = 0x4d3015a52e62e7dc6887dd6869969b57532cf58982b1264ed2b19809b668f8e5;
+    bytes32 constant internal SY2 = 0x96d8c7e9753d0c3dce20e0bd54a10932c96cf8457fe2ac7cebc4ca70af17a39a;
+    bytes32 constant internal UIN = 0x4c200b1000000000000000000000000000000000000000000000000000000000;
+    bytes32 constant internal UID = 0x9975842600000000000000000000000000000000000000000000000000000000;
+    bytes32 constant internal ERR = 0x08c379a000000000000000000000000000000000000000000000000000000000;
+    bytes32 constant internal EAP = 0x8c5be1e5ebec7d5bd14f71427d1e84f3dd0314c0f7b2291e5b200ac8c7c3b925;
+    bytes32 constant internal ETF = 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef;
 
     event Transfer(address indexed from, address indexed to, uint);
     event Approval(address indexed from, address indexed to, uint);
@@ -101,7 +101,7 @@ contract ERC20 is Sign {
 
             // emit Approval(caller(), to, amt)
             mstore(0x00, amt)
-            log3(0x00, 0x20, APP, caller(), toa)
+            log3(0x00, 0x20, EAP, caller(), toa)
         }
     }
 
@@ -152,7 +152,7 @@ contract ERC20 is Sign {
 
             // emit Transfer(caller(), to, amt)
             mstore(0x00, amt)
-            log3(0x00, 0x20, TTF, caller(), toa)
+            log3(0x00, 0x20, ETF, caller(), toa)
 
             // return true
             val := 0x01
@@ -216,7 +216,7 @@ contract ERC20 is Sign {
 
             // emit Transfer(from, to, amt)
             mstore(0x00, amt)
-            log3(0x00, 0x20, TTF, frm, toa)
+            log3(0x00, 0x20, ETF, frm, toa)
 
             //return true
             val := 0x01
@@ -251,7 +251,7 @@ contract ERC20 is Sign {
 
             // emit Transfer(0x0, to, amt)
             mstore(0x00, amt) 
-            log3(0x00, 0x20, TTF, 0x00, toa)
+            log3(0x00, 0x20, ETF, 0x00, toa)
         }
     }
 
@@ -299,7 +299,7 @@ contract ERC20 is Sign {
 
             // emit Transfer(0x0, to, amt)
             mstore(0x00, amt) 
-            log3(0x00, 0x20, TTF, 0x00, caller())
+            log3(0x00, 0x20, ETF, 0x00, caller())
         }
     }
 }
