@@ -5,11 +5,6 @@ pragma abicoder v1;
 import {UUPSUpgradeable} from "./UUPS.sol";
 import {Storage} from "../Storage.sol";
 
-struct List {
-    address tokenAddr;
-    uint price;
-}
-
 contract StorageP is Storage, UUPSUpgradeable {
 
     function initialize() external {
@@ -24,5 +19,5 @@ contract StorageP is Storage, UUPSUpgradeable {
             sstore(caller(), 0xff)
         }
     }
-    
+
 }

@@ -4,11 +4,6 @@ pragma abicoder v1;
 
 import {Access} from "../Util/Access.sol";
 
-struct List {
-    address tokenAddr;
-    uint price;
-}
-
 contract Storage is Access {
     
     constructor() {

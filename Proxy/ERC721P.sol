@@ -7,7 +7,6 @@ import {ERC721} from "../ERC721.sol";
 
 contract ERC721P is ERC721, UUPSUpgradeable {
 
-
     constructor() ERC721(address(0), "", "") { }
 
     function initialize(address sto, string memory nam, string memory sym) external {

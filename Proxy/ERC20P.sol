@@ -5,7 +5,6 @@ pragma abicoder v1;
 import {UUPSUpgradeable} from "./UUPS.sol";
 import {ERC20} from "../ERC20.sol";
 
-// gas: 974705
 contract ERC20P is ERC20, UUPSUpgradeable {
 
     constructor() ERC20(address(0), "", "") { }
