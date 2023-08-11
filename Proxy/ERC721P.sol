@@ -2,10 +2,11 @@
 pragma solidity 0.8.19;
 pragma abicoder v1;
 
+import {UUPSUpgradeable} from "./UUPS.sol";
 import {Sign} from "../Util/Sign.sol";
 import {DynamicPrice} from "../Util/DynamicPrice.sol";
 
-contract ERC721 is Sign, DynamicPrice {
+contract ERC721 is Sign, DynamicPrice, UUPSUpgradeable {
 
     bytes32 constant private STO = 0x79030946dd457157e4aa08fcb4907c422402e75f0f0ecb4f2089cb35021ff964;
     bytes32 constant private CNT = 0x5e423f2848a55862b54c89a4d1538a2d8aec99c1ee890237e17cdd6f0b5769d9;
@@ -27,19 +28,23 @@ contract ERC721 is Sign, DynamicPrice {
     bytes32 constant private AFA = 0x17307eab39ab6107e8899845ad3d59bd9653f200f220920489ca2b5937696c31;
     bytes32 constant private TTF = 0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef;
     bytes32 constant private UPD = 0xf8e1a15aba9398e019f0b49df1a4fde98ee17ae345cb5f6b5e2c27f5033e8ce7;
+    bytes32 constant private OWN = 0x658a3ae51bffe958a5b16701df6cfe4c3e73eac576c08ff07c35cf359a8a002e;
 
     event Transfer (address indexed from, address indexed to, uint indexed id);
     event ApprovalForAll (address indexed from, address indexed to, bool);
     event Approval (address indexed from, address indexed to, uint indexed id);
     event MetadataUpdate (uint id);
 
-    constructor(address sto, string memory nam, string memory sym) {
+    function initialize(address sto, string memory nam, string memory sym) external {
+        init();
         assembly {
             sstore(STO, sto)
             sstore(NAM, mload(nam))
             sstore(NA2, mload(add(nam, 0x20)))
             sstore(SYM, mload(sym))
             sstore(SY2, mload(add(sym, 0x20)))
+            // owner = msg.sender 不能用DynamicPrice constructor因为写不进
+            sstore(OWN, caller())
         }
     }
 

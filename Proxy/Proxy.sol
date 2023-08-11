@@ -2,7 +2,7 @@
 pragma solidity 0.8.19;
 pragma abicoder v1;
 
-import "./UUPS.sol";
+import {UUPSUpgradeable} from "./UUPS.sol";
 
 contract NFTExample is UUPSUpgradeable {
 
