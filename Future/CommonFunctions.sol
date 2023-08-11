@@ -41,9 +41,17 @@ contract lib {
         for (uint i = 0; i < len; ++i) b[len-i-1] = bytes1(uint8(a / (2**(8*i))));
     }
 
-    function convertStr2Hex(string memory s) external pure returns(bytes32 b) {
+    function convertStr2Hex(string memory a) external pure returns(bytes32) {
         assembly {
-            b := mload(add(s, 0x20))
+            mstore(0x00, mload(add(a, 0x20)))
+            return(0x00, 0x20)
+        }
+    }
+
+    function convertDec2Adr(uint a) external pure returns(address) {
+        assembly {
+            mstore(0x00, a)
+            return(0x00, 0x20)
         }
     }
 

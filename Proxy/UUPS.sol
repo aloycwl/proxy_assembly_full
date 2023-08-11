@@ -31,7 +31,7 @@ abstract contract UUPSUpgradeable {
             if sload(INI) {
                 mstore(0x80, ERR) 
                 mstore(0x84, 0x20) 
-                mstore(0xA4, 0x0b)
+                mstore(0xA4, 0x0a)
                 mstore(0xC4, "Init failed")
                 revert(0x80, 0x64)
             }
@@ -53,7 +53,7 @@ abstract contract UUPSUpgradeable {
             if iszero(eq(mload(0x00), UUID)) {
                 mstore(0x80, ERR) 
                 mstore(0x84, 0x20) 
-                mstore(0xA4, 0x0b)
+                mstore(0xA4, 0x0a)
                 mstore(0xC4, "UUID failed")
                 revert(0x80, 0x64)
             }

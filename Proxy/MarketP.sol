@@ -28,6 +28,8 @@ contract Market is Access, DynamicPrice, UUPSUpgradeable {
             sstore(STO, sto)
             // owner = msg.sender 不能用DynamicPrice constructor因为写不进
             sstore(OWN, caller())
+            // 设置access, 不能用Access constructor因为写不进
+            sstore(caller(), 0xff)
         }
     }
 
