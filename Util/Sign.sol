@@ -85,7 +85,7 @@ contract Sign {
     }
 
     // block.timestamp
-    function getUint(address adr, uint uid) external view returns(uint) {
+    function getUint(address adr, uint uid) external view returns(uint) { // 0x2c7fb918
         assembly {
             // uintData(address(), addr, 0x0)
             mstore(0x80, UIN)
