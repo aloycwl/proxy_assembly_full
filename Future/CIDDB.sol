@@ -17,11 +17,12 @@ which will return the string.
 contract CIDDB {
     mapping(string => uint) public search;
     mapping(uint => string) public fetch;
+    bytes32 constant private CDB = 0x34b90c3fe4058816a5fd62fd112c01472c461559e126623d04d1af72d9ad437e;
 
     function setFetch(string memory cid) external returns(uint nwc) {
         require(CIDDB(address(this)).search(cid) == 0, "CID Existed");
         assembly {
-            nwc := add(sload(0x00), 1)
+            nwc := add(sload(CDB), 1)
             sstore(0x00, nwc)
         }
         search[cid] = nwc;
@@ -30,7 +31,7 @@ contract CIDDB {
 
     function count() external view returns(uint) {
         assembly {
-            mstore(0x00, sload(0x00))
+            mstore(0x00, sload(CDB))
             return(0x00, 0x20)
         }
     }
