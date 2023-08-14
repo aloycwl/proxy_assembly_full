@@ -18,7 +18,7 @@ contract Market is Access, DynamicPrice {
     bytes32 constant internal ERR = 0x08c379a000000000000000000000000000000000000000000000000000000000;
     bytes32 constant internal ITM = 0x6a7a67f0593403947073c37028291bd516867d4d24f57a76f4b94f284a63589f;
 
-    event Item() anonymous;
+    event Item();
 
     constructor(address sto) {
         assembly {
