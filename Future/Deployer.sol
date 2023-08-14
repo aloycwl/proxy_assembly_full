@@ -2,10 +2,10 @@
 pragma solidity 0.8.19;
 pragma abicoder v1;
 
-import {Storage} from "./Storage.sol";
-import {ERC721} from "./ERC721.sol";
-import {ERC20} from "./ERC20.sol";
-import {Market} from "./Market.sol";
+import {Storage} from "../Storage.sol";
+import {ERC721} from "../ERC721.sol";
+import {ERC20} from "../ERC20.sol";
+import {Market} from "../Market.sol";
 
 contract Deployer {
 
