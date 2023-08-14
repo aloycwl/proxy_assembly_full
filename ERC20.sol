@@ -33,37 +33,39 @@ contract ERC20 is Sign {
         }                                   
     }
 
-    function decimals() external pure returns(uint val) {
+    function decimals() external pure returns(uint) {
         assembly {
-            val := 0x12
+            mstore(0x00, 0x12)
+            return(0x00, 0x20)
         }
     }
 
-    function totalSupply() external view returns(uint val) {
+    function totalSupply() external view returns(uint) {
         assembly {
-            val := sload(CNT)
+            mstore(0x00, sload(CNT))
+            return(0x00, 0x20)
         }
     }
 
-    function name() external view returns(string memory val) {
+    function name() external view returns(string memory) {
         assembly {
-            val := mload(0x40)
-            mstore(0x40, add(val, 0x40))
-            mstore(val, sload(NAM))
-            mstore(add(val, 0x20), sload(NA2))
+            mstore(0x80, 0x20)
+            mstore(0xa0, sload(NAM))
+            mstore(0xc0, sload(NA2))
+            return(0x80, 0x60)
         }
     }
 
-    function symbol() external view returns(string memory val) {
+    function symbol() external view returns(string memory) {
         assembly {
-            val := mload(0x40)
-            mstore(0x40, add(val, 0x40))
-            mstore(val, sload(SYM))
-            mstore(add(val, 0x20), sload(SY2))
+            mstore(0x80, 0x20)
+            mstore(0xa0, sload(SYM))
+            mstore(0xc0, sload(SY2))
+            return(0x80, 0x60)
         }
     }
 
-    function balanceOf(address adr) external view returns(uint val) {
+    function balanceOf(address adr) external view returns(uint) {
         assembly {
             // uintData(address(), addr, 0x0)
             mstore(0x80, UIN)
@@ -71,11 +73,11 @@ contract ERC20 is Sign {
             mstore(0xa4, adr)
             mstore(0xc4, 0x02)
             pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x00, 0x20))
-            val := mload(0x00)
+            return(0x00, 0x20)
         }
     }
 
-    function allowance(address frm, address toa) external view returns(uint val) {
+    function allowance(address frm, address toa) external view returns(uint) {
         assembly {
             // uintData(address(), from, to)
             mstore(0x80, UIN) 
@@ -83,12 +85,12 @@ contract ERC20 is Sign {
             mstore(0xa4, frm)
             mstore(0xc4, toa)
             pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x00, 0x20))
-            val := mload(0x00)
+            return(0x00, 0x20)
         }
     }
 
     // gas: 61187/38302
-    function approve(address toa, uint amt) external returns(bool val) {
+    function approve(address toa, uint amt) external returns(bool) {
         assembly {
             // uintData(address(), caller(), to, amt)
             mstore(0x80, UID) 
@@ -96,17 +98,15 @@ contract ERC20 is Sign {
             mstore(0xa4, caller())
             mstore(0xc4, toa)
             mstore(0xe4, amt)
-            pop(call(gas(), sload(STO), 0x00, 0x80, 0x84, 0x00, 0x00))
-            val := 0x01
-
             // emit Approval(caller(), to, amt)
-            mstore(0x00, amt)
-            log3(0x00, 0x20, EAP, caller(), toa)
+            log3(0xe4, 0x20, EAP, caller(), toa)
+            pop(call(gas(), sload(STO), 0x00, 0x80, 0x84, 0x00, 0x00))
+            return(0x80, 0x20)
         }
     }
 
     // gas: 77637/57972
-    function transfer(address toa, uint amt) external returns(bool val) {
+    function transfer(address toa, uint amt) external returns(bool) {
         checkSuspend(msg.sender, toa);
         assembly {
             let sto := sload(STO)
@@ -155,12 +155,12 @@ contract ERC20 is Sign {
             log3(0x00, 0x20, ETF, caller(), toa)
 
             // return true
-            val := 0x01
+            return(0x00, 0x20)
         }
     }
 
     // gas: 85644/65979
-    function transferFrom(address frm, address toa, uint amt) external returns(bool val) {
+    function transferFrom(address frm, address toa, uint amt) external returns(bool) {
         checkSuspend(frm, toa);
         assembly {
             let sto := sload(STO)
@@ -219,7 +219,7 @@ contract ERC20 is Sign {
             log3(0x00, 0x20, ETF, frm, toa)
 
             //return true
-            val := 0x01
+            return(0x00, 0x20)
         }
     }
 

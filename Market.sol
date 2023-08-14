@@ -146,9 +146,10 @@ contract Market is Access, DynamicPrice {
         }
     }
 
-    function fee() external view returns (uint val) {
+    function fee() external view returns (uint) {
         assembly {
-            val := sload(FEE)
+            mstore(0x00, sload(FEE))
+            return(0x00, 0x20)
         }
     }
     

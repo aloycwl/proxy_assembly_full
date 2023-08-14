@@ -35,9 +35,10 @@ contract Access {
         }
     }
 
-    function access(address addr) external view returns(uint val) {
+    function access(address addr) external view returns(uint) {
         assembly { // mapping(address => uint) public access;
-            val := sload(addr)
+            mstore(0x00, sload(addr))
+            return(0x00, 0x20)
         }
     }
 }

@@ -43,37 +43,40 @@ contract ERC721 is Sign, DynamicPrice {
         }
     }
 
-    function supportsInterface(bytes4 a) external pure returns(bool val) {
+    function supportsInterface(bytes4 a) external pure returns(bool) {
         assembly {
-            val := or(eq(a, IN7), eq(a, INM)) 
+            mstore(0x00, or(eq(a, IN7), eq(a, INM)))
+            return(0x00, 0x20)
+
         }
     }
 
-    function count() external view returns(uint val) {
+    function count() external view returns(uint) {
         assembly {
-            val := sload(CNT)
+            mstore(0x00, sload(CNT))
+            return(0x00, 0x20)
         }
     }
 
-    function name() external view returns(string memory val) {
+    function name() external view returns(string memory) {
         assembly {
-            val := mload(0x40)
-            mstore(0x40, add(val, 0x40))
-            mstore(val, sload(NAM))
-            mstore(add(val, 0x20), sload(NA2))
+            mstore(0x80, 0x20)
+            mstore(0xa0, sload(NAM))
+            mstore(0xc0, sload(NA2))
+            return(0x80, 0x60)
         }
     }
 
-    function symbol() external view returns(string memory val) {
+    function symbol() external view returns(string memory) {
         assembly {
-            val := mload(0x40)
-            mstore(0x40, add(val, 0x40))
-            mstore(val, sload(SYM))
-            mstore(add(val, 0x20), sload(SY2))
+            mstore(0x80, 0x20)
+            mstore(0xa0, sload(SYM))
+            mstore(0xc0, sload(SY2))
+            return(0x80, 0x60)
         }
     }
 
-    function ownerOf(uint tid) external view returns(address val) { // 0x6352211e
+    function ownerOf(uint tid) external view returns(address) { // 0x6352211e
         assembly {
             // addressData(address(), 0x0, id)
             mstore(0x80, ADR)
@@ -81,11 +84,11 @@ contract ERC721 is Sign, DynamicPrice {
             mstore(0xa4, 0x00)
             mstore(0xc4, tid)
             pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x0, 0x20))
-            val := mload(0x00)
+            return(0x00, 0x20)
         }
     }
 
-    function balanceOf(address adr) external view returns (uint val) {
+    function balanceOf(address adr) external view returns (uint) {
         assembly {
             // uintData(address(), addr, 0x0)
             mstore(0x80, UIN)
@@ -93,7 +96,7 @@ contract ERC721 is Sign, DynamicPrice {
             mstore(0xa4, adr)
             mstore(0xc4, 0x00)
             pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x00, 0x20))
-            val := mload(0x00)
+            return(0x00, 0x20)
         }
     }
 
@@ -113,7 +116,7 @@ contract ERC721 is Sign, DynamicPrice {
         }
     }
 
-    function getApproved(uint tid) external view returns(address val) {
+    function getApproved(uint tid) external view returns(address) {
         assembly {
             // addressData(address(), 0x1, id)
             mstore(0x80, ADR)
@@ -121,11 +124,11 @@ contract ERC721 is Sign, DynamicPrice {
             mstore(0xa4, 0x01)
             mstore(0xc4, tid)
             pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x00, 0x20))
-            val := mload(0x00)
+            return(0x00, 0x20)
         }
     }
 
-    function isApprovedForAll(address frm, address toa) external view returns(bool val) { // 0xe985e9c5
+    function isApprovedForAll(address frm, address toa) external view returns(bool) { // 0xe985e9c5
         assembly {
             // uintData(address(), from, to)
             mstore(0x80, UIN)
@@ -133,7 +136,7 @@ contract ERC721 is Sign, DynamicPrice {
             mstore(0xa4, frm)
             mstore(0xc4, toa)
             pop(staticcall(gas(), sload(STO), 0x80, 0x64, 0x00, 0x20))
-            val := mload(0x00)
+            return(0x00, 0x20)
         }
     }
 
