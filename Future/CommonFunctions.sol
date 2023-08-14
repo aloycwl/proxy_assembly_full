@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: None
-pragma solidity 0.8.19;
+pragma solidity 0.8.0;
 pragma abicoder v1;
 
-contract lib {
+contract CommonFunctions {
     function getSelector(string memory a) external pure returns(bytes4) {
         return bytes4(keccak256(abi.encodePacked(a)));
     }
@@ -15,9 +15,9 @@ contract lib {
         return a.code.length;
     }
 
-    function getBytecode() external pure returns (bytes memory) {
+    /*function getBytecode() external pure returns (bytes memory) {
         return type(TestCreationCode).creationCode;
-    }
+    }*/
 
     function getDeployAdr(bytes memory a, uint b)public view returns (address) {
         return address(uint160(uint(keccak256(abi.encodePacked(bytes1(0xff), address(this), b, keccak256(a))))));
@@ -72,6 +72,6 @@ contract lib {
     }
 }
 
-contract TestCreationCode {
+/*contract TestCreationCode {
     uint public constant storedNumber = 0x0500;
-}
+}*/
