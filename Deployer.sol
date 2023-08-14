@@ -22,6 +22,7 @@ contract Deployer {
 
         assembly {
             let sto := sload(STO.slot)
+            // setAccess()
             mstore(0x80, 0x850bbe8700000000000000000000000000000000000000000000000000000000)
             mstore(0x84, caller())
             mstore(0xa4, 0x01)
