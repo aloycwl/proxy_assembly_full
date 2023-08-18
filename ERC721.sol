@@ -47,7 +47,6 @@ contract ERC721 is Sign, DynamicPrice {
         assembly {
             mstore(0x00, or(eq(a, IN7), eq(a, INM)))
             return(0x00, 0x20)
-
         }
     }
 
